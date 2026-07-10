@@ -115,12 +115,16 @@
     box-shadow:0 18px 40px rgba(0,0,0,0.18);
     padding:22px 22px 18px;
     display:grid;
-    grid-template-columns:1.4fr 1fr 1fr auto;
+    grid-template-columns:1.1fr 0.8fr 1.6fr auto;
     gap:14px;
     position:relative;
     z-index:5;
   }
   .field{display:flex;flex-direction:column;gap:6px;}
+  .budget-controls{display:flex;gap:6px;}
+  .budget-controls select#budget{flex:0 0 auto;width:88px;}
+  .budget-controls input#budgetCustom{flex:1 1 auto;min-width:0;}
+  .budget-controls select#budgetPeriod{flex:0 0 auto;width:104px;}
   .field label{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:#6B6A5A;font-weight:600;}
   .field input,.field select{
     border:1px solid var(--line);
@@ -268,10 +272,14 @@
   @media (max-width:780px){
     .hero-inner{grid-template-columns:1fr;}
     .search-card{grid-template-columns:1fr 1fr;margin-top:-24px;}
+    .budget-field{grid-column:1/-1;}
     .btn-search{grid-column:1/-1;}
   }
   @media (max-width:520px){
     .search-card{grid-template-columns:1fr;}
+    .budget-controls{flex-wrap:wrap;}
+    .budget-controls select#budget,
+    .budget-controls select#budgetPeriod{width:auto;flex:1 1 120px;}
   }
   @media (prefers-reduced-motion:reduce){
     *{transition:none !important;}
@@ -332,16 +340,24 @@
       <option value="Studio">Studio</option>
     </select>
   </div>
-  <div class="field">
-    <label for="budget">Budget max (FCFA/mois)</label>
-    <select id="budget">
-      <option value="">Sans limite</option>
-      <option value="100000">100 000</option>
-      <option value="200000">200 000</option>
-      <option value="350000">350 000</option>
-      <option value="600000">600 000</option>
-      <option value="1000000">1 000 000</option>
-    </select>
+  <div class="field budget-field">
+    <label for="budget">Budget max (FCFA)</label>
+    <div class="budget-controls">
+      <select id="budget">
+        <option value="">Sans limite</option>
+        <option value="100000">100 000</option>
+        <option value="200000">200 000</option>
+        <option value="350000">350 000</option>
+        <option value="600000">600 000</option>
+        <option value="1000000">1 000 000</option>
+      </select>
+      <input type="number" id="budgetCustom" min="0" placeholder="Ou saisissez un montant">
+      <select id="budgetPeriod">
+        <option value="mois">Par mois</option>
+        <option value="semaine">Par semaine</option>
+        <option value="jour">Par jour</option>
+      </select>
+    </div>
   </div>
   <button type="submit" class="btn-search">Rechercher</button>
 </form>
@@ -367,7 +383,7 @@
       <p style="margin-top:10px;">Plateforme légère de mise en relation pour la location de résidences et maisons.</p>
     </div>
     <div>
-      <p>Une annonce à publier ?<br>Écrivez à annonces@seonaresi.ci</p>
+      <p>Une annonce à publier ?<br>Écrivez à amaniasylvanus@gmail.com<br>WhatsApp : 07 47 37 79 39 / 07 78 66 22 93</p>
     </div>
   </div>
   <div class="footer-fine">© 2026 SEONA RESI — Projet hébergé sur GitHub Pages.</div>
@@ -436,14 +452,27 @@ function money(n){ return n.toLocaleString('fr-FR') + ' FCFA'; }
 function render(){
   const q = document.getElementById('q').value.trim().toLowerCase();
   const type = document.getElementById('type').value;
-  const budget = document.getElementById('budget').value;
+  const budgetCustom = document.getElementById('budgetCustom').value;
+  const budgetPreset = document.getElementById('budget').value;
+  const period = document.getElementById('budgetPeriod').value;
+
+  // La saisie libre prend le pas sur le menu déroulant si elle est renseignée
+  const rawBudget = budgetCustom !== "" ? Number(budgetCustom) : (budgetPreset !== "" ? Number(budgetPreset) : null);
+
+  // Les prix des biens sont enregistrés par mois : on convertit le budget saisi vers un équivalent mensuel
+  let monthlyBudget = null;
+  if(rawBudget !== null && !isNaN(rawBudget)){
+    if(period === "semaine") monthlyBudget = rawBudget * 4.345;
+    else if(period === "jour") monthlyBudget = rawBudget * 30;
+    else monthlyBudget = rawBudget;
+  }
 
   let items = LISTINGS.filter(l => {
     if(activeCityFilter === "Favoris") return favorites.includes(l.id);
     if(activeCityFilter && l.city !== activeCityFilter) return false;
     if(q && !(l.city.toLowerCase().includes(q) || l.title.toLowerCase().includes(q))) return false;
     if(type && l.type !== type) return false;
-    if(budget && l.price > Number(budget)) return false;
+    if(monthlyBudget !== null && l.price > monthlyBudget) return false;
     return true;
   });
 
@@ -541,8 +570,9 @@ function openModal(id){
       <p class="modal-desc">${l.desc}</p>
       <div class="amenities">${l.amenities.map(a=>`<span>${a}</span>`).join('')}</div>
       <div class="contact-row">
-        <a class="btn-whatsapp" target="_blank" href="https://wa.me/${l.phone}?text=${waMsg}">Contacter sur WhatsApp</a>
-        <a class="btn-mail" href="mailto:annonces@seonaresi.ci?subject=Intérêt%20pour%20${l.ref}&body=${waMsg}">Envoyer un e-mail</a>
+        <a class="btn-whatsapp" target="_blank" href="https://wa.me/225747377939?text=${waMsg}">WhatsApp — 07 47 37 79 39</a>
+        <a class="btn-whatsapp" target="_blank" href="https://wa.me/225778662293?text=${waMsg}">WhatsApp — 07 78 66 22 93</a>
+        <a class="btn-mail" href="mailto:amaniasylvanus@gmail.com?cc=alecsylvanus@gmail.com&subject=Int%C3%A9r%C3%AAt%20pour%20${l.ref}&body=${waMsg}">Envoyer un e-mail</a>
       </div>
     </div>
   `;
@@ -558,3 +588,4 @@ render();
 </script>
 </body>
 </html>
+Mise à jour du filtre budget et des contacts
