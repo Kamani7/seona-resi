@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEONA RESI — Résidences & maisons à louer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1F2E2A;
+    --bg:#E4E4D8;
+    --panel:#FBFAF4;
+    --clay:#B5562F;
+    --teal:#3A6F62;
+    --gold:#C79A3E;
+    --line:#CBC7B4;
+    --white:#FFFFFF;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  img{max-width:100%;}
+
+  /* ---------- Roofline motif (signature element) ---------- */
+  .roofline{
+    height:22px;
+    width:100%;
+    background:
+      linear-gradient(135deg, transparent 50%, var(--bg) 50%) 0 0/16px 22px repeat-x,
+      linear-gradient(45deg, transparent 50%, var(--bg) 50%) 0 0/16px 22px repeat-x;
+    background-color:var(--ink);
+  }
+  .roofline.flip{transform:scaleY(-1);}
+
+  /* ---------- Header ---------- */
+  header{
+    background:var(--ink);
+    color:var(--panel);
+    padding:22px 6vw 26px;
+  }
+  .nav{
+    max-width:1180px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .logo{
+    display:flex;align-items:center;gap:10px;
+  }
+  .logo-mark{
+    width:36px;height:36px;flex:none;
+  }
+  .logo-text{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:20px;
+    letter-spacing:0.02em;
+  }
+  .logo-text span{color:var(--gold);}
+  nav .tag{
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:#C9C4AE;
+    border:1px solid #43544F;
+    padding:6px 12px;
+    border-radius:99px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:var(--ink);
+    color:var(--panel);
+    padding:10px 6vw 64px;
+  }
+  .hero-inner{
+    max-width:1180px;margin:0 auto;
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center;
+  }
+  .eyebrow{
+    font-size:13px;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:14px;font-weight:600;
+  }
+  .hero h1{
+    font-size:clamp(34px,4.6vw,54px);
+    line-height:1.06;
+    color:var(--panel);
+  }
+  .hero h1 em{color:var(--gold);font-style:italic;}
+  .hero p.lede{
+    margin-top:18px;font-size:17px;line-height:1.55;color:#D6D2C1;max-width:46ch;
+  }
+  .skyline{width:100%;height:auto;}
+
+  /* Search card overlapping hero/listing boundary */
+  .search-card{
+    max-width:1180px;margin:-38px auto 0;
+    background:var(--panel);
+    border-radius:var(--radius);
+    box-shadow:0 18px 40px rgba(0,0,0,0.18);
+    padding:22px 22px 18px;
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr auto;
+    gap:14px;
+    position:relative;
+    z-index:5;
+  }
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:#6B6A5A;font-weight:600;}
+  .field input,.field select{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:14.5px;
+    font-family:inherit;
+    background:var(--white);
+    color:var(--ink);
+  }
+  .field input:focus,.field select:focus{outline:2px solid var(--teal);outline-offset:1px;}
+  .btn-search{
+    align-self:end;
+    background:var(--clay);
+    color:var(--white);
+    border:none;border-radius:8px;
+    padding:11px 22px;
+    font-weight:600;font-size:14.5px;
+    transition:background .15s ease;
+  }
+  .btn-search:hover{background:#983F1F;}
+
+  /* ---------- Main / listings ---------- */
+  main{max-width:1180px;margin:0 auto;padding:56px 6vw 20px;}
+  .section-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    flex-wrap:wrap;gap:10px;margin-bottom:22px;
+  }
+  .section-head h2{font-size:26px;}
+  .count{font-size:13.5px;color:#65644F;}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:30px;}
+  .chip{
+    border:1px solid var(--line);
+    background:var(--panel);
+    padding:8px 15px;border-radius:99px;
+    font-size:13.5px;font-weight:500;color:var(--ink);
+    transition:all .15s ease;
+  }
+  .chip.active{background:var(--ink);color:var(--panel);border-color:var(--ink);}
+  .chip:hover:not(.active){border-color:var(--teal);color:var(--teal);}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:24px;
+  }
+  .card{
+    background:var(--panel);
+    border-radius:var(--radius);
+    overflow:hidden;
+    border:1px solid var(--line);
+    display:flex;flex-direction:column;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 14px 26px rgba(31,46,42,0.14);}
+  .card-visual{
+    height:150px;position:relative;display:flex;align-items:center;justify-content:center;
+  }
+  .card-visual svg{width:100%;height:100%;}
+  .ref-tag{
+    position:absolute;top:10px;left:10px;
+    background:rgba(31,46,42,0.82);color:var(--panel);
+    font-size:11px;letter-spacing:0.06em;
+    padding:4px 9px;border-radius:6px;font-weight:600;
+  }
+  .fav-btn{
+    position:absolute;top:8px;right:8px;
+    width:32px;height:32px;border-radius:50%;
+    border:none;background:rgba(255,255,255,0.88);
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;
+  }
+  .fav-btn.active{color:var(--clay);}
+  .fav-btn:not(.active){color:#9C9A87;}
+  .card-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .card-type{font-size:11.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--teal);font-weight:700;}
+  .card-title{font-size:17.5px;font-family:'Fraunces',serif;font-weight:600;}
+  .card-loc{font-size:13.5px;color:#6B6A5A;display:flex;gap:5px;align-items:center;}
+  .card-specs{
+    display:flex;gap:14px;font-size:12.5px;color:#54533F;
+    margin-top:2px;padding-top:10px;border-top:1px dashed var(--line);
+  }
+  .card-footer{
+    margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding-top:10px;
+  }
+  .price{font-family:'Fraunces',serif;font-weight:600;font-size:16.5px;color:var(--ink);}
+  .price small{font-family:'Work Sans',sans-serif;font-size:11.5px;font-weight:500;color:#6B6A5A;}
+  .card-btn{
+    background:none;border:1px solid var(--ink);color:var(--ink);
+    padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600;
+    transition:all .15s ease;
+  }
+  .card-btn:hover{background:var(--ink);color:var(--panel);}
+
+  .empty{
+    grid-column:1/-1;text-align:center;padding:60px 20px;color:#6B6A5A;
+  }
+  .empty .display{font-size:22px;margin-bottom:8px;color:var(--ink);}
+
+  /* ---------- Modal ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(20,26,23,0.55);
+    display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
+  }
+  .overlay.open{display:flex;}
+  .modal{
+    background:var(--panel);border-radius:16px;max-width:640px;width:100%;
+    max-height:88vh;overflow-y:auto;position:relative;
+  }
+  .modal-visual{height:180px;}
+  .modal-visual svg{width:100%;height:100%;}
+  .modal-close{
+    position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;
+    border:none;background:rgba(255,255,255,0.9);font-size:18px;color:var(--ink);
+  }
+  .modal-body{padding:26px 28px 30px;}
+  .modal-body .card-type{margin-bottom:6px;}
+  .modal-body h3{font-size:23px;margin-bottom:6px;}
+  .modal-loc{color:#6B6A5A;font-size:14px;margin-bottom:16px;}
+  .modal-price{font-size:20px;margin-bottom:18px;}
+  .modal-specs{display:flex;gap:20px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:18px;}
+  .modal-specs div{font-size:13px;color:#54533F;}
+  .modal-specs strong{display:block;font-family:'Fraunces',serif;font-size:18px;color:var(--ink);font-weight:600;}
+  .modal-desc{font-size:14.5px;line-height:1.65;color:#3C3B2E;margin-bottom:18px;}
+  .amenities{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
+  .amenities span{
+    background:#EFEDDF;border-radius:99px;padding:5px 12px;font-size:12.5px;color:var(--ink);
+  }
+  .contact-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .contact-row a{
+    flex:1;min-width:160px;text-align:center;padding:12px 16px;border-radius:9px;
+    font-weight:600;font-size:14px;text-decoration:none;
+  }
+  .btn-whatsapp{background:#3A6F62;color:#fff;}
+  .btn-mail{background:none;border:1px solid var(--ink);color:var(--ink);}
+
+  /* ---------- Footer ---------- */
+  footer{background:var(--ink);color:#C9C4AE;padding:44px 6vw 30px;}
+  .footer-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;}
+  .footer-inner .logo-text{color:var(--panel);}
+  footer p{font-size:13.5px;line-height:1.6;max-width:36ch;color:#ADA997;}
+  .footer-fine{max-width:1180px;margin:26px auto 0;border-top:1px solid #3A4A45;padding-top:16px;font-size:12px;color:#8E8B79;}
+
+  @media (max-width:780px){
+    .hero-inner{grid-template-columns:1fr;}
+    .search-card{grid-template-columns:1fr 1fr;margin-top:-24px;}
+    .btn-search{grid-column:1/-1;}
+  }
+  @media (max-width:520px){
+    .search-card{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="none">
+        <path d="M20 4 L36 16 L36 36 L4 36 L4 16 Z" fill="#C79A3E"/>
+        <rect x="15" y="22" width="10" height="14" fill="#1F2E2A"/>
+        <path d="M20 4 L36 16 L4 16 Z" fill="#3A6F62"/>
+      </svg>
+      <div class="logo-text">SEONA <span>RESI</span></div>
+    </div>
+    <span class="tag">Location de résidences</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Maisons · Villas · Appartements</div>
+      <h1>Trouvez la résidence<br>qui vous <em>ressemble</em>.</h1>
+      <p class="lede">SEONA RESI référence des biens en location vérifiés, avec un contact direct au propriétaire — sans intermédiaire, sans attente.</p>
+    </div>
+    <svg class="skyline" viewBox="0 0 420 220" fill="none">
+      <rect x="0" y="150" width="420" height="70" fill="#243A34"/>
+      <g>
+        <rect x="20" y="90" width="80" height="60" fill="#2C443D"/>
+        <path d="M20 90 L60 55 L100 90 Z" fill="#3A6F62"/>
+        <rect x="130" y="60" width="90" height="90" fill="#2C443D"/>
+        <path d="M130 60 L175 20 L220 60 Z" fill="#B5562F"/>
+        <rect x="250" y="105" width="70" height="45" fill="#2C443D"/>
+        <path d="M250 105 L285 78 L320 105 Z" fill="#C79A3E"/>
+        <rect x="335" y="80" width="65" height="70" fill="#2C443D"/>
+        <path d="M335 80 L367 45 L400 80 Z" fill="#3A6F62"/>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<form class="search-card" id="searchForm">
+  <div class="field">
+    <label for="q">Ville ou quartier</label>
+    <input type="text" id="q" placeholder="Ex : San-Pédro, Cocody…">
+  </div>
+  <div class="field">
+    <label for="type">Type de bien</label>
+    <select id="type">
+      <option value="">Tous les types</option>
+      <option value="Villa">Villa</option>
+      <option value="Maison">Maison</option>
+      <option value="Appartement">Appartement</option>
+      <option value="Studio">Studio</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="budget">Budget max (FCFA/mois)</label>
+    <select id="budget">
+      <option value="">Sans limite</option>
+      <option value="100000">100 000</option>
+      <option value="200000">200 000</option>
+      <option value="350000">350 000</option>
+      <option value="600000">600 000</option>
+      <option value="1000000">1 000 000</option>
+    </select>
+  </div>
+  <button type="submit" class="btn-search">Rechercher</button>
+</form>
+
+<main>
+  <div class="chips" id="chips">
+    <button class="chip active" data-city="">Toutes les villes</button>
+    <button class="chip" data-city="Favoris">♥ Mes favoris</button>
+  </div>
+
+  <div class="section-head">
+    <h2>Biens disponibles</h2>
+    <span class="count" id="resultCount"></span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="logo-text">SEONA <span style="color:#C79A3E">RESI</span></div>
+      <p style="margin-top:10px;">Plateforme légère de mise en relation pour la location de résidences et maisons.</p>
+    </div>
+    <div>
+      <p>Une annonce à publier ?<br>Écrivez à annonces@seonaresi.ci</p>
+    </div>
+  </div>
+  <div class="footer-fine">© 2026 SEONA RESI — Projet hébergé sur GitHub Pages.</div>
+</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+const LISTINGS = [
+  {id:1, ref:"SR-014", type:"Villa", title:"Villa avec jardin, quartier calme", city:"San-Pédro", price:280000, rooms:4, baths:3, area:210,
+    desc:"Villa de plain-pied entourée d'un jardin clos, proche du port. Idéale pour une famille recherchant calme et sécurité.",
+    amenities:["Jardin clos","Parking 2 voitures","Groupe électrogène","Forage d'eau"], color:"#3A6F62", phone:"225000000001"},
+  {id:2, ref:"SR-021", type:"Appartement", title:"Appartement standing, vue mer", city:"San-Pédro", price:190000, rooms:3, baths:2, area:95,
+    desc:"Appartement lumineux au 3e étage avec vue dégagée sur la mer, proche des commerces et écoles.",
+    amenities:["Climatisation","Ascenseur","Balcon","Gardien"], color:"#B5562F", phone:"225000000002"},
+  {id:3, ref:"SR-033", type:"Maison", title:"Maison familiale, cour spacieuse", city:"Abidjan", price:320000, rooms:5, baths:3, area:250,
+    desc:"Grande maison à Cocody avec cour intérieure, garage double et dépendance pour employé de maison.",
+    amenities:["Cour spacieuse","Garage double","Dépendance","Citerne d'eau"], color:"#C79A3E", phone:"225000000003"},
+  {id:4, ref:"SR-045", type:"Studio", title:"Studio meublé, proche université", city:"Abidjan", price:75000, rooms:1, baths:1, area:28,
+    desc:"Studio meublé et fonctionnel, à deux pas de l'université. Parfait pour étudiant ou jeune actif.",
+    amenities:["Meublé","Wifi inclus","Sécurisé 24h/24"], color:"#3A6F62", phone:"225000000004"},
+  {id:5, ref:"SR-052", type:"Villa", title:"Villa contemporaine avec piscine", city:"Abidjan", price:650000, rooms:5, baths:4, area:320,
+    desc:"Villa moderne à Riviera avec piscine privée, cuisine équipée et suite parentale.",
+    amenities:["Piscine privée","Cuisine équipée","Suite parentale","Vidéosurveillance"], color:"#B5562F", phone:"225000000005"},
+  {id:6, ref:"SR-061", type:"Appartement", title:"Appartement 2 pièces rénové", city:"Yamoussoukro", price:110000, rooms:2, baths:1, area:60,
+    desc:"Appartement récemment rénové, quartier résidentiel calme proche du centre administratif.",
+    amenities:["Rénové","Eau courante","Parking"], color:"#C79A3E", phone:"225000000006"},
+  {id:7, ref:"SR-074", type:"Maison", title:"Maison de ville avec terrasse", city:"Bouaké", price:150000, rooms:3, baths:2, area:130,
+    desc:"Maison de ville avec petite terrasse ombragée, idéale pour une famille de taille moyenne.",
+    amenities:["Terrasse","Cour arrière","Proche marché"], color:"#3A6F62", phone:"225000000007"},
+  {id:8, ref:"SR-088", type:"Studio", title:"Studio cosy centre-ville", city:"San-Pédro", price:65000, rooms:1, baths:1, area:24,
+    desc:"Petit studio bien agencé en plein centre-ville, à proximité immédiate des transports.",
+    amenities:["Centre-ville","Transports à pied","Sécurisé"], color:"#B5562F", phone:"225000000008"},
+];
+
+const grid = document.getElementById('grid');
+const resultCount = document.getElementById('resultCount');
+const chipsWrap = document.getElementById('chips');
+let favorites = JSON.parse(localStorage.getItem('seonaresi_favs') || '[]');
+let activeCityFilter = "";
+
+// Build city chips dynamically from data
+const cities = [...new Set(LISTINGS.map(l => l.city))];
+cities.forEach(city => {
+  const b = document.createElement('button');
+  b.className = 'chip';
+  b.textContent = city;
+  b.dataset.city = city;
+  chipsWrap.insertBefore(b, document.querySelector('[data-city="Favoris"]'));
+});
+
+function houseSVG(color, ref){
+  return `<svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice">
+    <rect width="300" height="150" fill="${color}"/>
+    <rect x="0" y="105" width="300" height="45" fill="rgba(0,0,0,0.12)"/>
+    <path d="M150 30 L230 85 L70 85 Z" fill="rgba(255,255,255,0.22)"/>
+    <rect x="95" y="85" width="110" height="55" fill="rgba(255,255,255,0.14)"/>
+    <rect x="135" y="105" width="30" height="35" fill="rgba(0,0,0,0.18)"/>
+  </svg>`;
+}
+
+function money(n){ return n.toLocaleString('fr-FR') + ' FCFA'; }
+
+function render(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const type = document.getElementById('type').value;
+  const budget = document.getElementById('budget').value;
+
+  let items = LISTINGS.filter(l => {
+    if(activeCityFilter === "Favoris") return favorites.includes(l.id);
+    if(activeCityFilter && l.city !== activeCityFilter) return false;
+    if(q && !(l.city.toLowerCase().includes(q) || l.title.toLowerCase().includes(q))) return false;
+    if(type && l.type !== type) return false;
+    if(budget && l.price > Number(budget)) return false;
+    return true;
+  });
+
+  resultCount.textContent = items.length + (items.length > 1 ? ' biens trouvés' : ' bien trouvé');
+  grid.innerHTML = "";
+
+  if(items.length === 0){
+    grid.innerHTML = `<div class="empty">
+      <div class="display">Aucun bien ne correspond.</div>
+      <div>Essayez d'élargir votre budget ou de changer de ville.</div>
+    </div>`;
+    return;
+  }
+
+  items.forEach(l => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const isFav = favorites.includes(l.id);
+    card.innerHTML = `
+      <div class="card-visual" style="background:${l.color}">
+        ${houseSVG(l.color, l.ref)}
+        <span class="ref-tag">${l.ref}</span>
+        <button class="fav-btn ${isFav?'active':''}" data-id="${l.id}" aria-label="Ajouter aux favoris">${isFav?'♥':'♡'}</button>
+      </div>
+      <div class="card-body">
+        <div class="card-type">${l.type}</div>
+        <div class="card-title">${l.title}</div>
+        <div class="card-loc">📍 ${l.city}</div>
+        <div class="card-specs">
+          <span>${l.rooms} pièce${l.rooms>1?'s':''}</span>
+          <span>${l.baths} SdB</span>
+          <span>${l.area} m²</span>
+        </div>
+        <div class="card-footer">
+          <div class="price">${money(l.price)}<br><small>par mois</small></div>
+          <button class="card-btn" data-open="${l.id}">Voir le bien</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+grid.addEventListener('click', e => {
+  const favBtn = e.target.closest('.fav-btn');
+  if(favBtn){
+    const id = Number(favBtn.dataset.id);
+    favorites = favorites.includes(id) ? favorites.filter(f=>f!==id) : [...favorites, id];
+    localStorage.setItem('seonaresi_favs', JSON.stringify(favorites));
+    render();
+    return;
+  }
+  const openBtn = e.target.closest('[data-open]');
+  if(openBtn){
+    openModal(Number(openBtn.dataset.open));
+  }
+});
+
+chipsWrap.addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if(!chip) return;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  activeCityFilter = chip.dataset.city;
+  render();
+});
+
+document.getElementById('searchForm').addEventListener('submit', e => {
+  e.preventDefault();
+  render();
+});
+
+const overlay = document.getElementById('overlay');
+const modalContent = document.getElementById('modalContent');
+
+function openModal(id){
+  const l = LISTINGS.find(x => x.id === id);
+  if(!l) return;
+  const waMsg = encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien ${l.ref} - ${l.title} (${l.city}) publié sur SEONA RESI.`);
+  modalContent.innerHTML = `
+    <div class="modal-visual" style="background:${l.color}">
+      ${houseSVG(l.color, l.ref)}
+    </div>
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-body">
+      <div class="card-type">${l.type} · Réf. ${l.ref}</div>
+      <h3>${l.title}</h3>
+      <div class="modal-loc">📍 ${l.city}</div>
+      <div class="modal-price display">${money(l.price)} <small style="font-family:'Work Sans';font-size:13px;color:#6B6A5A;">/ mois</small></div>
+      <div class="modal-specs">
+        <div><strong>${l.rooms}</strong>pièces</div>
+        <div><strong>${l.baths}</strong>salles de bain</div>
+        <div><strong>${l.area}</strong>m²</div>
+      </div>
+      <p class="modal-desc">${l.desc}</p>
+      <div class="amenities">${l.amenities.map(a=>`<span>${a}</span>`).join('')}</div>
+      <div class="contact-row">
+        <a class="btn-whatsapp" target="_blank" href="https://wa.me/${l.phone}?text=${waMsg}">Contacter sur WhatsApp</a>
+        <a class="btn-mail" href="mailto:annonces@seonaresi.ci?subject=Intérêt%20pour%20${l.ref}&body=${waMsg}">Envoyer un e-mail</a>
+      </div>
+    </div>
+  `;
+  overlay.classList.add('open');
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+}
+
+function closeModal(){ overlay.classList.remove('open'); }
+overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+render();
+</script>
+</body>
+</html>
