@@ -225,6 +225,116 @@
   }
   .empty .display{font-size:22px;margin-bottom:8px;color:var(--ink);}
 
+  /* ---------- Bien réservé (grisé) ---------- */
+  .card.reserved{
+    opacity:0.55;filter:grayscale(0.55);
+  }
+  .card.reserved:hover{transform:none;box-shadow:none;}
+  .card.reserved .card-btn{
+    background:#9C9A87;border-color:#9C9A87;color:#fff;cursor:not-allowed;
+  }
+  .card.reserved .card-btn:hover{background:#9C9A87;color:#fff;}
+  .reserved-tag{
+    position:absolute;top:10px;right:10px;
+    background:rgba(181,86,47,0.92);color:#fff;
+    font-size:11px;letter-spacing:0.06em;text-transform:uppercase;
+    padding:4px 9px;border-radius:6px;font-weight:700;
+  }
+
+  /* ---------- Galerie photos (modal) ---------- */
+  .modal-visual{position:relative;}
+  .gallery-caption{
+    position:absolute;bottom:10px;left:10px;
+    background:rgba(31,46,42,0.78);color:var(--panel);
+    font-size:12px;padding:4px 10px;border-radius:99px;font-weight:600;
+  }
+  .gallery-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:32px;height:32px;border-radius:50%;border:none;
+    background:rgba(255,255,255,0.88);color:var(--ink);font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .gallery-prev{left:10px;}
+  .gallery-next{right:10px;}
+  .thumbs{display:flex;gap:8px;padding:12px 28px 0;}
+  .thumb{
+    width:64px;height:46px;border-radius:7px;overflow:hidden;border:2px solid transparent;
+    padding:0;background:none;flex:none;
+  }
+  .thumb svg{width:100%;height:100%;display:block;}
+  .thumb.active{border-color:var(--teal);}
+
+  /* ---------- Options de paiement partiel ---------- */
+  .pay-option-group{margin:4px 0 16px;display:flex;flex-direction:column;gap:8px;}
+  .pay-option{
+    display:flex;align-items:center;gap:10px;border:1px solid var(--line);
+    border-radius:9px;padding:11px 13px;font-size:14px;cursor:pointer;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .pay-option:hover{border-color:var(--teal);}
+  .pay-option input{accent-color:var(--teal);width:16px;height:16px;flex:none;}
+  .pay-option.checked{border-color:var(--teal);background:#EEF4F2;}
+  .pay-option span.sub{display:block;font-size:12px;color:#6B6A5A;font-weight:400;}
+
+  .btn-pay{
+    width:100%;background:var(--clay);color:#fff;border:none;border-radius:9px;
+    padding:13px 16px;font-weight:600;font-size:15px;transition:background .15s ease;
+  }
+  .btn-pay:hover{background:#983F1F;}
+
+  /* ---------- Méthodes de paiement ---------- */
+  .pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 20px;}
+  .pay-method{
+    border:1px solid var(--line);border-radius:10px;padding:14px 12px;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    font-size:13px;font-weight:600;color:var(--ink);background:var(--white);
+  }
+  .pay-method:hover{border-color:var(--teal);}
+  .pay-method.selected{border-color:var(--teal);background:#EEF4F2;box-shadow:0 0 0 2px var(--teal) inset;}
+  .pay-method .dot{
+    width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:14px;font-weight:700;
+  }
+  .btn-back-link{
+    background:none;border:none;color:#6B6A5A;font-size:13px;font-weight:600;
+    text-decoration:underline;padding:0 0 16px;
+  }
+
+  /* ---------- Étape dépôt (QR / code / redirection) ---------- */
+  .deposit-summary{
+    display:flex;align-items:center;gap:10px;background:#EFEDDF;border-radius:10px;
+    padding:12px 14px;margin-bottom:18px;font-size:13.5px;
+  }
+  .deposit-summary .dot{
+    width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:11px;font-weight:700;flex:none;
+  }
+  .deposit-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .deposit-tab{
+    flex:1;min-width:110px;border:1px solid var(--line);background:var(--white);
+    border-radius:8px;padding:10px 8px;font-size:12.5px;font-weight:600;text-align:center;color:var(--ink);
+  }
+  .deposit-tab.active{border-color:var(--teal);background:#EEF4F2;color:var(--teal);}
+  .deposit-panel{
+    border:1px solid var(--line);border-radius:12px;padding:22px 18px;text-align:center;margin-bottom:18px;
+  }
+  .qr-wrap{display:flex;justify-content:center;margin-bottom:14px;}
+  .qr-wrap svg{width:160px;height:160px;}
+  .code-digits{
+    display:flex;justify-content:center;gap:10px;margin:6px 0 14px;
+  }
+  .code-digits span{
+    width:44px;height:54px;border-radius:8px;background:#EFEDDF;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--ink);
+  }
+  .deposit-instructions{font-size:13.5px;color:#54533F;line-height:1.6;margin-bottom:4px;}
+  .deposit-instructions strong{color:var(--ink);}
+  .btn-open-network{
+    display:inline-block;margin-top:10px;background:var(--ink);color:var(--panel);
+    border:none;border-radius:9px;padding:11px 20px;font-weight:600;font-size:14px;text-decoration:none;
+  }
+
   /* ---------- Modal ---------- */
   .overlay{
     position:fixed;inset:0;background:rgba(20,26,23,0.55);
@@ -501,6 +611,7 @@ const grid = document.getElementById('grid');
 const resultCount = document.getElementById('resultCount');
 const chipsWrap = document.getElementById('chips');
 let favorites = JSON.parse(localStorage.getItem('seonaresi_favs') || '[]');
+let reservedIds = JSON.parse(localStorage.getItem('seonaresi_reserved') || '[]');
 let activeCityFilter = "";
 
 // Build city chips dynamically from data
@@ -521,6 +632,36 @@ function houseSVG(color, ref){
     <rect x="95" y="85" width="110" height="55" fill="rgba(255,255,255,0.14)"/>
     <rect x="135" y="105" width="30" height="35" fill="rgba(0,0,0,0.18)"/>
   </svg>`;
+}
+
+/* Génère une petite galerie de vues (extérieur / salon / chambre / cuisine)
+   pour donner l'illusion de plusieurs photos du même bien. */
+function galleryFor(l){
+  const c = l.color;
+  return [
+    {label:"Extérieur", svg:houseSVG(c, l.ref)},
+    {label:"Salon", svg:`<svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice">
+        <rect width="300" height="150" fill="${c}"/>
+        <rect x="0" y="0" width="300" height="150" fill="rgba(0,0,0,0.08)"/>
+        <rect x="20" y="90" width="90" height="40" rx="6" fill="rgba(255,255,255,0.85)"/>
+        <rect x="130" y="30" width="60" height="60" fill="rgba(255,255,255,0.3)"/>
+        <rect x="210" y="70" width="70" height="55" rx="6" fill="rgba(0,0,0,0.18)"/>
+      </svg>`},
+    {label:"Chambre", svg:`<svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice">
+        <rect width="300" height="150" fill="${c}"/>
+        <rect x="0" y="0" width="300" height="150" fill="rgba(255,255,255,0.05)"/>
+        <rect x="30" y="70" width="140" height="55" rx="8" fill="rgba(255,255,255,0.85)"/>
+        <rect x="30" y="70" width="140" height="16" rx="8" fill="rgba(0,0,0,0.15)"/>
+        <rect x="200" y="20" width="70" height="70" fill="rgba(255,255,255,0.28)"/>
+      </svg>`},
+    {label:"Cuisine", svg:`<svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice">
+        <rect width="300" height="150" fill="${c}"/>
+        <rect x="0" y="0" width="300" height="150" fill="rgba(0,0,0,0.1)"/>
+        <rect x="15" y="95" width="270" height="35" fill="rgba(255,255,255,0.85)"/>
+        <rect x="40" y="55" width="220" height="30" fill="rgba(255,255,255,0.32)"/>
+        <rect x="220" y="98" width="45" height="30" rx="4" fill="rgba(0,0,0,0.2)"/>
+      </svg>`}
+  ];
 }
 
 function money(n){ return n.toLocaleString('fr-FR') + ' FCFA'; }
@@ -565,13 +706,15 @@ function render(){
 
   items.forEach(l => {
     const card = document.createElement('div');
-    card.className = 'card';
+    const isReserved = reservedIds.includes(l.id);
+    card.className = 'card' + (isReserved ? ' reserved' : '');
+    card.dataset.open = l.id;
     const isFav = favorites.includes(l.id);
     card.innerHTML = `
       <div class="card-visual" style="background:${l.color}">
         ${houseSVG(l.color, l.ref)}
         <span class="ref-tag">${l.ref}</span>
-        <button class="fav-btn ${isFav?'active':''}" data-id="${l.id}" aria-label="Ajouter aux favoris">${isFav?'♥':'♡'}</button>
+        ${isReserved ? `<span class="reserved-tag">Réservé</span>` : `<button class="fav-btn ${isFav?'active':''}" data-id="${l.id}" aria-label="Ajouter aux favoris">${isFav?'♥':'♡'}</button>`}
       </div>
       <div class="card-body">
         <div class="card-type">${l.type}</div>
@@ -584,7 +727,9 @@ function render(){
         </div>
         <div class="card-footer">
           <div class="price">${money(l.price)}<br><small>par mois</small></div>
-          <button class="card-btn" data-open="${l.id}">Voir le bien</button>
+          ${isReserved
+            ? `<button class="card-btn" disabled>Indisponible</button>`
+            : `<button class="card-btn" data-open="${l.id}">Voir le bien</button>`}
         </div>
       </div>
     `;
@@ -627,10 +772,19 @@ const modalContent = document.getElementById('modalContent');
 function openModal(id){
   const l = LISTINGS.find(x => x.id === id);
   if(!l) return;
+  const isReserved = reservedIds.includes(l.id);
+  const images = galleryFor(l);
+  let currentImg = 0;
   const waMsg = encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien ${l.ref} - ${l.title} (${l.city}) publié sur SEONA RESI.`);
   modalContent.innerHTML = `
-    <div class="modal-visual" style="background:${l.color}">
-      ${houseSVG(l.color, l.ref)}
+    <div class="modal-visual" style="background:${l.color}" id="modalVisual">
+      ${images[0].svg}
+      <span class="gallery-caption" id="galleryCaption">${images[0].label}</span>
+      <button class="gallery-nav gallery-prev" id="galleryPrev" aria-label="Image précédente">‹</button>
+      <button class="gallery-nav gallery-next" id="galleryNext" aria-label="Image suivante">›</button>
+    </div>
+    <div class="thumbs" id="thumbs">
+      ${images.map((img,i)=>`<button class="thumb ${i===0?'active':''}" data-idx="${i}">${img.svg}</button>`).join('')}
     </div>
     <button class="modal-close" id="modalClose">✕</button>
     <div class="modal-body">
@@ -645,7 +799,9 @@ function openModal(id){
       </div>
       <p class="modal-desc">${l.desc}</p>
       <div class="amenities">${l.amenities.map(a=>`<span>${a}</span>`).join('')}</div>
-      <button class="btn-reserve" id="btnReserve" data-id="${l.id}" style="width:100%;padding:13px 16px;border-radius:9px;font-weight:600;font-size:15px;margin-bottom:12px;">Réservation</button>
+      ${isReserved
+        ? `<button class="btn-reserve" disabled style="width:100%;padding:13px 16px;border-radius:9px;font-weight:600;font-size:15px;margin-bottom:12px;background:#9C9A87;cursor:not-allowed;">Bien déjà réservé</button>`
+        : `<button class="btn-reserve" id="btnReserve" data-id="${l.id}" style="width:100%;padding:13px 16px;border-radius:9px;font-weight:600;font-size:15px;margin-bottom:12px;">Réservation</button>`}
       <div class="contact-row">
         <a class="btn-whatsapp" target="_blank" href="https://wa.me/225747377939?text=${waMsg}">WhatsApp — 07 47 37 79 39</a>
         <a class="btn-whatsapp" target="_blank" href="https://wa.me/225778662293?text=${waMsg}">WhatsApp — 07 78 66 22 93</a>
@@ -654,11 +810,35 @@ function openModal(id){
     </div>
   `;
   overlay.classList.add('open');
-  document.getElementById('modalClose').addEventListener('click', closeModal);
-  document.getElementById('btnReserve').addEventListener('click', () => {
-    closeModal();
-    openReservationModal(l);
+
+  function showImage(idx){
+    currentImg = (idx + images.length) % images.length;
+    document.getElementById('modalVisual').innerHTML =
+      images[currentImg].svg +
+      `<span class="gallery-caption" id="galleryCaption">${images[currentImg].label}</span>
+       <button class="gallery-nav gallery-prev" id="galleryPrev" aria-label="Image précédente">‹</button>
+       <button class="gallery-nav gallery-next" id="galleryNext" aria-label="Image suivante">›</button>`;
+    document.getElementById('galleryPrev').addEventListener('click', () => showImage(currentImg - 1));
+    document.getElementById('galleryNext').addEventListener('click', () => showImage(currentImg + 1));
+    document.querySelectorAll('#thumbs .thumb').forEach((t,i) => t.classList.toggle('active', i === currentImg));
+  }
+
+  document.getElementById('galleryPrev').addEventListener('click', () => showImage(currentImg - 1));
+  document.getElementById('galleryNext').addEventListener('click', () => showImage(currentImg + 1));
+  document.getElementById('thumbs').addEventListener('click', e => {
+    const t = e.target.closest('.thumb');
+    if(!t) return;
+    showImage(Number(t.dataset.idx));
   });
+
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  const reserveBtn = document.getElementById('btnReserve');
+  if(reserveBtn){
+    reserveBtn.addEventListener('click', () => {
+      closeModal();
+      openReservationModal(l);
+    });
+  }
 }
 
 function closeModal(){ overlay.classList.remove('open'); }
@@ -708,11 +888,27 @@ function openReservationModal(l){
       <div class="res-error" id="resError"></div>
 
       <div class="res-total">
-        <span class="label">Total à payer</span>
+        <span class="label">Montant total</span>
         <span class="amount" id="resTotal">${money(l.price)}</span>
       </div>
 
-      <button class="btn-validate" id="btnValidate">Valider</button>
+      <div class="pay-option-group" id="payOptionGroup">
+        <label class="pay-option checked">
+          <input type="radio" name="payPortion" value="full" checked>
+          <span>Payer la totalité<span class="sub">Vous réglez 100% du montant total</span></span>
+        </label>
+        <label class="pay-option">
+          <input type="radio" name="payPortion" value="30">
+          <span>Payer 30% du montant total<span class="sub">Acompte pour valider la réservation</span></span>
+        </label>
+      </div>
+
+      <div class="res-total">
+        <span class="label">Montant à payer maintenant</span>
+        <span class="amount" id="resDue">${money(l.price)}</span>
+      </div>
+
+      <button class="btn-pay" id="btnProceedPayment">Passer au paiement</button>
     </div>
   `;
   reservationOverlay.classList.add('open');
@@ -720,44 +916,226 @@ function openReservationModal(l){
   const amountInput = document.getElementById('resAmount');
   const staysInput = document.getElementById('resStays');
   const totalEl = document.getElementById('resTotal');
+  const dueEl = document.getElementById('resDue');
+  const payOptionGroup = document.getElementById('payOptionGroup');
 
+  function getPortion(){
+    return document.querySelector('input[name="payPortion"]:checked').value;
+  }
   function updateTotal(){
     const amount = Number(amountInput.value) || 0;
     const stays = Number(staysInput.value) || 0;
-    totalEl.textContent = money(amount * stays);
+    const total = amount * stays;
+    const portion = getPortion();
+    const due = portion === '30' ? Math.round(total * 0.3) : total;
+    totalEl.textContent = money(total);
+    dueEl.textContent = money(due);
   }
   amountInput.addEventListener('input', updateTotal);
   staysInput.addEventListener('input', updateTotal);
+  payOptionGroup.addEventListener('change', () => {
+    document.querySelectorAll('.pay-option').forEach(opt => {
+      opt.classList.toggle('checked', opt.querySelector('input').checked);
+    });
+    updateTotal();
+  });
 
   document.getElementById('reservationClose').addEventListener('click', closeReservationModal);
-  document.getElementById('btnValidate').addEventListener('click', () => validateReservation(l));
+  document.getElementById('btnProceedPayment').addEventListener('click', () => {
+    const name = document.getElementById('resName').value.trim();
+    const phone = document.getElementById('resPhone').value.trim();
+    const amount = Number(amountInput.value);
+    const stays = Number(staysInput.value);
+    const errorEl = document.getElementById('resError');
+
+    if(!name || !phone || !amount || amount <= 0 || !stays || stays <= 0){
+      errorEl.textContent = "Merci de renseigner votre nom, votre téléphone, un montant et un nombre de séjour valides.";
+      errorEl.classList.add('show');
+      return;
+    }
+    errorEl.classList.remove('show');
+
+    const total = amount * stays;
+    const portion = getPortion();
+    const due = portion === '30' ? Math.round(total * 0.3) : total;
+    openPaymentMethods(l, {name, phone, amount, stays, total, portion, due});
+  });
 }
 
 function closeReservationModal(){ reservationOverlay.classList.remove('open'); }
 reservationOverlay.addEventListener('click', e => { if(e.target === reservationOverlay) closeReservationModal(); });
 
-function validateReservation(l){
-  const name = document.getElementById('resName').value.trim();
-  const phone = document.getElementById('resPhone').value.trim();
-  const amount = Number(document.getElementById('resAmount').value);
-  const stays = Number(document.getElementById('resStays').value);
-  const errorEl = document.getElementById('resError');
+const PAYMENT_METHODS = [
+  {id:'orange', label:'Orange Monnaie', color:'#FF7900', initials:'OM', ussd:'#144#'},
+  {id:'mtn', label:'MTN Momo', color:'#FFCC00', initials:'MoMo', ussd:'*133#'},
+  {id:'wave', label:'Wave', color:'#1DC3EA', initials:'W', ussd:null},
+  {id:'moov', label:'Moov Monnaie', color:'#0072CE', initials:'MM', ussd:'*155#'},
+];
 
-  if(!name || !phone || !amount || amount <= 0 || !stays || stays <= 0){
-    errorEl.textContent = "Merci de renseigner votre nom, votre téléphone, un montant et un nombre de séjour valides.";
-    errorEl.classList.add('show');
-    return;
+/* Génère un faux QR code (motif visuel) à partir d'une graine, pour illustrer le flux de dépôt. */
+function fakeQR(seed){
+  let s = 0;
+  for(let i=0;i<seed.length;i++) s = (s * 31 + seed.charCodeAt(i)) >>> 0;
+  const rand = () => { s = (s * 1103515245 + 12345) >>> 0; return (s >> 16) % 2; };
+  const cells = 11;
+  let rects = '';
+  for(let y=0;y<cells;y++){
+    for(let x=0;x<cells;x++){
+      const isFinder = (x<3&&y<3)||(x>cells-4&&y<3)||(x<3&&y>cells-4);
+      const on = isFinder ? (x===0||x===2||y===0||y===2||(x>=1&&x<=1&&y>=1&&y<=1)) : rand();
+      if(on) rects += `<rect x="${x*20}" y="${y*20}" width="20" height="20" fill="#1F2E2A"/>`;
+    }
   }
-  errorEl.classList.remove('show');
+  return `<svg viewBox="0 0 ${cells*20} ${cells*20}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#fff"/>${rects}</svg>`;
+}
 
-  const total = amount * stays;
+function openPaymentMethods(l, res){
+  let selected = null;
+  reservationContent.innerHTML = `
+    <button class="modal-close" id="reservationClose2">✕</button>
+    <div class="receipt-wrap">
+      <div class="card-type" style="margin-bottom:4px;">Mode de paiement</div>
+      <h3 style="margin-bottom:6px;">${l.title}</h3>
+      <div class="res-total" style="margin-bottom:18px;">
+        <span class="label">Montant à payer</span>
+        <span class="amount">${money(res.due)}</span>
+      </div>
+
+      <div class="pay-methods" id="payMethods">
+        ${PAYMENT_METHODS.map(m => `
+          <button type="button" class="pay-method" data-id="${m.id}">
+            <span class="dot" style="background:${m.color}">${m.initials}</span>
+            ${m.label}
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="res-error" id="payError"></div>
+
+      <button class="btn-validate" id="btnConfirmPayment">Continuer</button>
+      <button type="button" class="btn-back-link" id="btnBackToReservation">← Revenir aux informations de réservation</button>
+    </div>
+  `;
+  reservationOverlay.classList.add('open');
+
+  document.getElementById('reservationClose2').addEventListener('click', closeReservationModal);
+  document.getElementById('btnBackToReservation').addEventListener('click', () => openReservationModal(l));
+
+  document.getElementById('payMethods').addEventListener('click', e => {
+    const btn = e.target.closest('.pay-method');
+    if(!btn) return;
+    selected = btn.dataset.id;
+    document.querySelectorAll('.pay-method').forEach(m => m.classList.toggle('selected', m === btn));
+    document.getElementById('payError').classList.remove('show');
+  });
+
+  document.getElementById('btnConfirmPayment').addEventListener('click', () => {
+    const errorEl = document.getElementById('payError');
+    if(!selected){
+      errorEl.textContent = "Merci de choisir un mode de paiement.";
+      errorEl.classList.add('show');
+      return;
+    }
+    const method = PAYMENT_METHODS.find(m => m.id === selected);
+    openDepositStep(l, res, method);
+  });
+}
+
+/* ---------- Étape de finalisation du dépôt : QR code / code à 4 chiffres / redirection ---------- */
+function openDepositStep(l, res, method){
+  const depositCode = String(Math.floor(1000 + Math.random() * 9000));
+  const qrPayload = `SEONA-RESI|${l.ref}|${method.id}|${res.due}|${depositCode}`;
+  let mode = 'qr';
+
+  reservationContent.innerHTML = `
+    <button class="modal-close" id="reservationClose3">✕</button>
+    <div class="receipt-wrap">
+      <div class="card-type" style="margin-bottom:4px;">Finaliser le dépôt</div>
+      <h3 style="margin-bottom:14px;">${l.title}</h3>
+
+      <div class="deposit-summary">
+        <span class="dot" style="background:${method.color}">${method.initials}</span>
+        <span>Paiement via <strong>${method.label}</strong> — Montant à déposer : <strong>${money(res.due)}</strong></span>
+      </div>
+
+      <div class="deposit-tabs" id="depositTabs">
+        <button type="button" class="deposit-tab active" data-mode="qr">📷 Scanner un QR code</button>
+        <button type="button" class="deposit-tab" data-mode="code">🔢 Code à 4 chiffres</button>
+        <button type="button" class="deposit-tab" data-mode="redirect">↗ Ouvrir ${method.label}</button>
+      </div>
+
+      <div class="deposit-panel" id="depositPanel"></div>
+
+      <div class="res-error" id="depositError"></div>
+
+      <button class="btn-validate" id="btnDepositDone">J'ai effectué le dépôt</button>
+      <button type="button" class="btn-back-link" id="btnBackToMethods">← Changer de mode de paiement</button>
+    </div>
+  `;
+  reservationOverlay.classList.add('open');
+
+  const panel = document.getElementById('depositPanel');
+
+  function renderPanel(){
+    if(mode === 'qr'){
+      panel.innerHTML = `
+        <div class="qr-wrap">${fakeQR(qrPayload)}</div>
+        <div class="deposit-instructions">Ouvrez l'application <strong>${method.label}</strong> sur votre téléphone, puis scannez ce code pour déposer <strong>${money(res.due)}</strong>.</div>
+      `;
+    } else if(mode === 'code'){
+      panel.innerHTML = `
+        <div class="code-digits">${depositCode.split('').map(d => `<span>${d}</span>`).join('')}</div>
+        <div class="deposit-instructions">
+          ${method.ussd
+            ? `Composez <strong>${method.ussd}</strong> sur votre téléphone (réseau ${method.label}), choisissez « Paiement / Dépôt », puis saisissez ce code de confirmation à 4 chiffres pour valider le dépôt de <strong>${money(res.due)}</strong>.`
+            : `Ouvrez l'application <strong>${method.label}</strong>, lancez un dépôt de <strong>${money(res.due)}</strong>, puis saisissez ce code de confirmation à 4 chiffres lorsqu'il vous est demandé.`}
+        </div>
+      `;
+    } else {
+      panel.innerHTML = `
+        <div class="deposit-instructions" style="margin-bottom:14px;">Vous allez être redirigé(e) vers votre réseau <strong>${method.label}</strong> pour déposer <strong>${money(res.due)}</strong>.</div>
+        ${method.ussd
+          ? `<a class="btn-open-network" href="tel:${encodeURIComponent(method.ussd)}">Ouvrir ${method.label} (${method.ussd})</a>`
+          : `<a class="btn-open-network" href="https://www.wave.com" target="_blank" rel="noopener">Ouvrir l'application Wave</a>`}
+        <div class="deposit-instructions" style="margin-top:14px;">Une fois le dépôt effectué depuis votre téléphone, revenez ici et cliquez sur « J'ai effectué le dépôt ».</div>
+      `;
+    }
+  }
+  renderPanel();
+
+  document.getElementById('depositTabs').addEventListener('click', e => {
+    const tab = e.target.closest('.deposit-tab');
+    if(!tab) return;
+    mode = tab.dataset.mode;
+    document.querySelectorAll('.deposit-tab').forEach(t => t.classList.toggle('active', t === tab));
+    renderPanel();
+  });
+
+  document.getElementById('reservationClose3').addEventListener('click', closeReservationModal);
+  document.getElementById('btnBackToMethods').addEventListener('click', () => openPaymentMethods(l, res));
+  document.getElementById('btnDepositDone').addEventListener('click', () => {
+    validateReservation(l, res, method);
+  });
+}
+
+function validateReservation(l, res, method){
   const receiptNumber = 'REC-' + Date.now().toString().slice(-8);
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
 
+  if(!reservedIds.includes(l.id)){
+    reservedIds.push(l.id);
+    localStorage.setItem('seonaresi_reserved', JSON.stringify(reservedIds));
+  }
+
   closeReservationModal();
+  render();
   openReceipt({
-    receiptNumber, dateStr, l, name, phone, amount, stays, total
+    receiptNumber, dateStr, l,
+    name: res.name, phone: res.phone,
+    amount: res.amount, stays: res.stays,
+    total: res.total, due: res.due, portion: res.portion,
+    method
   });
 }
 
@@ -782,11 +1160,15 @@ function openReceipt(r){
         <div class="receipt-row"><span>Ville</span><span>${r.l.city}</span></div>
         <div class="receipt-row"><span>Montant unitaire</span><span>${money(r.amount)}</span></div>
         <div class="receipt-row"><span>Nombre de séjour(s)</span><span>${r.stays}</span></div>
+        <div class="receipt-row"><span>Montant total</span><span>${money(r.total)}</span></div>
+        <div class="receipt-row"><span>Formule de paiement</span><span>${r.portion === '30' ? 'Acompte 30%' : 'Totalité'}</span></div>
+        <div class="receipt-row"><span>Mode de paiement</span><span>${r.method ? r.method.label : '—'}</span></div>
+        ${r.portion === '30' ? `<div class="receipt-row"><span>Reste à payer</span><span>${money(r.total - r.due)}</span></div>` : ''}
       </div>
 
       <div class="receipt-total-row">
-        <span class="label">Total payé</span>
-        <span class="amount">${money(r.total)}</span>
+        <span class="label">${r.portion === '30' ? 'Acompte payé' : 'Total payé'}</span>
+        <span class="amount">${money(r.due)}</span>
       </div>
 
       <div class="receipt-note">Ce reçu confirme votre réservation sur SEONA RESI. Conservez-le et présentez-le lors de votre arrivée. Pour toute question, contactez-nous via WhatsApp au 07 47 37 79 39 ou 07 78 66 22 93.</div>
@@ -813,4 +1195,4 @@ render();
 </script>
 </body>
 </html>
-Mise à jour du filtre budget et ajoute du bouton réservation
+Mise à jour du mode de paiement
