@@ -261,6 +261,69 @@
   }
   .btn-whatsapp{background:#3A6F62;color:#fff;}
   .btn-mail{background:none;border:1px solid var(--ink);color:var(--ink);}
+  .btn-reserve{background:var(--clay);color:#fff;border:none;}
+  .btn-reserve:hover{background:#983F1F;}
+
+  /* ---------- Réservation / Reçu ---------- */
+  .res-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+  .res-field label{font-size:12px;text-transform:uppercase;letter-spacing:0.06em;color:#6B6A5A;font-weight:600;}
+  .res-field input{
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-size:14.5px;font-family:inherit;background:var(--white);color:var(--ink);
+  }
+  .res-field input:read-only{background:#EFEDDF;color:#54533F;}
+  .res-field input:focus{outline:2px solid var(--teal);outline-offset:1px;}
+  .res-row{display:flex;gap:14px;}
+  .res-row .res-field{flex:1;}
+  .res-total{
+    display:flex;justify-content:space-between;align-items:center;
+    background:#EFEDDF;border-radius:10px;padding:14px 16px;margin:6px 0 20px;
+  }
+  .res-total .label{font-size:13px;color:#54533F;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
+  .res-total .amount{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--ink);}
+  .btn-validate{
+    width:100%;background:var(--teal);color:#fff;border:none;border-radius:9px;
+    padding:13px 16px;font-weight:600;font-size:15px;transition:background .15s ease;
+  }
+  .btn-validate:hover{background:#2C574C;}
+  .res-error{color:var(--clay);font-size:13px;margin:-8px 0 14px;display:none;}
+  .res-error.show{display:block;}
+
+  .receipt-wrap{padding:26px 28px 30px;}
+  .receipt-head{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    border-bottom:2px dashed var(--line);padding-bottom:16px;margin-bottom:18px;
+  }
+  .receipt-head .logo-text{font-size:18px;}
+  .receipt-ok{
+    display:inline-flex;align-items:center;gap:6px;background:#E4F0EC;color:var(--teal);
+    font-size:12px;font-weight:700;padding:5px 11px;border-radius:99px;letter-spacing:0.04em;
+  }
+  .receipt-num{font-size:12.5px;color:#6B6A5A;margin-top:4px;}
+  .receipt-rows{margin-bottom:18px;}
+  .receipt-row{
+    display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);
+    font-size:14px;
+  }
+  .receipt-row span:first-child{color:#6B6A5A;}
+  .receipt-row span:last-child{font-weight:600;text-align:right;}
+  .receipt-total-row{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--ink);color:var(--panel);border-radius:10px;padding:16px 18px;margin:16px 0 22px;
+  }
+  .receipt-total-row .label{font-size:13px;text-transform:uppercase;letter-spacing:0.06em;color:#C9C4AE;}
+  .receipt-total-row .amount{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--gold);}
+  .receipt-note{font-size:12.5px;color:#6B6A5A;line-height:1.6;margin-bottom:20px;}
+  .receipt-actions{display:flex;gap:10px;flex-wrap:wrap;}
+  .btn-print{background:none;border:1px solid var(--ink);color:var(--ink);flex:1;min-width:160px;text-align:center;padding:12px 16px;border-radius:9px;font-weight:600;font-size:14px;}
+  .btn-close-receipt{background:var(--ink);color:var(--panel);flex:1;min-width:160px;text-align:center;padding:12px 16px;border-radius:9px;font-weight:600;font-size:14px;border:none;}
+
+  @media print{
+    body *{visibility:hidden;}
+    #receiptPrintArea, #receiptPrintArea *{visibility:visible;}
+    #receiptPrintArea{position:absolute;top:0;left:0;width:100%;}
+    .receipt-actions{display:none;}
+  }
 
   /* ---------- Footer ---------- */
   footer{background:var(--ink);color:#C9C4AE;padding:44px 6vw 30px;}
@@ -345,6 +408,11 @@
     <div class="budget-controls">
       <select id="budget">
         <option value="">Sans limite</option>
+        <option value="15000">15 000</option>
+        <option value="25000">25 000</option>
+        <option value="45000">45 000</option>
+        <option value="65000">65 000</option>
+        <option value="75000">75 000</option>
         <option value="100000">100 000</option>
         <option value="200000">200 000</option>
         <option value="350000">350 000</option>
@@ -391,6 +459,14 @@
 
 <div class="overlay" id="overlay">
   <div class="modal" id="modalContent"></div>
+</div>
+
+<div class="overlay" id="reservationOverlay">
+  <div class="modal" id="reservationContent"></div>
+</div>
+
+<div class="overlay" id="receiptOverlay">
+  <div class="modal" id="receiptContent"></div>
 </div>
 
 <script>
@@ -569,6 +645,7 @@ function openModal(id){
       </div>
       <p class="modal-desc">${l.desc}</p>
       <div class="amenities">${l.amenities.map(a=>`<span>${a}</span>`).join('')}</div>
+      <button class="btn-reserve" id="btnReserve" data-id="${l.id}" style="width:100%;padding:13px 16px;border-radius:9px;font-weight:600;font-size:15px;margin-bottom:12px;">Réservation</button>
       <div class="contact-row">
         <a class="btn-whatsapp" target="_blank" href="https://wa.me/225747377939?text=${waMsg}">WhatsApp — 07 47 37 79 39</a>
         <a class="btn-whatsapp" target="_blank" href="https://wa.me/225778662293?text=${waMsg}">WhatsApp — 07 78 66 22 93</a>
@@ -578,14 +655,162 @@ function openModal(id){
   `;
   overlay.classList.add('open');
   document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('btnReserve').addEventListener('click', () => {
+    closeModal();
+    openReservationModal(l);
+  });
 }
 
 function closeModal(){ overlay.classList.remove('open'); }
 overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
 
+/* ---------- Réservation & paiement ---------- */
+const reservationOverlay = document.getElementById('reservationOverlay');
+const reservationContent = document.getElementById('reservationContent');
+const receiptOverlay = document.getElementById('receiptOverlay');
+const receiptContent = document.getElementById('receiptContent');
+
+function openReservationModal(l){
+  reservationContent.innerHTML = `
+    <button class="modal-close" id="reservationClose">✕</button>
+    <div class="receipt-wrap">
+      <div class="card-type" style="margin-bottom:4px;">Réservation</div>
+      <h3 style="margin-bottom:20px;">${l.title}</h3>
+
+      <div class="res-field">
+        <label for="resCode">Numéro / Code du bien</label>
+        <input type="text" id="resCode" value="${l.ref}" readonly>
+      </div>
+
+      <div class="res-row">
+        <div class="res-field">
+          <label for="resName">Nom complet</label>
+          <input type="text" id="resName" placeholder="Votre nom et prénoms">
+        </div>
+        <div class="res-field">
+          <label for="resPhone">Téléphone</label>
+          <input type="tel" id="resPhone" placeholder="Ex : 07 00 00 00 00">
+        </div>
+      </div>
+
+      <div class="res-row">
+        <div class="res-field">
+          <label for="resAmount">Montant unitaire (FCFA / séjour)</label>
+          <input type="number" id="resAmount" min="1" value="${l.price}">
+        </div>
+        <div class="res-field">
+          <label for="resStays">Nombre de séjour(s)</label>
+          <input type="number" id="resStays" min="1" value="1">
+        </div>
+      </div>
+
+      <div class="res-error" id="resError"></div>
+
+      <div class="res-total">
+        <span class="label">Total à payer</span>
+        <span class="amount" id="resTotal">${money(l.price)}</span>
+      </div>
+
+      <button class="btn-validate" id="btnValidate">Valider</button>
+    </div>
+  `;
+  reservationOverlay.classList.add('open');
+
+  const amountInput = document.getElementById('resAmount');
+  const staysInput = document.getElementById('resStays');
+  const totalEl = document.getElementById('resTotal');
+
+  function updateTotal(){
+    const amount = Number(amountInput.value) || 0;
+    const stays = Number(staysInput.value) || 0;
+    totalEl.textContent = money(amount * stays);
+  }
+  amountInput.addEventListener('input', updateTotal);
+  staysInput.addEventListener('input', updateTotal);
+
+  document.getElementById('reservationClose').addEventListener('click', closeReservationModal);
+  document.getElementById('btnValidate').addEventListener('click', () => validateReservation(l));
+}
+
+function closeReservationModal(){ reservationOverlay.classList.remove('open'); }
+reservationOverlay.addEventListener('click', e => { if(e.target === reservationOverlay) closeReservationModal(); });
+
+function validateReservation(l){
+  const name = document.getElementById('resName').value.trim();
+  const phone = document.getElementById('resPhone').value.trim();
+  const amount = Number(document.getElementById('resAmount').value);
+  const stays = Number(document.getElementById('resStays').value);
+  const errorEl = document.getElementById('resError');
+
+  if(!name || !phone || !amount || amount <= 0 || !stays || stays <= 0){
+    errorEl.textContent = "Merci de renseigner votre nom, votre téléphone, un montant et un nombre de séjour valides.";
+    errorEl.classList.add('show');
+    return;
+  }
+  errorEl.classList.remove('show');
+
+  const total = amount * stays;
+  const receiptNumber = 'REC-' + Date.now().toString().slice(-8);
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+
+  closeReservationModal();
+  openReceipt({
+    receiptNumber, dateStr, l, name, phone, amount, stays, total
+  });
+}
+
+function openReceipt(r){
+  receiptContent.innerHTML = `
+    <button class="modal-close" id="receiptClose">✕</button>
+    <div class="receipt-wrap" id="receiptPrintArea">
+      <div class="receipt-head">
+        <div>
+          <div class="logo-text">SEONA <span style="color:#C79A3E">RESI</span></div>
+          <div class="receipt-num">Reçu N° ${r.receiptNumber}</div>
+          <div class="receipt-num">${r.dateStr}</div>
+        </div>
+        <span class="receipt-ok">✓ Réservation validée</span>
+      </div>
+
+      <div class="receipt-rows">
+        <div class="receipt-row"><span>Client</span><span>${r.name}</span></div>
+        <div class="receipt-row"><span>Téléphone</span><span>${r.phone}</span></div>
+        <div class="receipt-row"><span>Code du bien</span><span>${r.l.ref}</span></div>
+        <div class="receipt-row"><span>Bien réservé</span><span>${r.l.title}</span></div>
+        <div class="receipt-row"><span>Ville</span><span>${r.l.city}</span></div>
+        <div class="receipt-row"><span>Montant unitaire</span><span>${money(r.amount)}</span></div>
+        <div class="receipt-row"><span>Nombre de séjour(s)</span><span>${r.stays}</span></div>
+      </div>
+
+      <div class="receipt-total-row">
+        <span class="label">Total payé</span>
+        <span class="amount">${money(r.total)}</span>
+      </div>
+
+      <div class="receipt-note">Ce reçu confirme votre réservation sur SEONA RESI. Conservez-le et présentez-le lors de votre arrivée. Pour toute question, contactez-nous via WhatsApp au 07 47 37 79 39 ou 07 78 66 22 93.</div>
+
+      <div class="receipt-actions">
+        <button class="btn-print" id="btnPrintReceipt">🖨️ Imprimer / Enregistrer en PDF</button>
+        <button class="btn-close-receipt" id="btnCloseReceipt">Fermer</button>
+      </div>
+    </div>
+  `;
+  receiptOverlay.classList.add('open');
+  document.getElementById('receiptClose').addEventListener('click', closeReceipt);
+  document.getElementById('btnCloseReceipt').addEventListener('click', closeReceipt);
+  document.getElementById('btnPrintReceipt').addEventListener('click', () => window.print());
+}
+
+function closeReceipt(){ receiptOverlay.classList.remove('open'); }
+receiptOverlay.addEventListener('click', e => { if(e.target === receiptOverlay) closeReceipt(); });
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ closeReservationModal(); closeReceipt(); }
+});
+
 render();
 </script>
 </body>
 </html>
-Mise à jour du filtre budget et des contacts
+Mise à jour du filtre budget et ajoute du bouton réservation
