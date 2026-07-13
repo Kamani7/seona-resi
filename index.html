@@ -261,7 +261,7 @@
     width:64px;height:46px;border-radius:7px;overflow:hidden;border:2px solid transparent;
     padding:0;background:none;flex:none;
   }
-  .thumb svg{width:100%;height:100%;display:block;}
+  .thumb svg,.thumb img{width:100%;height:100%;display:block;object-fit:cover;}
   .thumb.active{border-color:var(--teal);}
 
   /* ---------- Options de paiement partiel ---------- */
@@ -457,6 +457,84 @@
   @media (prefers-reduced-motion:reduce){
     *{transition:none !important;}
   }
+
+  /* ---------- Auth buttons (header) ---------- */
+  .nav-actions{display:flex;gap:10px;align-items:center;}
+  .btn-nav{
+    border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:600;
+    border:1px solid #43544F;background:transparent;color:var(--panel);
+    transition:all .15s ease;white-space:nowrap;
+  }
+  .btn-nav:hover{border-color:var(--gold);color:var(--gold);}
+  .btn-nav.solid{background:var(--gold);color:var(--ink);border-color:var(--gold);}
+  .btn-nav.solid:hover{background:#B08A34;}
+  .session-pill{
+    font-size:12.5px;color:#C9C4AE;border:1px solid #43544F;border-radius:99px;
+    padding:6px 12px;display:flex;align-items:center;gap:8px;
+  }
+  .session-pill button{background:none;border:none;color:var(--gold);font-weight:700;font-size:12px;padding:0;}
+
+  /* ---------- Formulaires (auth / propriétaire) ---------- */
+  .form-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+  .form-field label{font-size:12px;text-transform:uppercase;letter-spacing:0.06em;color:#6B6A5A;font-weight:600;}
+  .form-field input[type=text],.form-field input[type=password],.form-field input[type=email],
+  .form-field input[type=tel],.form-field input[type=number],.form-field select{
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-size:14.5px;font-family:inherit;background:var(--white);color:var(--ink);width:100%;
+  }
+  .form-field input:focus,.form-field select:focus{outline:2px solid var(--teal);outline-offset:1px;}
+  .form-field .hint{font-size:11.5px;color:#8B8A76;font-weight:400;text-transform:none;letter-spacing:0;}
+  .form-row{display:flex;gap:14px;}
+  .form-row .form-field{flex:1;}
+  .file-drop{
+    border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;
+    background:#FBFAF4;font-size:13px;color:#6B6A5A;cursor:pointer;
+  }
+  .file-drop:hover{border-color:var(--teal);}
+  .file-drop.has-file{border-color:var(--teal);color:var(--teal);font-weight:600;background:#EEF4F2;}
+  .auth-tabs{display:flex;gap:8px;margin-bottom:20px;}
+  .auth-tab{
+    flex:1;border:1px solid var(--line);background:var(--white);border-radius:8px;
+    padding:10px 8px;font-size:13.5px;font-weight:600;text-align:center;color:var(--ink);
+  }
+  .auth-tab.active{border-color:var(--ink);background:var(--ink);color:var(--panel);}
+  .sr-badge{
+    display:inline-flex;align-items:center;gap:6px;background:#EFEDDF;color:var(--ink);
+    font-family:'Fraunces',serif;font-weight:600;font-size:16px;padding:8px 14px;border-radius:8px;
+    margin-bottom:14px;
+  }
+  .status-pill{
+    font-size:11.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;
+    padding:4px 10px;border-radius:99px;display:inline-block;
+  }
+  .status-pill.pending{background:#F3E3C9;color:#8A5A12;}
+  .status-pill.validated{background:#E4F0EC;color:var(--teal);}
+
+  /* ---------- Dashboards (propriétaire / admin) ---------- */
+  .dash-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+  .dash-section{margin-bottom:26px;}
+  .dash-section h4{font-family:'Fraunces',serif;font-size:16px;margin-bottom:10px;}
+  .dash-card{
+    border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--white);
+  }
+  .dash-card .meta{font-size:12.5px;color:#6B6A5A;}
+  .dash-btn{
+    border:1px solid var(--ink);background:none;color:var(--ink);border-radius:7px;
+    padding:7px 13px;font-size:12.5px;font-weight:600;
+  }
+  .dash-btn:hover{background:var(--ink);color:var(--panel);}
+  .dash-btn.danger{border-color:var(--clay);color:var(--clay);}
+  .dash-btn.danger:hover{background:var(--clay);color:#fff;}
+  .dash-btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .dash-btn.primary:hover{background:#2C574C;}
+  .img-thumbs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+  .img-thumbs img{width:64px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--line);}
+  .wallet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;}
+  .wallet-card{border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center;background:var(--white);}
+  .wallet-card .op{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;}
+  .wallet-card .amt{font-family:'Fraunces',serif;font-size:18px;font-weight:600;}
+  .empty-note{font-size:13px;color:#8B8A76;padding:10px 0;}
 </style>
 </head>
 <body>
@@ -471,7 +549,11 @@
       </svg>
       <div class="logo-text">SEONA <span>RESI</span></div>
     </div>
-    <span class="tag">Location de résidences</span>
+    <div class="nav-actions" id="navActions">
+      <span class="tag">Location de résidences</span>
+      <button class="btn-nav" id="btnOpenLogin">Se connecter</button>
+      <button class="btn-nav solid" id="btnOpenRegister">S'inscrire</button>
+    </div>
   </div>
 </header>
 
@@ -579,33 +661,44 @@
   <div class="modal" id="receiptContent"></div>
 </div>
 
+<div class="overlay" id="authOverlay">
+  <div class="modal" id="authContent" style="max-width:520px;"></div>
+</div>
+
+<div class="overlay" id="dashOverlay">
+  <div class="modal" id="dashContent" style="max-width:760px;"></div>
+</div>
+
 <script>
 const LISTINGS = [
   {id:1, ref:"SR-014", type:"Villa", title:"Villa avec jardin, quartier calme", city:"San-Pédro", price:280000, rooms:4, baths:3, area:210,
     desc:"Villa de plain-pied entourée d'un jardin clos, proche du port. Idéale pour une famille recherchant calme et sécurité.",
-    amenities:["Jardin clos","Parking 2 voitures","Groupe électrogène","Forage d'eau"], color:"#3A6F62", phone:"225000000001"},
+    amenities:["Jardin clos","Parking 2 voitures","Groupe électrogène","Forage d'eau"], color:"#3A6F62", phone:"07 47 37 79 39", payOperator:"orange", images:[]},
   {id:2, ref:"SR-021", type:"Appartement", title:"Appartement standing, vue mer", city:"San-Pédro", price:190000, rooms:3, baths:2, area:95,
     desc:"Appartement lumineux au 3e étage avec vue dégagée sur la mer, proche des commerces et écoles.",
-    amenities:["Climatisation","Ascenseur","Balcon","Gardien"], color:"#B5562F", phone:"225000000002"},
+    amenities:["Climatisation","Ascenseur","Balcon","Gardien"], color:"#B5562F", phone:"07 78 66 22 93", payOperator:"mtn", images:[]},
   {id:3, ref:"SR-033", type:"Maison", title:"Maison familiale, cour spacieuse", city:"Abidjan", price:320000, rooms:5, baths:3, area:250,
     desc:"Grande maison à Cocody avec cour intérieure, garage double et dépendance pour employé de maison.",
-    amenities:["Cour spacieuse","Garage double","Dépendance","Citerne d'eau"], color:"#C79A3E", phone:"225000000003"},
+    amenities:["Cour spacieuse","Garage double","Dépendance","Citerne d'eau"], color:"#C79A3E", phone:"01 02 03 04 05", payOperator:"wave", images:[]},
   {id:4, ref:"SR-045", type:"Studio", title:"Studio meublé, proche université", city:"Abidjan", price:75000, rooms:1, baths:1, area:28,
     desc:"Studio meublé et fonctionnel, à deux pas de l'université. Parfait pour étudiant ou jeune actif.",
-    amenities:["Meublé","Wifi inclus","Sécurisé 24h/24"], color:"#3A6F62", phone:"225000000004"},
+    amenities:["Meublé","Wifi inclus","Sécurisé 24h/24"], color:"#3A6F62", phone:"05 06 07 08 09", payOperator:"moov", images:[]},
   {id:5, ref:"SR-052", type:"Villa", title:"Villa contemporaine avec piscine", city:"Abidjan", price:650000, rooms:5, baths:4, area:320,
     desc:"Villa moderne à Riviera avec piscine privée, cuisine équipée et suite parentale.",
-    amenities:["Piscine privée","Cuisine équipée","Suite parentale","Vidéosurveillance"], color:"#B5562F", phone:"225000000005"},
+    amenities:["Piscine privée","Cuisine équipée","Suite parentale","Vidéosurveillance"], color:"#B5562F", phone:"07 47 37 79 39", payOperator:"orange", images:[]},
   {id:6, ref:"SR-061", type:"Appartement", title:"Appartement 2 pièces rénové", city:"Yamoussoukro", price:110000, rooms:2, baths:1, area:60,
     desc:"Appartement récemment rénové, quartier résidentiel calme proche du centre administratif.",
-    amenities:["Rénové","Eau courante","Parking"], color:"#C79A3E", phone:"225000000006"},
+    amenities:["Rénové","Eau courante","Parking"], color:"#C79A3E", phone:"01 02 03 04 05", payOperator:"wave", images:[]},
   {id:7, ref:"SR-074", type:"Maison", title:"Maison de ville avec terrasse", city:"Bouaké", price:150000, rooms:3, baths:2, area:130,
     desc:"Maison de ville avec petite terrasse ombragée, idéale pour une famille de taille moyenne.",
-    amenities:["Terrasse","Cour arrière","Proche marché"], color:"#3A6F62", phone:"225000000007"},
+    amenities:["Terrasse","Cour arrière","Proche marché"], color:"#3A6F62", phone:"05 06 07 08 09", payOperator:"moov", images:[]},
   {id:8, ref:"SR-088", type:"Studio", title:"Studio cosy centre-ville", city:"San-Pédro", price:65000, rooms:1, baths:1, area:24,
     desc:"Petit studio bien agencé en plein centre-ville, à proximité immédiate des transports.",
-    amenities:["Centre-ville","Transports à pied","Sécurisé"], color:"#B5562F", phone:"225000000008"},
+    amenities:["Centre-ville","Transports à pied","Sécurisé"], color:"#B5562F", phone:"07 78 66 22 93", payOperator:"mtn", images:[]},
 ];
+/* Biens ajoutés par les propriétaires inscrits (persistés séparément) */
+let ownerListings = JSON.parse(localStorage.getItem('seonaresi_owner_listings') || '[]');
+function getAllListings(){ return LISTINGS.concat(ownerListings); }
 
 const grid = document.getElementById('grid');
 const resultCount = document.getElementById('resultCount');
@@ -637,6 +730,9 @@ function houseSVG(color, ref){
 /* Génère une petite galerie de vues (extérieur / salon / chambre / cuisine)
    pour donner l'illusion de plusieurs photos du même bien. */
 function galleryFor(l){
+  if(l.images && l.images.length){
+    return l.images.map((src,i) => ({label:`Photo ${i+1}`, svg:`<img src="${src}" style="width:100%;height:100%;object-fit:cover;display:block;">`}));
+  }
   const c = l.color;
   return [
     {label:"Extérieur", svg:houseSVG(c, l.ref)},
@@ -684,7 +780,7 @@ function render(){
     else monthlyBudget = rawBudget;
   }
 
-  let items = LISTINGS.filter(l => {
+  let items = getAllListings().filter(l => {
     if(activeCityFilter === "Favoris") return favorites.includes(l.id);
     if(activeCityFilter && l.city !== activeCityFilter) return false;
     if(q && !(l.city.toLowerCase().includes(q) || l.title.toLowerCase().includes(q))) return false;
@@ -710,9 +806,10 @@ function render(){
     card.className = 'card' + (isReserved ? ' reserved' : '');
     card.dataset.open = l.id;
     const isFav = favorites.includes(l.id);
+    const cardVisual = (l.images && l.images.length) ? `<img src="${l.images[0]}" style="width:100%;height:100%;object-fit:cover;display:block;">` : houseSVG(l.color, l.ref);
     card.innerHTML = `
       <div class="card-visual" style="background:${l.color}">
-        ${houseSVG(l.color, l.ref)}
+        ${cardVisual}
         <span class="ref-tag">${l.ref}</span>
         ${isReserved ? `<span class="reserved-tag">Réservé</span>` : `<button class="fav-btn ${isFav?'active':''}" data-id="${l.id}" aria-label="Ajouter aux favoris">${isFav?'♥':'♡'}</button>`}
       </div>
@@ -770,7 +867,7 @@ const overlay = document.getElementById('overlay');
 const modalContent = document.getElementById('modalContent');
 
 function openModal(id){
-  const l = LISTINGS.find(x => x.id === id);
+  const l = getAllListings().find(x => x.id === id);
   if(!l) return;
   const isReserved = reservedIds.includes(l.id);
   const images = galleryFor(l);
@@ -799,6 +896,13 @@ function openModal(id){
       </div>
       <p class="modal-desc">${l.desc}</p>
       <div class="amenities">${l.amenities.map(a=>`<span>${a}</span>`).join('')}</div>
+      ${(l.payOperator && l.phone) ? (() => {
+          const m = PAYMENT_METHODS.find(pm => pm.id === l.payOperator);
+          return `<div class="deposit-summary" style="margin-bottom:16px;">
+            <span class="dot" style="background:${m?m.color:'#888'}">${m?m.initials:'?'}</span>
+            <span>Moyen de paiement du propriétaire (identique sur son profil) : <strong>${m?m.label:l.payOperator}</strong> — ${l.phone}</span>
+          </div>`;
+        })() : ''}
       ${isReserved
         ? `<button class="btn-reserve" disabled style="width:100%;padding:13px 16px;border-radius:9px;font-weight:600;font-size:15px;margin-bottom:12px;background:#9C9A87;cursor:not-allowed;">Bien déjà réservé</button>`
         : `<button class="btn-reserve" id="btnReserve" data-id="${l.id}" style="width:100%;padding:13px 16px;border-radius:9px;font-weight:600;font-size:15px;margin-bottom:12px;">Réservation</button>`}
@@ -990,7 +1094,24 @@ function fakeQR(seed){
 }
 
 function openPaymentMethods(l, res){
-  let selected = null;
+  const method = PAYMENT_METHODS.find(m => m.id === l.payOperator);
+
+  if(!method || !l.phone){
+    reservationContent.innerHTML = `
+      <button class="modal-close" id="reservationCloseErr">✕</button>
+      <div class="receipt-wrap">
+        <div class="card-type" style="margin-bottom:4px;">Mode de paiement</div>
+        <h3 style="margin-bottom:14px;">${l.title}</h3>
+        <div class="res-error show">Le propriétaire de ce bien n'a pas encore renseigné de moyen de paiement. La réservation n'est pas possible pour le moment.</div>
+        <button type="button" class="btn-back-link" id="btnBackToReservationErr">← Revenir aux informations de réservation</button>
+      </div>
+    `;
+    reservationOverlay.classList.add('open');
+    document.getElementById('reservationCloseErr').addEventListener('click', closeReservationModal);
+    document.getElementById('btnBackToReservationErr').addEventListener('click', () => openReservationModal(l));
+    return;
+  }
+
   reservationContent.innerHTML = `
     <button class="modal-close" id="reservationClose2">✕</button>
     <div class="receipt-wrap">
@@ -1001,16 +1122,10 @@ function openPaymentMethods(l, res){
         <span class="amount">${money(res.due)}</span>
       </div>
 
-      <div class="pay-methods" id="payMethods">
-        ${PAYMENT_METHODS.map(m => `
-          <button type="button" class="pay-method" data-id="${m.id}">
-            <span class="dot" style="background:${m.color}">${m.initials}</span>
-            ${m.label}
-          </button>
-        `).join('')}
+      <div class="deposit-summary" style="margin-bottom:18px;">
+        <span class="dot" style="background:${method.color}">${method.initials}</span>
+        <span>Ce bien est réglé via <strong>${method.label}</strong>, au numéro du propriétaire <strong>${l.phone}</strong> — le même moyen de paiement que celui affiché sur son profil.</span>
       </div>
-
-      <div class="res-error" id="payError"></div>
 
       <button class="btn-validate" id="btnConfirmPayment">Continuer</button>
       <button type="button" class="btn-back-link" id="btnBackToReservation">← Revenir aux informations de réservation</button>
@@ -1020,25 +1135,7 @@ function openPaymentMethods(l, res){
 
   document.getElementById('reservationClose2').addEventListener('click', closeReservationModal);
   document.getElementById('btnBackToReservation').addEventListener('click', () => openReservationModal(l));
-
-  document.getElementById('payMethods').addEventListener('click', e => {
-    const btn = e.target.closest('.pay-method');
-    if(!btn) return;
-    selected = btn.dataset.id;
-    document.querySelectorAll('.pay-method').forEach(m => m.classList.toggle('selected', m === btn));
-    document.getElementById('payError').classList.remove('show');
-  });
-
-  document.getElementById('btnConfirmPayment').addEventListener('click', () => {
-    const errorEl = document.getElementById('payError');
-    if(!selected){
-      errorEl.textContent = "Merci de choisir un mode de paiement.";
-      errorEl.classList.add('show');
-      return;
-    }
-    const method = PAYMENT_METHODS.find(m => m.id === selected);
-    openDepositStep(l, res, method);
-  });
+  document.getElementById('btnConfirmPayment').addEventListener('click', () => openDepositStep(l, res, method));
 }
 
 /* ---------- Étape de finalisation du dépôt : QR code / code à 4 chiffres / redirection ---------- */
@@ -1128,6 +1225,24 @@ function validateReservation(l, res, method){
     localStorage.setItem('seonaresi_reserved', JSON.stringify(reservedIds));
   }
 
+  /* Répartition automatique du paiement : commission plateforme (500 FCFA) vers le
+     portefeuille administrateur (sur le même opérateur que le paiement), le reste
+     part directement au propriétaire du bien. */
+  const fee = Math.min(500, res.due);
+  const ownerNet = res.due - fee;
+  adminWallet[method.id] = (adminWallet[method.id] || 0) + fee;
+  saveWallet();
+  const ownerAccount = getOwnerByCode(l.ownerCode);
+  if(ownerAccount){
+    ownerAccount.balance = (ownerAccount.balance || 0) + ownerNet;
+    saveOwners();
+  }
+  reservationsLog.push({
+    ref:l.ref, title:l.title, dateStr, clientName:res.name,
+    due:res.due, operator:method.label, operatorId:method.id, fee, ownerNet
+  });
+  saveReservationsLog();
+
   closeReservationModal();
   render();
   openReceipt({
@@ -1188,11 +1303,511 @@ function openReceipt(r){
 function closeReceipt(){ receiptOverlay.classList.remove('open'); }
 receiptOverlay.addEventListener('click', e => { if(e.target === receiptOverlay) closeReceipt(); });
 document.addEventListener('keydown', e => {
-  if(e.key === 'Escape'){ closeReservationModal(); closeReceipt(); }
+  if(e.key === 'Escape'){ closeReservationModal(); closeReceipt(); closeAuth(); closeDash(); }
 });
 
+/* ==================== Comptes propriétaires & administration ==================== */
+
+const ADMIN_ACCOUNT = {username:'admin', password:'admin2026'};
+
+let owners = JSON.parse(localStorage.getItem('seonaresi_owners') || '[]');
+let reservationsLog = JSON.parse(localStorage.getItem('seonaresi_reservations_log') || '[]');
+let adminWallet = JSON.parse(localStorage.getItem('seonaresi_admin_wallet') || '{"orange":0,"mtn":0,"wave":0,"moov":0}');
+let session = JSON.parse(localStorage.getItem('seonaresi_session') || 'null'); // {type:'owner', srCode} | {type:'admin'}
+
+function saveOwners(){ localStorage.setItem('seonaresi_owners', JSON.stringify(owners)); }
+function saveOwnerListings(){ localStorage.setItem('seonaresi_owner_listings', JSON.stringify(ownerListings)); }
+function saveWallet(){ localStorage.setItem('seonaresi_admin_wallet', JSON.stringify(adminWallet)); }
+function saveSession(){ localStorage.setItem('seonaresi_session', JSON.stringify(session)); }
+function saveReservationsLog(){ localStorage.setItem('seonaresi_reservations_log', JSON.stringify(reservationsLog)); }
+
+function getOwnerByCode(code){ return owners.find(o => o.srCode === code); }
+
+function genSRCode(){
+  const used = new Set(LISTINGS.map(l => l.ref).concat(owners.map(o => o.srCode)));
+  let code;
+  do { code = 'SR-' + String(Math.floor(100 + Math.random() * 900)); } while(used.has(code));
+  return code;
+}
+
+function fileToDataURL(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+const authOverlay = document.getElementById('authOverlay');
+const authContent = document.getElementById('authContent');
+const dashOverlay = document.getElementById('dashOverlay');
+const dashContent = document.getElementById('dashContent');
+const navActions = document.getElementById('navActions');
+
+function closeAuth(){ authOverlay.classList.remove('open'); }
+function closeDash(){ dashOverlay.classList.remove('open'); }
+authOverlay.addEventListener('click', e => { if(e.target === authOverlay) closeAuth(); });
+dashOverlay.addEventListener('click', e => { if(e.target === dashOverlay) closeDash(); });
+
+document.getElementById('btnOpenLogin').addEventListener('click', () => openAuthModal('login'));
+document.getElementById('btnOpenRegister').addEventListener('click', () => openAuthModal('register'));
+
+function renderNav(){
+  const oldPill = document.getElementById('sessionPill');
+  if(oldPill) oldPill.remove();
+  const loginBtn = document.getElementById('btnOpenLogin');
+  const regBtn = document.getElementById('btnOpenRegister');
+  if(session){
+    loginBtn.style.display = 'none';
+    regBtn.style.display = 'none';
+    const label = session.type === 'admin' ? 'Administrateur' : ((getOwnerByCode(session.srCode)||{}).prenom || 'Propriétaire');
+    const pill = document.createElement('span');
+    pill.className = 'session-pill';
+    pill.id = 'sessionPill';
+    pill.innerHTML = `👤 ${label} <button type="button" id="btnGoDash">Mon espace</button> <button type="button" id="btnLogout">Déconnexion</button>`;
+    navActions.insertBefore(pill, loginBtn);
+    document.getElementById('btnGoDash').addEventListener('click', openDashboard);
+    document.getElementById('btnLogout').addEventListener('click', () => { session = null; saveSession(); renderNav(); });
+  } else {
+    loginBtn.style.display = '';
+    regBtn.style.display = '';
+  }
+}
+
+function openAuthModal(tab){
+  authContent.innerHTML = `
+    <button class="modal-close" id="authClose">✕</button>
+    <div class="receipt-wrap">
+      <div class="auth-tabs" id="authTabs">
+        <button type="button" class="auth-tab ${tab==='login'?'active':''}" data-tab="login">Se connecter</button>
+        <button type="button" class="auth-tab ${tab==='register'?'active':''}" data-tab="register">S'inscrire (propriétaire)</button>
+      </div>
+      <div id="authBody"></div>
+    </div>
+  `;
+  authOverlay.classList.add('open');
+  document.getElementById('authClose').addEventListener('click', closeAuth);
+  document.getElementById('authTabs').addEventListener('click', e => {
+    const t = e.target.closest('.auth-tab');
+    if(!t) return;
+    document.querySelectorAll('.auth-tab').forEach(x => x.classList.toggle('active', x === t));
+    renderAuthBody(t.dataset.tab);
+  });
+  renderAuthBody(tab);
+}
+
+function renderAuthBody(tab){
+  const body = document.getElementById('authBody');
+  if(tab === 'login'){
+    body.innerHTML = `
+      <h3 style="margin-bottom:14px;">Connexion</h3>
+      <div class="form-field">
+        <label>Type de compte</label>
+        <select id="loginType">
+          <option value="owner">Propriétaire</option>
+          <option value="admin">Administrateur</option>
+        </select>
+      </div>
+      <div class="form-field"><label>Nom d'utilisateur</label><input type="text" id="loginUser"></div>
+      <div class="form-field"><label>Mot de passe</label><input type="password" id="loginPass"></div>
+      <div class="res-error" id="loginError"></div>
+      <button class="btn-validate" id="btnDoLogin">Se connecter</button>
+    `;
+    document.getElementById('btnDoLogin').addEventListener('click', () => {
+      const type = document.getElementById('loginType').value;
+      const user = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      const errEl = document.getElementById('loginError');
+      if(type === 'admin'){
+        if(user === ADMIN_ACCOUNT.username && pass === ADMIN_ACCOUNT.password){
+          session = {type:'admin'}; saveSession(); closeAuth(); renderNav(); openDashboard();
+        } else {
+          errEl.textContent = "Identifiants administrateur incorrects.";
+          errEl.classList.add('show');
+        }
+        return;
+      }
+      const owner = owners.find(o => o.username === user && o.password === pass);
+      if(!owner){
+        errEl.textContent = "Nom d'utilisateur ou mot de passe incorrect.";
+        errEl.classList.add('show');
+        return;
+      }
+      session = {type:'owner', srCode: owner.srCode};
+      saveSession(); closeAuth(); renderNav(); openDashboard();
+    });
+  } else {
+    const srCode = genSRCode();
+    body.innerHTML = `
+      <h3 style="margin-bottom:4px;">Inscription propriétaire</h3>
+      <p style="font-size:13px;color:#6B6A5A;margin-bottom:16px;">Réservée à toute personne disposant d'un bien immobilier à publier. Un code propriétaire unique vous est attribué automatiquement — il apparaîtra sur tous vos biens à la page d'accueil.</p>
+      <div class="sr-badge">Code attribué : ${srCode}</div>
+      <div class="form-row">
+        <div class="form-field"><label>Nom d'utilisateur</label><input type="text" id="regUsername"></div>
+        <div class="form-field"><label>Mot de passe</label><input type="password" id="regPassword"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Nom</label><input type="text" id="regNom"></div>
+        <div class="form-field"><label>Prénom</label><input type="text" id="regPrenom"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Email</label><input type="email" id="regEmail"></div>
+        <div class="form-field"><label>Contact</label><input type="tel" id="regContact" placeholder="Ex : 07 00 00 00 00"></div>
+      </div>
+      <div class="form-field">
+        <label>Pièce d'identité (CNI recto — png, jpeg, pdf)</label>
+        <input type="file" id="regCNI" accept=".png,.jpg,.jpeg,.pdf" style="display:none;">
+        <div class="file-drop" id="regCNIDrop">Cliquez pour joindre votre CNI (recto)</div>
+        <span class="hint">Sans CNI jointe, le compte reste « non validé » et ne peut pas publier de bien.</span>
+      </div>
+      <div class="res-error" id="regError"></div>
+      <button class="btn-validate" id="btnDoRegister">S'inscrire</button>
+    `;
+    let cniFile = null;
+    document.getElementById('regCNIDrop').addEventListener('click', () => document.getElementById('regCNI').click());
+    document.getElementById('regCNI').addEventListener('change', e => {
+      const f = e.target.files[0];
+      const drop = document.getElementById('regCNIDrop');
+      if(f){ cniFile = f; drop.textContent = '✓ ' + f.name; drop.classList.add('has-file'); }
+    });
+    document.getElementById('btnDoRegister').addEventListener('click', async () => {
+      const username = document.getElementById('regUsername').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const nom = document.getElementById('regNom').value.trim();
+      const prenom = document.getElementById('regPrenom').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const contact = document.getElementById('regContact').value.trim();
+      const errEl = document.getElementById('regError');
+      if(!username || !password || !nom || !prenom || !email || !contact){
+        errEl.textContent = "Merci de remplir tous les champs.";
+        errEl.classList.add('show');
+        return;
+      }
+      if(owners.some(o => o.username === username)){
+        errEl.textContent = "Ce nom d'utilisateur est déjà utilisé.";
+        errEl.classList.add('show');
+        return;
+      }
+      if(!cniFile){
+        errEl.textContent = "La pièce d'identité (CNI) est obligatoire — sans elle le compte ne peut pas être validé.";
+        errEl.classList.add('show');
+        return;
+      }
+      errEl.classList.remove('show');
+      const cniData = await fileToDataURL(cniFile);
+      owners.push({
+        srCode, username, password, nom, prenom, email, contact,
+        cniName: cniFile.name, cniData,
+        validated: false,
+        paymentOperator: '', paymentPhone: '',
+        balance: 0
+      });
+      saveOwners();
+      authContent.innerHTML = `
+        <button class="modal-close" id="authClose2">✕</button>
+        <div class="receipt-wrap" style="text-align:center;">
+          <div class="sr-badge">${srCode}</div>
+          <h3 style="margin-bottom:10px;">Inscription envoyée</h3>
+          <p style="font-size:14px;color:#54533F;line-height:1.6;">Votre compte propriétaire a été créé avec le code <strong>${srCode}</strong>. Il sera <strong>validé</strong> après vérification de votre CNI par un administrateur. Une fois validé, vous pourrez vous connecter, renseigner votre moyen de paiement et ajouter les images de vos biens (7 maximum par bien).</p>
+          <button class="btn-validate" style="margin-top:16px;" id="btnAuthDoneClose">Fermer</button>
+        </div>
+      `;
+      document.getElementById('authClose2').addEventListener('click', closeAuth);
+      document.getElementById('btnAuthDoneClose').addEventListener('click', closeAuth);
+    });
+  }
+}
+
+function openDashboard(){
+  if(!session){ openAuthModal('login'); return; }
+  dashOverlay.classList.add('open');
+  if(session.type === 'admin') renderAdminDashboard();
+  else renderOwnerDashboard();
+}
+
+function renderOwnerDashboard(){
+  const owner = getOwnerByCode(session.srCode);
+  if(!owner){ session = null; saveSession(); renderNav(); closeDash(); return; }
+  const myListings = ownerListings.filter(p => p.ownerCode === owner.srCode);
+  dashContent.innerHTML = `
+    <button class="modal-close" id="dashClose">✕</button>
+    <div class="receipt-wrap">
+      <div class="dash-head">
+        <div>
+          <div class="sr-badge">${owner.srCode}</div>
+          <div style="font-size:14px;color:#54533F;">${owner.prenom} ${owner.nom} — ${owner.email}</div>
+        </div>
+        <span class="status-pill ${owner.validated ? 'validated' : 'pending'}">${owner.validated ? '✓ Compte validé' : 'En attente de validation (CNI)'}</span>
+      </div>
+
+      ${!owner.validated ? `<div class="empty-note">Votre compte sera activé dès qu'un administrateur aura vérifié votre pièce d'identité (${owner.cniName}). Vous pourrez ensuite renseigner votre moyen de paiement et ajouter les images de vos biens.</div>` : ''}
+
+      <div class="dash-section">
+        <h4>Moyen de paiement (réception des loyers)</h4>
+        <p style="font-size:12.5px;color:#6B6A5A;margin-bottom:10px;">Ce numéro est affiché sur vos biens à la page d'accueil et reçoit automatiquement chaque paiement effectué par un client.</p>
+        <div class="form-row">
+          <div class="form-field"><label>Opérateur</label>
+            <select id="ownPayOperator" ${!owner.validated?'disabled':''}>
+              <option value="">Choisir…</option>
+              <option value="orange" ${owner.paymentOperator==='orange'?'selected':''}>Orange Monnaie</option>
+              <option value="mtn" ${owner.paymentOperator==='mtn'?'selected':''}>MTN Momo</option>
+              <option value="wave" ${owner.paymentOperator==='wave'?'selected':''}>Wave</option>
+              <option value="moov" ${owner.paymentOperator==='moov'?'selected':''}>Moov Monnaie</option>
+            </select>
+          </div>
+          <div class="form-field"><label>Numéro</label><input type="tel" id="ownPayPhone" value="${owner.paymentPhone||''}" ${!owner.validated?'disabled':''} placeholder="Ex : 07 47 37 79 39"></div>
+        </div>
+        <button class="dash-btn primary" id="btnSavePay" ${!owner.validated?'disabled':''}>Enregistrer le moyen de paiement</button>
+      </div>
+
+      <div class="dash-section">
+        <h4>Portefeuille (après commission plateforme de 500 FCFA / paiement)</h4>
+        <div class="wallet-card" style="max-width:200px;">
+          <div class="op">Solde reçu</div>
+          <div class="amt">${money(owner.balance||0)}</div>
+        </div>
+      </div>
+
+      <div class="dash-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <h4>Mes biens (${myListings.length})</h4>
+          <button class="dash-btn primary" id="btnAddProperty" ${!owner.validated?'disabled':''}>+ Ajouter un bien</button>
+        </div>
+        ${!owner.validated ? '<div class="empty-note">Ajout de biens disponible après validation du compte.</div>' : ''}
+        <div id="ownerPropsList">
+          ${myListings.length === 0 ? '<div class="empty-note">Aucun bien ajouté pour le moment.</div>' : myListings.map(p => `
+            <div class="dash-card">
+              <div>
+                <strong>${p.title}</strong> — ${p.ref}
+                <div class="meta">${p.city} · ${money(p.price)}/mois · ${p.images.length}/7 images
+                  ${reservedIds.includes(p.id) ? '<span class="status-pill validated" style="margin-left:8px;">Réservé</span>' : ''}
+                </div>
+              </div>
+              <button class="dash-btn" data-add-img="${p.id}">Ajouter les Images</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('dashClose').addEventListener('click', closeDash);
+  const savePayBtn = document.getElementById('btnSavePay');
+  if(savePayBtn) savePayBtn.addEventListener('click', () => {
+    owner.paymentOperator = document.getElementById('ownPayOperator').value;
+    owner.paymentPhone = document.getElementById('ownPayPhone').value.trim();
+    saveOwners();
+    ownerListings.filter(p => p.ownerCode === owner.srCode).forEach(p => {
+      p.payOperator = owner.paymentOperator;
+      p.phone = owner.paymentPhone;
+    });
+    saveOwnerListings();
+    render();
+    renderOwnerDashboard();
+  });
+  const addPropBtn = document.getElementById('btnAddProperty');
+  if(addPropBtn) addPropBtn.addEventListener('click', () => openPropertyForm(owner));
+  document.getElementById('ownerPropsList').addEventListener('click', e => {
+    const btn = e.target.closest('[data-add-img]');
+    if(!btn) return;
+    openImageUpload(Number(btn.dataset.addImg));
+  });
+}
+
+function openPropertyForm(owner){
+  dashContent.innerHTML = `
+    <button class="modal-close" id="propFormClose">✕</button>
+    <div class="receipt-wrap">
+      <h3 style="margin-bottom:4px;">Nouveau bien</h3>
+      <div class="sr-badge" style="margin-bottom:16px;">${owner.srCode}</div>
+      <div class="form-row">
+        <div class="form-field"><label>Titre</label><input type="text" id="pfTitle" placeholder="Ex : Villa moderne 4 pièces"></div>
+        <div class="form-field"><label>Type</label>
+          <select id="pfType"><option>Villa</option><option>Maison</option><option>Appartement</option><option>Studio</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Ville</label><input type="text" id="pfCity"></div>
+        <div class="form-field"><label>Prix / mois (FCFA)</label><input type="number" id="pfPrice" min="1"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Pièces</label><input type="number" id="pfRooms" min="1" value="1"></div>
+        <div class="form-field"><label>Salles de bain</label><input type="number" id="pfBaths" min="1" value="1"></div>
+        <div class="form-field"><label>Surface (m²)</label><input type="number" id="pfArea" min="1" value="30"></div>
+      </div>
+      <div class="form-field"><label>Description</label><input type="text" id="pfDesc"></div>
+      <div class="res-error" id="pfError"></div>
+      <button class="btn-validate" id="btnCreateProp">Créer le bien</button>
+      <button type="button" class="btn-back-link" id="btnBackToDash">← Retour à mon espace</button>
+    </div>
+  `;
+  document.getElementById('propFormClose').addEventListener('click', closeDash);
+  document.getElementById('btnBackToDash').addEventListener('click', renderOwnerDashboard);
+  document.getElementById('btnCreateProp').addEventListener('click', () => {
+    const title = document.getElementById('pfTitle').value.trim();
+    const type = document.getElementById('pfType').value;
+    const city = document.getElementById('pfCity').value.trim();
+    const price = Number(document.getElementById('pfPrice').value);
+    const rooms = Number(document.getElementById('pfRooms').value) || 1;
+    const baths = Number(document.getElementById('pfBaths').value) || 1;
+    const area = Number(document.getElementById('pfArea').value) || 0;
+    const desc = document.getElementById('pfDesc').value.trim();
+    const errEl = document.getElementById('pfError');
+    if(!title || !city || !price){
+      errEl.textContent = "Merci de renseigner au moins le titre, la ville et le prix.";
+      errEl.classList.add('show');
+      return;
+    }
+    const colors = ['#3A6F62','#B5562F','#C79A3E'];
+    const prop = {
+      id: Date.now(),
+      ref: owner.srCode,
+      ownerCode: owner.srCode,
+      type, title, city, price, rooms, baths, area,
+      desc: desc || 'Bien proposé par un propriétaire vérifié SEONA RESI.',
+      amenities: [],
+      color: colors[Math.floor(Math.random() * colors.length)],
+      phone: owner.paymentPhone || '',
+      payOperator: owner.paymentOperator || '',
+      images: []
+    };
+    ownerListings.push(prop);
+    saveOwnerListings();
+    render();
+    openImageUpload(prop.id);
+  });
+}
+
+function openImageUpload(propId){
+  const prop = ownerListings.find(p => p.id === propId);
+  if(!prop) return;
+  dashContent.innerHTML = `
+    <button class="modal-close" id="imgClose">✕</button>
+    <div class="receipt-wrap">
+      <h3 style="margin-bottom:4px;">Ajouter les Images</h3>
+      <div class="sr-badge" style="margin-bottom:10px;">${prop.ref}</div>
+      <p style="font-size:12.5px;color:#6B6A5A;margin-bottom:14px;">${prop.title} — maximum 7 images par bien. Elles seront visibles par les clients sur la page d'accueil dès leur ajout.</p>
+      <div class="img-thumbs" id="imgThumbs">
+        ${prop.images.length ? prop.images.map(src => `<img src="${src}">`).join('') : '<span class="empty-note">Aucune image pour le moment.</span>'}
+      </div>
+      <input type="file" id="imgInput" accept="image/png,image/jpeg" multiple style="display:none;">
+      <div class="file-drop ${prop.images.length >= 7 ? '' : ''}" id="imgDrop">${prop.images.length >= 7 ? 'Limite de 7 images atteinte' : 'Cliquez pour ajouter des images (PNG / JPEG)'}</div>
+      <div class="res-error" id="imgError"></div>
+      <button type="button" class="btn-back-link" id="btnBackToDash2">← Retour à mon espace</button>
+    </div>
+  `;
+  document.getElementById('imgClose').addEventListener('click', closeDash);
+  document.getElementById('btnBackToDash2').addEventListener('click', renderOwnerDashboard);
+  const drop = document.getElementById('imgDrop');
+  if(prop.images.length < 7){
+    drop.addEventListener('click', () => document.getElementById('imgInput').click());
+    document.getElementById('imgInput').addEventListener('change', async e => {
+      const files = Array.from(e.target.files);
+      const remaining = 7 - prop.images.length;
+      const errEl = document.getElementById('imgError');
+      if(files.length > remaining){
+        errEl.textContent = `Vous ne pouvez ajouter que ${remaining} image(s) supplémentaire(s) (maximum 7 par bien).`;
+        errEl.classList.add('show');
+      }
+      const toAdd = files.slice(0, remaining);
+      for(const f of toAdd){
+        const dataUrl = await fileToDataURL(f);
+        prop.images.push(dataUrl);
+      }
+      saveOwnerListings();
+      render();
+      openImageUpload(propId);
+    });
+  }
+}
+
+function renderAdminDashboard(){
+  const pending = owners.filter(o => !o.validated);
+  const validated = owners.filter(o => o.validated);
+  const totalWallet = Object.values(adminWallet).reduce((a,b) => a + b, 0);
+  dashContent.innerHTML = `
+    <button class="modal-close" id="dashCloseA">✕</button>
+    <div class="receipt-wrap">
+      <h3 style="margin-bottom:16px;">Espace administrateur</h3>
+
+      <div class="dash-section">
+        <h4>Portefeuille administrateur — commission 500 FCFA / paiement</h4>
+        <div class="wallet-grid">
+          ${['orange','mtn','wave','moov'].map(op => `
+            <div class="wallet-card">
+              <div class="op">${op}</div>
+              <div class="amt">${money(adminWallet[op]||0)}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="font-size:13px;color:#54533F;">Total collecté : <strong>${money(totalWallet)}</strong></div>
+      </div>
+
+      <div class="dash-section">
+        <h4>Inscriptions en attente de validation (${pending.length})</h4>
+        ${pending.length === 0 ? '<div class="empty-note">Aucune inscription en attente.</div>' : pending.map(o => `
+          <div class="dash-card">
+            <div>
+              <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
+              <div class="meta">${o.username} · ${o.email} · ${o.contact}</div>
+              <div class="meta">CNI : <a href="${o.cniData}" target="_blank" rel="noopener">${o.cniName}</a></div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="dash-btn primary" data-validate="${o.srCode}">Valider</button>
+              <button class="dash-btn danger" data-reject="${o.srCode}">Refuser</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="dash-section">
+        <h4>Comptes propriétaires validés (${validated.length}) — accès complet</h4>
+        ${validated.length === 0 ? '<div class="empty-note">Aucun compte validé pour le moment.</div>' : validated.map(o => `
+          <div class="dash-card">
+            <div>
+              <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
+              <div class="meta">Identifiant : ${o.username} · Mot de passe : ${o.password} · ${o.email} · ${o.contact}</div>
+              <div class="meta">Paiement : ${o.paymentOperator ? o.paymentOperator + ' — ' + o.paymentPhone : 'non renseigné'} · Solde : ${money(o.balance||0)}</div>
+              <div class="meta">${ownerListings.filter(p => p.ownerCode === o.srCode).length} bien(s) publié(s)</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="dash-section">
+        <h4>Réservations &amp; paiements (${reservationsLog.length})</h4>
+        ${reservationsLog.length === 0 ? '<div class="empty-note">Aucune réservation pour le moment.</div>' : reservationsLog.slice().reverse().map(r => `
+          <div class="dash-card">
+            <div>
+              <strong>${r.ref}</strong> — ${r.title}
+              <div class="meta">${r.dateStr} · Client : ${r.clientName} · Payé : ${money(r.due)} via ${r.operator}</div>
+              <div class="meta">Commission admin : ${money(r.fee)} · Reversé au propriétaire : ${money(r.ownerNet)}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('dashCloseA').addEventListener('click', closeDash);
+  dashContent.onclick = function(e){
+    const v = e.target.closest('[data-validate]');
+    const r = e.target.closest('[data-reject]');
+    if(v){
+      const owner = getOwnerByCode(v.dataset.validate);
+      if(owner) owner.validated = true;
+      saveOwners();
+      renderAdminDashboard();
+    } else if(r){
+      owners = owners.filter(o => o.srCode !== r.dataset.reject);
+      saveOwners();
+      renderAdminDashboard();
+    }
+  };
+}
+
+renderNav();
 render();
 </script>
 </body>
 </html>
-Mise à jour du mode de paiement
+mise à jour du boutons se connecter et un bouton s'inscrire et du bouton Ajout des images
