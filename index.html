@@ -533,6 +533,56 @@
   .wallet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;}
   .wallet-card{border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center;background:var(--white);}
   .wallet-card .op{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;}
+
+  /* ---------- Espace administrateur : menu / sous-menu ---------- */
+  #dashContent.admin-wide{max-width:960px;}
+  .admin-title{font-family:'Fraunces',serif;font-size:19px;margin-bottom:16px;}
+  .admin-layout{display:flex;gap:22px;align-items:flex-start;}
+  .admin-sidebar{
+    flex:0 0 240px;display:flex;flex-direction:column;gap:6px;
+    border-right:1px solid var(--line);padding-right:16px;
+  }
+  .admin-menu-btn{
+    width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;
+    background:none;border:none;text-align:left;font-family:'Fraunces',serif;font-weight:600;
+    font-size:14.5px;color:var(--ink);padding:9px 4px;border-radius:7px;
+  }
+  .admin-menu-btn:hover{background:#EFEDDF;}
+  .admin-menu-btn .chev{transition:transform .18s ease;flex:none;color:#8B8A76;}
+  .admin-menu.open .admin-menu-btn .chev{transform:rotate(180deg);}
+  .admin-submenu{display:none;flex-direction:column;gap:2px;padding:2px 0 8px 10px;}
+  .admin-menu.open .admin-submenu{display:flex;}
+  .admin-sub-btn{
+    width:100%;text-align:left;background:none;border:none;border-left:2px solid var(--line);
+    font-size:13px;color:#54533F;padding:7px 10px;border-radius:0 6px 6px 0;
+  }
+  .admin-sub-btn:hover{background:#F3F2E7;color:var(--ink);}
+  .admin-sub-btn.active{border-left-color:var(--teal);background:#E4F0EC;color:var(--teal);font-weight:600;}
+  .admin-content{flex:1;min-width:0;}
+  .admin-content h4{font-family:'Fraunces',serif;font-size:16px;margin-bottom:4px;}
+  .admin-content .sub-hint{font-size:12.5px;color:#6B6A5A;margin-bottom:16px;}
+  .admin-toggle-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .admin-toggle-row .dash-btn.active{background:var(--ink);color:var(--panel);}
+  .icon-btn{
+    width:32px;height:32px;border-radius:7px;border:1px solid var(--line);background:var(--white);
+    display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink);flex:none;
+  }
+  .icon-btn:hover{border-color:var(--ink);}
+  .icon-btn.danger:hover{border-color:var(--clay);color:var(--clay);}
+  .icon-btn.key:hover{border-color:var(--gold);color:#8A5A12;}
+  .edit-owner-form{width:100%;}
+  .edit-owner-form .form-row{margin-bottom:4px;}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px;}
+  .stat-card{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--white);}
+  .stat-card .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:0.04em;color:#6B6A5A;font-weight:600;margin-bottom:6px;}
+  .stat-card .val{font-family:'Fraunces',serif;font-size:20px;font-weight:600;}
+  .type-badge{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;padding:3px 9px;border-radius:99px;}
+  .type-badge.commission{background:#E4F0EC;color:var(--teal);}
+  .type-badge.transfert{background:#F3E3C9;color:#8A5A12;}
+  @media (max-width:680px){
+    .admin-layout{flex-direction:column;}
+    .admin-sidebar{flex:none;width:100%;border-right:none;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:10px;}
+  }
   .wallet-card .amt{font-family:'Fraunces',serif;font-size:18px;font-weight:600;}
   .empty-note{font-size:13px;color:#8B8A76;padding:10px 0;}
 </style>
@@ -1313,6 +1363,7 @@ const ADMIN_ACCOUNT = {username:'admin', password:'admin2026'};
 let owners = JSON.parse(localStorage.getItem('seonaresi_owners') || '[]');
 let reservationsLog = JSON.parse(localStorage.getItem('seonaresi_reservations_log') || '[]');
 let adminWallet = JSON.parse(localStorage.getItem('seonaresi_admin_wallet') || '{"orange":0,"mtn":0,"wave":0,"moov":0}');
+let transferLog = JSON.parse(localStorage.getItem('seonaresi_transfer_log') || '[]');
 let session = JSON.parse(localStorage.getItem('seonaresi_session') || 'null'); // {type:'owner', srCode} | {type:'admin'}
 
 function saveOwners(){ localStorage.setItem('seonaresi_owners', JSON.stringify(owners)); }
@@ -1320,6 +1371,41 @@ function saveOwnerListings(){ localStorage.setItem('seonaresi_owner_listings', J
 function saveWallet(){ localStorage.setItem('seonaresi_admin_wallet', JSON.stringify(adminWallet)); }
 function saveSession(){ localStorage.setItem('seonaresi_session', JSON.stringify(session)); }
 function saveReservationsLog(){ localStorage.setItem('seonaresi_reservations_log', JSON.stringify(reservationsLog)); }
+function saveTransferLog(){ localStorage.setItem('seonaresi_transfer_log', JSON.stringify(transferLog)); }
+
+/* ---- État de navigation de l'espace administrateur (menus / sous-menus) ---- */
+const ADMIN_MENU = [
+  {id:'parametrages', label:'Paramétrages', items:[
+    {id:'gestion-comptes', label:'Gestion des Comptes Utilisateurs'}
+  ]},
+  {id:'inscriptions', label:'Inscriptions', items:[
+    {id:'attente-validation', label:'En attente de validation'}
+  ]},
+  {id:'comptes-proprietaires', label:'Comptes propriétaires', items:[
+    {id:'valides', label:'Validés'}
+  ]},
+  {id:'reservations-paiements', label:'Réservations & paiements', items:[
+    {id:'historique-reservations', label:'Historique des Réservations'},
+    {id:'rapport-activite', label:"Rapport d'activité"}
+  ]},
+  {id:'comptabilite', label:'Comptabilité', items:[
+    {id:'commission', label:'Commission'},
+    {id:'transfert', label:'Transfert'},
+    {id:'historique-comptabilite', label:'Historique'}
+  ]}
+];
+let adminSection = 'gestion-comptes';
+let adminOpenMenu = 'parametrages';
+let editingOwnerSR = null;
+let resetPwSR = null;
+let commissionView = 'portefeuille';
+function menuIdForSection(sectionId){ const m = ADMIN_MENU.find(mn => mn.items.some(it => it.id === sectionId)); return m ? m.id : ADMIN_MENU[0].id; }
+const OPS = [
+  {id:'orange', label:'Orange Monnaie'},
+  {id:'mtn', label:'MTN Momo'},
+  {id:'wave', label:'Wave'},
+  {id:'moov', label:'Moov Monnaie'}
+];
 
 function getOwnerByCode(code){ return owners.find(o => o.srCode === code); }
 
@@ -1522,6 +1608,7 @@ function renderAuthBody(tab){
 function openDashboard(){
   if(!session){ openAuthModal('login'); return; }
   dashOverlay.classList.add('open');
+  dashContent.classList.toggle('admin-wide', session.type === 'admin');
   if(session.type === 'admin') renderAdminDashboard();
   else renderOwnerDashboard();
 }
@@ -1721,88 +1808,413 @@ function openImageUpload(propId){
   }
 }
 
+/* ==================== Espace administrateur : menu déroulant + sous-menus ==================== */
+
 function renderAdminDashboard(){
-  const pending = owners.filter(o => !o.validated);
-  const validated = owners.filter(o => o.validated);
-  const totalWallet = Object.values(adminWallet).reduce((a,b) => a + b, 0);
+  adminOpenMenu = menuIdForSection(adminSection);
   dashContent.innerHTML = `
     <button class="modal-close" id="dashCloseA">✕</button>
     <div class="receipt-wrap">
-      <h3 style="margin-bottom:16px;">Espace administrateur</h3>
-
-      <div class="dash-section">
-        <h4>Portefeuille administrateur — commission 500 FCFA / paiement</h4>
-        <div class="wallet-grid">
-          ${['orange','mtn','wave','moov'].map(op => `
-            <div class="wallet-card">
-              <div class="op">${op}</div>
-              <div class="amt">${money(adminWallet[op]||0)}</div>
+      <h3 class="admin-title">Espace administrateur</h3>
+      <div class="admin-layout">
+        <nav class="admin-sidebar" id="adminSidebar">
+          ${ADMIN_MENU.map(menu => `
+            <div class="admin-menu ${menu.id === adminOpenMenu ? 'open' : ''}" data-menu="${menu.id}">
+              <button type="button" class="admin-menu-btn" data-toggle-menu="${menu.id}">
+                <span>${menu.label}${adminMenuCount(menu.id)}</span>
+                <svg class="chev" viewBox="0 0 24 24" width="14" height="14"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="admin-submenu">
+                ${menu.items.map(it => `
+                  <button type="button" class="admin-sub-btn ${adminSection === it.id ? 'active' : ''}" data-section="${it.id}">${it.label}${adminSubCount(it.id)}</button>
+                `).join('')}
+              </div>
             </div>
           `).join('')}
-        </div>
-        <div style="font-size:13px;color:#54533F;">Total collecté : <strong>${money(totalWallet)}</strong></div>
-      </div>
-
-      <div class="dash-section">
-        <h4>Inscriptions en attente de validation (${pending.length})</h4>
-        ${pending.length === 0 ? '<div class="empty-note">Aucune inscription en attente.</div>' : pending.map(o => `
-          <div class="dash-card">
-            <div>
-              <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
-              <div class="meta">${o.username} · ${o.email} · ${o.contact}</div>
-              <div class="meta">CNI : <a href="${o.cniData}" target="_blank" rel="noopener">${o.cniName}</a></div>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button class="dash-btn primary" data-validate="${o.srCode}">Valider</button>
-              <button class="dash-btn danger" data-reject="${o.srCode}">Refuser</button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-
-      <div class="dash-section">
-        <h4>Comptes propriétaires validés (${validated.length}) — accès complet</h4>
-        ${validated.length === 0 ? '<div class="empty-note">Aucun compte validé pour le moment.</div>' : validated.map(o => `
-          <div class="dash-card">
-            <div>
-              <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
-              <div class="meta">Identifiant : ${o.username} · Mot de passe : ${o.password} · ${o.email} · ${o.contact}</div>
-              <div class="meta">Paiement : ${o.paymentOperator ? o.paymentOperator + ' — ' + o.paymentPhone : 'non renseigné'} · Solde : ${money(o.balance||0)}</div>
-              <div class="meta">${ownerListings.filter(p => p.ownerCode === o.srCode).length} bien(s) publié(s)</div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-
-      <div class="dash-section">
-        <h4>Réservations &amp; paiements (${reservationsLog.length})</h4>
-        ${reservationsLog.length === 0 ? '<div class="empty-note">Aucune réservation pour le moment.</div>' : reservationsLog.slice().reverse().map(r => `
-          <div class="dash-card">
-            <div>
-              <strong>${r.ref}</strong> — ${r.title}
-              <div class="meta">${r.dateStr} · Client : ${r.clientName} · Payé : ${money(r.due)} via ${r.operator}</div>
-              <div class="meta">Commission admin : ${money(r.fee)} · Reversé au propriétaire : ${money(r.ownerNet)}</div>
-            </div>
-          </div>
-        `).join('')}
+        </nav>
+        <div class="admin-content" id="adminContent">${adminSectionHTML(adminSection)}</div>
       </div>
     </div>
   `;
   document.getElementById('dashCloseA').addEventListener('click', closeDash);
-  dashContent.onclick = function(e){
-    const v = e.target.closest('[data-validate]');
-    const r = e.target.closest('[data-reject]');
-    if(v){
-      const owner = getOwnerByCode(v.dataset.validate);
+
+  document.getElementById('adminSidebar').addEventListener('click', e => {
+    const menuBtn = e.target.closest('[data-toggle-menu]');
+    const subBtn = e.target.closest('[data-section]');
+    if(menuBtn){
+      adminOpenMenu = (adminOpenMenu === menuBtn.dataset.toggleMenu) ? null : menuBtn.dataset.toggleMenu;
+      document.querySelectorAll('.admin-menu').forEach(m => m.classList.toggle('open', m.dataset.menu === adminOpenMenu));
+      return;
+    }
+    if(subBtn){
+      adminSection = subBtn.dataset.section;
+      editingOwnerSR = null; resetPwSR = null; commissionView = 'portefeuille';
+      document.querySelectorAll('.admin-sub-btn').forEach(b => b.classList.toggle('active', b.dataset.section === adminSection));
+      document.getElementById('adminContent').innerHTML = adminSectionHTML(adminSection);
+    }
+  });
+
+  bindAdminContentEvents();
+}
+
+function adminMenuCount(menuId){
+  if(menuId === 'reservations-paiements') return ` (${reservationsLog.length})`;
+  return '';
+}
+function adminSubCount(sectionId){
+  if(sectionId === 'valides') return ` (${owners.filter(o => o.validated).length})`;
+  return '';
+}
+
+function adminSectionHTML(sectionId){
+  switch(sectionId){
+    case 'gestion-comptes': return sectionGestionComptes();
+    case 'attente-validation': return sectionAttenteValidation();
+    case 'valides': return sectionComptesValides();
+    case 'historique-reservations': return sectionHistoriqueReservations();
+    case 'rapport-activite': return sectionRapportActivite();
+    case 'commission': return sectionCommission();
+    case 'transfert': return sectionTransfert();
+    case 'historique-comptabilite': return sectionHistoriqueComptabilite();
+    default: return '<div class="empty-note">Choisissez une rubrique dans le menu.</div>';
+  }
+}
+
+/* ---- Paramétrages > Gestion des Comptes Utilisateurs ---- */
+function sectionGestionComptes(){
+  return `
+    <h4>Gestion des comptes utilisateurs</h4>
+    <p class="sub-hint">Réinitialisez un mot de passe, modifiez les informations d'un propriétaire ou supprimez son compte.</p>
+    ${owners.length === 0 ? '<div class="empty-note">Aucun compte propriétaire pour le moment.</div>' : owners.map(o => {
+      if(editingOwnerSR === o.srCode){
+        return `
+          <div class="dash-card">
+            <form class="edit-owner-form" data-edit-form="${o.srCode}">
+              <div class="form-row">
+                <div class="form-field"><label>Nom</label><input type="text" name="nom" value="${o.nom}"></div>
+                <div class="form-field"><label>Prénom</label><input type="text" name="prenom" value="${o.prenom}"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-field"><label>Email</label><input type="email" name="email" value="${o.email}"></div>
+                <div class="form-field"><label>Contact</label><input type="tel" name="contact" value="${o.contact}"></div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button type="submit" class="dash-btn primary">Enregistrer</button>
+                <button type="button" class="dash-btn" data-cancel-edit="${o.srCode}">Annuler</button>
+              </div>
+            </form>
+          </div>
+        `;
+      }
+      if(resetPwSR === o.srCode){
+        return `
+          <div class="dash-card">
+            <form class="edit-owner-form" data-pw-form="${o.srCode}">
+              <div class="sr-badge" style="margin-bottom:10px;">${o.srCode} — ${o.prenom} ${o.nom}</div>
+              <div class="form-field"><label>Nouveau mot de passe</label><input type="text" name="password" placeholder="Nouveau mot de passe" required></div>
+              <div style="display:flex;gap:8px;">
+                <button type="submit" class="dash-btn primary">Enregistrer le mot de passe</button>
+                <button type="button" class="dash-btn" data-cancel-pw="${o.srCode}">Annuler</button>
+              </div>
+            </form>
+          </div>
+        `;
+      }
+      return `
+        <div class="dash-card">
+          <div>
+            <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
+            <span class="status-pill ${o.validated ? 'validated' : 'pending'}" style="margin-left:6px;">${o.validated ? 'Validé' : 'En attente'}</span>
+            <div class="meta">Identifiant : ${o.username} · ${o.email} · ${o.contact}</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="icon-btn key" title="Réinitialiser le mot de passe" data-resetpw-owner="${o.srCode}">🔑</button>
+            <button type="button" class="icon-btn" title="Modifier" data-edit-owner="${o.srCode}">✎</button>
+            <button type="button" class="icon-btn danger" title="Supprimer" data-delete-owner="${o.srCode}">🗑</button>
+          </div>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+/* ---- Inscriptions > En attente de validation ---- */
+function sectionAttenteValidation(){
+  return `
+    <h4>Inscriptions — validation des comptes</h4>
+    <p class="sub-hint">Chaque compte créé apparaît ici. Une fois validé, le propriétaire peut se connecter via le bouton « Se connecter », choisir le type de compte « Propriétaire », puis saisir son nom d'utilisateur et son mot de passe.</p>
+    ${owners.length === 0 ? '<div class="empty-note">Aucune inscription pour le moment.</div>' : owners.slice().reverse().map(o => `
+      <div class="dash-card">
+        <div>
+          <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
+          <span class="status-pill ${o.validated ? 'validated' : 'pending'}" style="margin-left:6px;">${o.validated ? '✓ Compte créé' : 'Non effectuée'}</span>
+          <div class="meta">${o.username} · ${o.email} · ${o.contact}</div>
+          <div class="meta">CNI : <a href="${o.cniData}" target="_blank" rel="noopener">${o.cniName}</a></div>
+        </div>
+        ${!o.validated ? `
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="dash-btn primary" data-validate="${o.srCode}">Valider</button>
+            <button type="button" class="dash-btn danger" data-reject="${o.srCode}">Refuser</button>
+          </div>
+        ` : ''}
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ---- Comptes propriétaires > Validés ---- */
+function sectionComptesValides(){
+  const validated = owners.filter(o => o.validated);
+  return `
+    <h4>Comptes propriétaires validés (${validated.length})</h4>
+    <p class="sub-hint">Accès complet à la plateforme.</p>
+    ${validated.length === 0 ? '<div class="empty-note">Aucun compte validé pour le moment.</div>' : validated.map(o => `
+      <div class="dash-card">
+        <div>
+          <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
+          <div class="meta">Identifiant : ${o.username} · Mot de passe : ${o.password} · ${o.email} · ${o.contact}</div>
+          <div class="meta">Paiement : ${o.paymentOperator ? o.paymentOperator + ' — ' + o.paymentPhone : 'non renseigné'} · Solde : ${money(o.balance||0)}</div>
+          <div class="meta">${ownerListings.filter(p => p.ownerCode === o.srCode).length} bien(s) publié(s)</div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ---- Réservations & paiements > Historique des Réservations ---- */
+function sectionHistoriqueReservations(){
+  return `
+    <h4>Historique des réservations (${reservationsLog.length})</h4>
+    ${reservationsLog.length === 0 ? '<div class="empty-note">Aucune réservation pour le moment.</div>' : reservationsLog.slice().reverse().map(r => `
+      <div class="dash-card">
+        <div>
+          <strong>${r.ref}</strong> — ${r.title}
+          <div class="meta">${r.dateStr} · Client : ${r.clientName} · Payé : ${money(r.due)} via ${r.operator}</div>
+          <div class="meta">Commission admin : ${money(r.fee)} · Reversé au propriétaire : ${money(r.ownerNet)}</div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ---- Réservations & paiements > Rapport d'activité ---- */
+function sectionRapportActivite(){
+  const totalRevenue = reservationsLog.reduce((a,r) => a + (r.due||0), 0);
+  const totalCommission = reservationsLog.reduce((a,r) => a + (r.fee||0), 0);
+  const totalReverse = reservationsLog.reduce((a,r) => a + (r.ownerNet||0), 0);
+  const validated = owners.filter(o => o.validated).length;
+  const pending = owners.filter(o => !o.validated).length;
+  return `
+    <h4>Rapport d'activité</h4>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="lbl">Réservations</div><div class="val">${reservationsLog.length}</div></div>
+      <div class="stat-card"><div class="lbl">Montant total encaissé</div><div class="val">${money(totalRevenue)}</div></div>
+      <div class="stat-card"><div class="lbl">Commissions collectées</div><div class="val">${money(totalCommission)}</div></div>
+      <div class="stat-card"><div class="lbl">Reversé aux propriétaires</div><div class="val">${money(totalReverse)}</div></div>
+      <div class="stat-card"><div class="lbl">Comptes validés</div><div class="val">${validated}</div></div>
+      <div class="stat-card"><div class="lbl">Comptes en attente</div><div class="val">${pending}</div></div>
+      <div class="stat-card"><div class="lbl">Biens publiés (propriétaires)</div><div class="val">${ownerListings.length}</div></div>
+      <div class="stat-card"><div class="lbl">Annonces vitrine</div><div class="val">${LISTINGS.length}</div></div>
+    </div>
+  `;
+}
+
+/* ---- Comptabilité > Commission ---- */
+function sectionCommission(){
+  const totalWallet = Object.values(adminWallet).reduce((a,b) => a + b, 0);
+  return `
+    <h4>Commission</h4>
+    <div class="admin-toggle-row">
+      <button type="button" class="dash-btn ${commissionView === 'portefeuille' ? 'active' : ''}" data-commission-view="portefeuille">Portefeuille</button>
+      <button type="button" class="dash-btn ${commissionView === 'historique' ? 'active' : ''}" data-commission-view="historique">Historique des commissions</button>
+    </div>
+    ${commissionView === 'portefeuille' ? `
+      <p class="sub-hint">Commission plateforme : 500 FCFA par paiement, répartie par moyen de paiement.</p>
+      <div class="wallet-grid">
+        ${OPS.map(op => `
+          <div class="wallet-card">
+            <div class="op">${op.label}</div>
+            <div class="amt">${money(adminWallet[op.id]||0)}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="font-size:13px;color:#54533F;">Total collecté : <strong>${money(totalWallet)}</strong></div>
+    ` : `
+      ${reservationsLog.length === 0 ? '<div class="empty-note">Aucune commission enregistrée pour le moment.</div>' : reservationsLog.slice().reverse().map(r => `
+        <div class="dash-card">
+          <div>
+            <strong>${r.ref}</strong> — ${r.title}
+            <div class="meta">${r.dateStr} · via ${r.operator}</div>
+          </div>
+          <div class="amt" style="font-family:'Fraunces',serif;font-weight:600;">${money(r.fee)}</div>
+        </div>
+      `).join('')}
+    `}
+  `;
+}
+
+/* ---- Comptabilité > Transfert ---- */
+function sectionTransfert(){
+  return `
+    <h4>Transfert</h4>
+    <p class="sub-hint">Effectuez un transfert depuis le portefeuille administrateur.</p>
+    <div class="wallet-grid">
+      ${OPS.map(op => `
+        <div class="wallet-card">
+          <div class="op">${op.label}</div>
+          <div class="amt">${money(adminWallet[op.id]||0)}</div>
+        </div>
+      `).join('')}
+    </div>
+    <form id="transferForm">
+      <div class="form-row">
+        <div class="form-field">
+          <label>Moyen de paiement</label>
+          <select name="operator">
+            ${OPS.map(op => `<option value="${op.id}">${op.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-field"><label>Montant (FCFA)</label><input type="number" name="amount" min="1" required></div>
+      </div>
+      <div class="form-field"><label>Destinataire</label><input type="text" name="recipient" placeholder="Nom ou numéro du destinataire" required></div>
+      <div class="res-error" id="transferError"></div>
+      <button type="submit" class="btn-validate">Faire un transfert</button>
+    </form>
+  `;
+}
+
+/* ---- Comptabilité > Historique ---- */
+function sectionHistoriqueComptabilite(){
+  const commissionEntries = reservationsLog.map(r => ({type:'commission', date:r.dateStr, label:`${r.ref} — ${r.title}`, operator:r.operator, amount:r.fee}));
+  const transferEntries = transferLog.map(t => ({type:'transfert', date:t.dateStr, label:`Vers ${t.recipient}`, operator:t.operator, amount:t.amount}));
+  const all = commissionEntries.concat(transferEntries);
+  return `
+    <h4>Historique de la comptabilité</h4>
+    ${all.length === 0 ? '<div class="empty-note">Aucune opération enregistrée pour le moment.</div>' : all.slice().reverse().map(e => `
+      <div class="dash-card">
+        <div>
+          <span class="type-badge ${e.type}">${e.type === 'commission' ? 'Commission' : 'Transfert'}</span>
+          <div style="margin-top:6px;"><strong>${e.label}</strong></div>
+          <div class="meta">${e.date} · via ${e.operator}</div>
+        </div>
+        <div class="amt" style="font-family:'Fraunces',serif;font-weight:600;">${money(e.amount)}</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ---- Événements du panneau de contenu admin ---- */
+function bindAdminContentEvents(){
+  const content = document.getElementById('adminContent');
+
+  content.addEventListener('click', e => {
+    const validateBtn = e.target.closest('[data-validate]');
+    const rejectBtn = e.target.closest('[data-reject]');
+    const editBtn = e.target.closest('[data-edit-owner]');
+    const cancelEditBtn = e.target.closest('[data-cancel-edit]');
+    const resetPwBtn = e.target.closest('[data-resetpw-owner]');
+    const cancelPwBtn = e.target.closest('[data-cancel-pw]');
+    const deleteBtn = e.target.closest('[data-delete-owner]');
+    const commissionViewBtn = e.target.closest('[data-commission-view]');
+
+    if(validateBtn){
+      const owner = getOwnerByCode(validateBtn.dataset.validate);
       if(owner) owner.validated = true;
       saveOwners();
-      renderAdminDashboard();
-    } else if(r){
-      owners = owners.filter(o => o.srCode !== r.dataset.reject);
+      refreshAdminSection();
+    } else if(rejectBtn){
+      owners = owners.filter(o => o.srCode !== rejectBtn.dataset.reject);
       saveOwners();
-      renderAdminDashboard();
+      refreshAdminSection();
+    } else if(editBtn){
+      editingOwnerSR = editBtn.dataset.editOwner; resetPwSR = null;
+      refreshAdminSection();
+    } else if(cancelEditBtn){
+      editingOwnerSR = null;
+      refreshAdminSection();
+    } else if(resetPwBtn){
+      resetPwSR = resetPwBtn.dataset.resetpwOwner; editingOwnerSR = null;
+      refreshAdminSection();
+    } else if(cancelPwBtn){
+      resetPwSR = null;
+      refreshAdminSection();
+    } else if(deleteBtn){
+      const code = deleteBtn.dataset.deleteOwner;
+      if(confirm('Supprimer définitivement ce compte propriétaire ?')){
+        owners = owners.filter(o => o.srCode !== code);
+        ownerListings = ownerListings.filter(p => p.ownerCode !== code);
+        saveOwners(); saveOwnerListings();
+        render();
+        refreshAdminSection();
+      }
+    } else if(commissionViewBtn){
+      commissionView = commissionViewBtn.dataset.commissionView;
+      refreshAdminSection();
     }
-  };
+  });
+
+  content.addEventListener('submit', e => {
+    const editForm = e.target.closest('[data-edit-form]');
+    const pwForm = e.target.closest('[data-pw-form]');
+    const transferForm = e.target.id === 'transferForm' ? e.target : null;
+
+    if(editForm){
+      e.preventDefault();
+      const owner = getOwnerByCode(editForm.dataset.editForm);
+      if(owner){
+        owner.nom = editForm.nom.value.trim() || owner.nom;
+        owner.prenom = editForm.prenom.value.trim() || owner.prenom;
+        owner.email = editForm.email.value.trim() || owner.email;
+        owner.contact = editForm.contact.value.trim() || owner.contact;
+        saveOwners();
+      }
+      editingOwnerSR = null;
+      refreshAdminSection();
+    } else if(pwForm){
+      e.preventDefault();
+      const owner = getOwnerByCode(pwForm.dataset.pwForm);
+      const newPw = pwForm.password.value.trim();
+      if(owner && newPw){
+        owner.password = newPw;
+        saveOwners();
+      }
+      resetPwSR = null;
+      refreshAdminSection();
+    } else if(transferForm){
+      e.preventDefault();
+      const errEl = document.getElementById('transferError');
+      const operator = transferForm.operator.value;
+      const amount = Number(transferForm.amount.value);
+      const recipient = transferForm.recipient.value.trim();
+      if(!amount || amount <= 0 || !recipient){
+        errEl.textContent = "Merci de renseigner un montant valide et un destinataire.";
+        errEl.classList.add('show');
+        return;
+      }
+      if(amount > (adminWallet[operator]||0)){
+        errEl.textContent = "Solde insuffisant sur ce moyen de paiement.";
+        errEl.classList.add('show');
+        return;
+      }
+      adminWallet[operator] = (adminWallet[operator]||0) - amount;
+      saveWallet();
+      transferLog.push({id:Date.now(), dateStr:new Date().toLocaleString('fr-FR'), operator, amount, recipient});
+      saveTransferLog();
+      refreshAdminSection();
+    }
+  });
+}
+
+function refreshAdminSection(){
+  document.getElementById('adminContent').innerHTML = adminSectionHTML(adminSection);
+  document.querySelectorAll('.admin-menu-btn[data-toggle-menu]').forEach(btn => {
+    const label = ADMIN_MENU.find(m => m.id === btn.dataset.toggleMenu);
+    if(label) btn.querySelector('span').textContent = label.label + adminMenuCount(label.id);
+  });
+  document.querySelectorAll('.admin-sub-btn[data-section]').forEach(btn => {
+    const item = ADMIN_MENU.flatMap(m => m.items).find(it => it.id === btn.dataset.section);
+    if(item) btn.textContent = item.label + adminSubCount(item.id);
+  });
 }
 
 renderNav();
@@ -1810,4 +2222,4 @@ render();
 </script>
 </body>
 </html>
-mise à jour
+mise à jour du profil administrateur
