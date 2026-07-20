@@ -719,6 +719,39 @@
   <div class="modal" id="dashContent" style="max-width:760px;"></div>
 </div>
 
+<div id="fbSetupBanner" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#B5562F;color:#fff;font-family:'Work Sans',sans-serif;font-size:13.5px;padding:12px 6vw;text-align:center;">
+  ⚠️ Firebase n'est pas configuré : remplacez les valeurs de <code>firebaseConfig</code> tout en haut du fichier (juste avant <code>&lt;script&gt;const LISTINGS…</code>) par celles de votre propre projet Firebase, sinon les comptes et réservations ne seront pas partagés.
+</div>
+
+<!-- ==================== Connexion à Firebase (Firestore) ====================
+     1) Créez un projet gratuit sur https://console.firebase.google.com
+     2) Ajoutez une application Web au projet, puis copiez l'objet de configuration
+        fourni (apiKey, authDomain, projectId, etc.) et collez-le ci-dessous, à la
+        place des valeurs "VOTRE_...".
+     3) Dans la console Firebase > Firestore Database > Créer une base de données
+        (mode production ou test, peu importe pour démarrer).
+     4) Dans l'onglet "Règles" de Firestore, utilisez temporairement des règles
+        ouvertes pour que le site puisse lire/écrire (voir explication fournie
+        avec cette migration) — à sécuriser ensuite avec Firebase Authentication. -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "VOTRE_apiKey, authDomain, projectId, etc.",
+    authDomain: "VOTRE_PROJET.firebaseapp.com",
+    projectId: "VOTRE_PROJET",
+    storageBucket: "VOTRE_PROJET.appspot.com",
+    messagingSenderId: "VOTRE_SENDER_ID",
+    appId: "VOTRE_APP_ID"
+  };
+  const fbNotConfigured = firebaseConfig.apiKey === "VOTRE_API_KEY";
+  if(fbNotConfigured){
+    document.getElementById('fbSetupBanner').style.display = 'block';
+  }
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
 <script>
 const LISTINGS = [
   {id:1, ref:"SR-014", type:"Villa", title:"Villa avec jardin, quartier calme", city:"San-Pédro", price:280000, rooms:4, baths:3, area:210,
@@ -747,7 +780,8 @@ const LISTINGS = [
     amenities:["Centre-ville","Transports à pied","Sécurisé"], color:"#B5562F", phone:"07 78 66 22 93", payOperator:"mtn", images:[]},
 ];
 /* Biens ajoutés par les propriétaires inscrits (persistés séparément) */
-let ownerListings = JSON.parse(localStorage.getItem('seonaresi_owner_listings') || '[]');
+/* Alimenté en temps réel depuis Firestore (collection 'ownerListings'), voir plus bas. */
+let ownerListings = [];
 function getAllListings(){ return LISTINGS.concat(ownerListings); }
 
 const grid = document.getElementById('grid');
@@ -1265,7 +1299,7 @@ function openDepositStep(l, res, method){
   });
 }
 
-function validateReservation(l, res, method){
+async function validateReservation(l, res, method){
   const receiptNumber = 'REC-' + Date.now().toString().slice(-8);
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
@@ -1277,21 +1311,27 @@ function validateReservation(l, res, method){
 
   /* Répartition automatique du paiement : commission plateforme (500 FCFA) vers le
      portefeuille administrateur (sur le même opérateur que le paiement), le reste
-     part directement au propriétaire du bien. */
+     part directement au propriétaire du bien. Tout est écrit dans Firestore afin
+     d'être visible immédiatement côté administrateur, sur n'importe quel appareil. */
   const fee = Math.min(500, res.due);
   const ownerNet = res.due - fee;
-  adminWallet[method.id] = (adminWallet[method.id] || 0) + fee;
-  saveWallet();
+
+  await db.collection('meta').doc('adminWallet').set(
+    {[method.id]: firebase.firestore.FieldValue.increment(fee)}, {merge:true}
+  );
+
   const ownerAccount = getOwnerByCode(l.ownerCode);
   if(ownerAccount){
-    ownerAccount.balance = (ownerAccount.balance || 0) + ownerNet;
-    saveOwners();
+    await db.collection('owners').doc(l.ownerCode).update({
+      balance: firebase.firestore.FieldValue.increment(ownerNet)
+    });
   }
-  reservationsLog.push({
+
+  await db.collection('reservationsLog').add({
     ref:l.ref, title:l.title, dateStr, clientName:res.name,
-    due:res.due, operator:method.label, operatorId:method.id, fee, ownerNet
+    due:res.due, operator:method.label, operatorId:method.id, fee, ownerNet,
+    createdAt: Date.now()
   });
-  saveReservationsLog();
 
   closeReservationModal();
   render();
@@ -1360,18 +1400,57 @@ document.addEventListener('keydown', e => {
 
 const ADMIN_ACCOUNT = {username:'admin', password:'admin2026'};
 
-let owners = JSON.parse(localStorage.getItem('seonaresi_owners') || '[]');
-let reservationsLog = JSON.parse(localStorage.getItem('seonaresi_reservations_log') || '[]');
-let adminWallet = JSON.parse(localStorage.getItem('seonaresi_admin_wallet') || '{"orange":0,"mtn":0,"wave":0,"moov":0}');
-let transferLog = JSON.parse(localStorage.getItem('seonaresi_transfer_log') || '[]');
+/* Ces tableaux sont désormais alimentés en temps réel depuis Firestore (voir les
+   écouteurs onSnapshot plus bas) — ils ne sont plus lus depuis localStorage,
+   afin que les données soient partagées entre tous les appareils/navigateurs. */
+let owners = [];
+let reservationsLog = [];
+let adminWallet = {orange:0, mtn:0, wave:0, moov:0};
+let transferLog = [];
+/* La session (qui est connecté sur CET appareil) reste locale au navigateur : c'est
+   volontaire, chaque appareil garde son propre état de connexion. */
 let session = JSON.parse(localStorage.getItem('seonaresi_session') || 'null'); // {type:'owner', srCode} | {type:'admin'}
-
-function saveOwners(){ localStorage.setItem('seonaresi_owners', JSON.stringify(owners)); }
-function saveOwnerListings(){ localStorage.setItem('seonaresi_owner_listings', JSON.stringify(ownerListings)); }
-function saveWallet(){ localStorage.setItem('seonaresi_admin_wallet', JSON.stringify(adminWallet)); }
 function saveSession(){ localStorage.setItem('seonaresi_session', JSON.stringify(session)); }
-function saveReservationsLog(){ localStorage.setItem('seonaresi_reservations_log', JSON.stringify(reservationsLog)); }
-function saveTransferLog(){ localStorage.setItem('seonaresi_transfer_log', JSON.stringify(transferLog)); }
+
+/* Vue actuellement affichée dans la modale « Mon espace », pour savoir si on doit
+   la rafraîchir automatiquement quand de nouvelles données arrivent de Firestore. */
+let currentDashView = null; // 'admin' | 'owner-main' | 'owner-other' | null
+
+function onDataChanged(){
+  render();
+  renderNav();
+  if(!dashOverlay.classList.contains('open') || !session) return;
+  if(session.type === 'admin' && currentDashView === 'admin'){
+    renderAdminDashboard();
+  } else if(session.type === 'owner' && currentDashView === 'owner-main'){
+    renderOwnerDashboard();
+  }
+}
+
+db.collection('owners').onSnapshot(snap => {
+  owners = snap.docs.map(d => d.data());
+  onDataChanged();
+}, err => console.error('Erreur Firestore (owners) :', err));
+
+db.collection('ownerListings').onSnapshot(snap => {
+  ownerListings = snap.docs.map(d => d.data());
+  onDataChanged();
+}, err => console.error('Erreur Firestore (ownerListings) :', err));
+
+db.collection('reservationsLog').orderBy('createdAt').onSnapshot(snap => {
+  reservationsLog = snap.docs.map(d => d.data());
+  onDataChanged();
+}, err => console.error('Erreur Firestore (reservationsLog) :', err));
+
+db.collection('transferLog').orderBy('createdAt').onSnapshot(snap => {
+  transferLog = snap.docs.map(d => d.data());
+  onDataChanged();
+}, err => console.error('Erreur Firestore (transferLog) :', err));
+
+db.collection('meta').doc('adminWallet').onSnapshot(doc => {
+  adminWallet = doc.exists ? doc.data() : {orange:0, mtn:0, wave:0, moov:0};
+  onDataChanged();
+}, err => console.error('Erreur Firestore (adminWallet) :', err));
 
 /* ---- État de navigation de l'espace administrateur (menus / sous-menus) ---- */
 const ADMIN_MENU = [
@@ -1425,6 +1504,26 @@ function fileToDataURL(file){
   });
 }
 
+/* Réduit la taille des photos de biens (max 1024px de large, JPEG qualité 0.72)
+   avant stockage dans Firestore, dont chaque document est limité à 1 Mo. */
+function fileToCompressedDataURL(file, maxWidth = 1024, quality = 0.72){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = () => { img.onload = () => {
+      const scale = Math.min(1, maxWidth / img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    }; img.onerror = reject; img.src = reader.result; };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 const authOverlay = document.getElementById('authOverlay');
 const authContent = document.getElementById('authContent');
 const dashOverlay = document.getElementById('dashOverlay');
@@ -1432,7 +1531,7 @@ const dashContent = document.getElementById('dashContent');
 const navActions = document.getElementById('navActions');
 
 function closeAuth(){ authOverlay.classList.remove('open'); }
-function closeDash(){ dashOverlay.classList.remove('open'); }
+function closeDash(){ dashOverlay.classList.remove('open'); currentDashView = null; }
 authOverlay.addEventListener('click', e => { if(e.target === authOverlay) closeAuth(); });
 dashOverlay.addEventListener('click', e => { if(e.target === dashOverlay) closeDash(); });
 
@@ -1581,15 +1680,25 @@ function renderAuthBody(tab){
         return;
       }
       errEl.classList.remove('show');
+      document.getElementById('btnDoRegister').disabled = true;
+      document.getElementById('btnDoRegister').textContent = 'Envoi en cours…';
       const cniData = await fileToDataURL(cniFile);
-      owners.push({
-        srCode, username, password, nom, prenom, email, contact,
-        cniName: cniFile.name, cniData,
-        validated: false,
-        paymentOperator: '', paymentPhone: '',
-        balance: 0
-      });
-      saveOwners();
+      try {
+        await db.collection('owners').doc(srCode).set({
+          srCode, username, password, nom, prenom, email, contact,
+          cniName: cniFile.name, cniData,
+          validated: false,
+          paymentOperator: '', paymentPhone: '',
+          balance: 0
+        });
+      } catch(err){
+        console.error('Erreur Firestore (inscription) :', err);
+        errEl.textContent = "L'inscription n'a pas pu être enregistrée (connexion à la base indisponible). Réessayez.";
+        errEl.classList.add('show');
+        document.getElementById('btnDoRegister').disabled = false;
+        document.getElementById('btnDoRegister').textContent = "S'inscrire";
+        return;
+      }
       authContent.innerHTML = `
         <button class="modal-close" id="authClose2">✕</button>
         <div class="receipt-wrap" style="text-align:center;">
@@ -1614,6 +1723,7 @@ function openDashboard(){
 }
 
 function renderOwnerDashboard(){
+  currentDashView = 'owner-main';
   const owner = getOwnerByCode(session.srCode);
   if(!owner){ session = null; saveSession(); renderNav(); closeDash(); return; }
   const myListings = ownerListings.filter(p => p.ownerCode === owner.srCode);
@@ -1680,17 +1790,17 @@ function renderOwnerDashboard(){
   `;
   document.getElementById('dashClose').addEventListener('click', closeDash);
   const savePayBtn = document.getElementById('btnSavePay');
-  if(savePayBtn) savePayBtn.addEventListener('click', () => {
-    owner.paymentOperator = document.getElementById('ownPayOperator').value;
-    owner.paymentPhone = document.getElementById('ownPayPhone').value.trim();
-    saveOwners();
+  if(savePayBtn) savePayBtn.addEventListener('click', async () => {
+    const paymentOperator = document.getElementById('ownPayOperator').value;
+    const paymentPhone = document.getElementById('ownPayPhone').value.trim();
+    savePayBtn.disabled = true;
+    savePayBtn.textContent = 'Enregistrement…';
+    const batch = db.batch();
+    batch.update(db.collection('owners').doc(owner.srCode), {paymentOperator, paymentPhone});
     ownerListings.filter(p => p.ownerCode === owner.srCode).forEach(p => {
-      p.payOperator = owner.paymentOperator;
-      p.phone = owner.paymentPhone;
+      batch.update(db.collection('ownerListings').doc(String(p.id)), {payOperator: paymentOperator, phone: paymentPhone});
     });
-    saveOwnerListings();
-    render();
-    renderOwnerDashboard();
+    try { await batch.commit(); } catch(err){ console.error('Erreur Firestore (moyen de paiement) :', err); }
   });
   const addPropBtn = document.getElementById('btnAddProperty');
   if(addPropBtn) addPropBtn.addEventListener('click', () => openPropertyForm(owner));
@@ -1702,6 +1812,7 @@ function renderOwnerDashboard(){
 }
 
 function openPropertyForm(owner){
+  currentDashView = 'owner-other';
   dashContent.innerHTML = `
     <button class="modal-close" id="propFormClose">✕</button>
     <div class="receipt-wrap">
@@ -1730,7 +1841,7 @@ function openPropertyForm(owner){
   `;
   document.getElementById('propFormClose').addEventListener('click', closeDash);
   document.getElementById('btnBackToDash').addEventListener('click', renderOwnerDashboard);
-  document.getElementById('btnCreateProp').addEventListener('click', () => {
+  document.getElementById('btnCreateProp').addEventListener('click', async () => {
     const title = document.getElementById('pfTitle').value.trim();
     const type = document.getElementById('pfType').value;
     const city = document.getElementById('pfCity').value.trim();
@@ -1745,6 +1856,7 @@ function openPropertyForm(owner){
       errEl.classList.add('show');
       return;
     }
+    errEl.classList.remove('show');
     const colors = ['#3A6F62','#B5562F','#C79A3E'];
     const prop = {
       id: Date.now(),
@@ -1758,14 +1870,22 @@ function openPropertyForm(owner){
       payOperator: owner.paymentOperator || '',
       images: []
     };
-    ownerListings.push(prop);
-    saveOwnerListings();
-    render();
-    openImageUpload(prop.id);
+    const btn = document.getElementById('btnCreateProp');
+    btn.disabled = true; btn.textContent = 'Création…';
+    try {
+      await db.collection('ownerListings').doc(String(prop.id)).set(prop);
+      openImageUpload(prop.id);
+    } catch(err){
+      console.error('Erreur Firestore (création du bien) :', err);
+      errEl.textContent = "Le bien n'a pas pu être enregistré (connexion à la base indisponible). Réessayez.";
+      errEl.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Créer le bien';
+    }
   });
 }
 
 function openImageUpload(propId){
+  currentDashView = 'owner-other';
   const prop = ownerListings.find(p => p.id === propId);
   if(!prop) return;
   dashContent.innerHTML = `
@@ -1797,12 +1917,18 @@ function openImageUpload(propId){
         errEl.classList.add('show');
       }
       const toAdd = files.slice(0, remaining);
+      drop.textContent = 'Envoi en cours…';
       for(const f of toAdd){
-        const dataUrl = await fileToDataURL(f);
+        const dataUrl = await fileToCompressedDataURL(f);
         prop.images.push(dataUrl);
       }
-      saveOwnerListings();
-      render();
+      try {
+        await db.collection('ownerListings').doc(String(prop.id)).update({images: prop.images});
+      } catch(err){
+        console.error('Erreur Firestore (images) :', err);
+        errEl.textContent = "Les images n'ont pas pu être enregistrées (connexion à la base indisponible, ou photos trop volumineuses). Réessayez avec moins d'images à la fois.";
+        errEl.classList.add('show');
+      }
       openImageUpload(propId);
     });
   }
@@ -1811,6 +1937,7 @@ function openImageUpload(propId){
 /* ==================== Espace administrateur : menu déroulant + sous-menus ==================== */
 
 function renderAdminDashboard(){
+  currentDashView = 'admin';
   adminOpenMenu = menuIdForSection(adminSection);
   dashContent.innerHTML = `
     <button class="modal-close" id="dashCloseA">✕</button>
@@ -2107,7 +2234,7 @@ function sectionHistoriqueComptabilite(){
 function bindAdminContentEvents(){
   const content = document.getElementById('adminContent');
 
-  content.addEventListener('click', e => {
+  content.addEventListener('click', async e => {
     const validateBtn = e.target.closest('[data-validate]');
     const rejectBtn = e.target.closest('[data-reject]');
     const editBtn = e.target.closest('[data-edit-owner]');
@@ -2118,14 +2245,11 @@ function bindAdminContentEvents(){
     const commissionViewBtn = e.target.closest('[data-commission-view]');
 
     if(validateBtn){
-      const owner = getOwnerByCode(validateBtn.dataset.validate);
-      if(owner) owner.validated = true;
-      saveOwners();
-      refreshAdminSection();
+      try { await db.collection('owners').doc(validateBtn.dataset.validate).update({validated: true}); }
+      catch(err){ console.error('Erreur Firestore (validation) :', err); alert("La validation n'a pas pu être enregistrée."); }
     } else if(rejectBtn){
-      owners = owners.filter(o => o.srCode !== rejectBtn.dataset.reject);
-      saveOwners();
-      refreshAdminSection();
+      try { await db.collection('owners').doc(rejectBtn.dataset.reject).delete(); }
+      catch(err){ console.error('Erreur Firestore (refus) :', err); alert("Le refus n'a pas pu être enregistré."); }
     } else if(editBtn){
       editingOwnerSR = editBtn.dataset.editOwner; resetPwSR = null;
       refreshAdminSection();
@@ -2141,11 +2265,16 @@ function bindAdminContentEvents(){
     } else if(deleteBtn){
       const code = deleteBtn.dataset.deleteOwner;
       if(confirm('Supprimer définitivement ce compte propriétaire ?')){
-        owners = owners.filter(o => o.srCode !== code);
-        ownerListings = ownerListings.filter(p => p.ownerCode !== code);
-        saveOwners(); saveOwnerListings();
-        render();
-        refreshAdminSection();
+        try {
+          const batch = db.batch();
+          batch.delete(db.collection('owners').doc(code));
+          const listingsSnap = await db.collection('ownerListings').where('ownerCode', '==', code).get();
+          listingsSnap.forEach(doc => batch.delete(doc.ref));
+          await batch.commit();
+        } catch(err){
+          console.error('Erreur Firestore (suppression) :', err);
+          alert("La suppression n'a pas pu être enregistrée.");
+        }
       }
     } else if(commissionViewBtn){
       commissionView = commissionViewBtn.dataset.commissionView;
@@ -2153,7 +2282,7 @@ function bindAdminContentEvents(){
     }
   });
 
-  content.addEventListener('submit', e => {
+  content.addEventListener('submit', async e => {
     const editForm = e.target.closest('[data-edit-form]');
     const pwForm = e.target.closest('[data-pw-form]');
     const transferForm = e.target.id === 'transferForm' ? e.target : null;
@@ -2161,12 +2290,20 @@ function bindAdminContentEvents(){
     if(editForm){
       e.preventDefault();
       const owner = getOwnerByCode(editForm.dataset.editForm);
+      const submitBtn = editForm.querySelector('button[type=submit]');
       if(owner){
-        owner.nom = editForm.nom.value.trim() || owner.nom;
-        owner.prenom = editForm.prenom.value.trim() || owner.prenom;
-        owner.email = editForm.email.value.trim() || owner.email;
-        owner.contact = editForm.contact.value.trim() || owner.contact;
-        saveOwners();
+        submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
+        try {
+          await db.collection('owners').doc(owner.srCode).update({
+            nom: editForm.nom.value.trim() || owner.nom,
+            prenom: editForm.prenom.value.trim() || owner.prenom,
+            email: editForm.email.value.trim() || owner.email,
+            contact: editForm.contact.value.trim() || owner.contact
+          });
+        } catch(err){
+          console.error('Erreur Firestore (modification) :', err);
+          alert("La modification n'a pas pu être enregistrée.");
+        }
       }
       editingOwnerSR = null;
       refreshAdminSection();
@@ -2175,8 +2312,10 @@ function bindAdminContentEvents(){
       const owner = getOwnerByCode(pwForm.dataset.pwForm);
       const newPw = pwForm.password.value.trim();
       if(owner && newPw){
-        owner.password = newPw;
-        saveOwners();
+        const submitBtn = pwForm.querySelector('button[type=submit]');
+        submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
+        try { await db.collection('owners').doc(owner.srCode).update({password: newPw}); }
+        catch(err){ console.error('Erreur Firestore (mot de passe) :', err); alert("Le mot de passe n'a pas pu être réinitialisé."); }
       }
       resetPwSR = null;
       refreshAdminSection();
@@ -2196,11 +2335,23 @@ function bindAdminContentEvents(){
         errEl.classList.add('show');
         return;
       }
-      adminWallet[operator] = (adminWallet[operator]||0) - amount;
-      saveWallet();
-      transferLog.push({id:Date.now(), dateStr:new Date().toLocaleString('fr-FR'), operator, amount, recipient});
-      saveTransferLog();
-      refreshAdminSection();
+      const submitBtn = transferForm.querySelector('button[type=submit]');
+      submitBtn.disabled = true; submitBtn.textContent = 'Envoi en cours…';
+      try {
+        const batch = db.batch();
+        batch.set(db.collection('meta').doc('adminWallet'),
+          {[operator]: firebase.firestore.FieldValue.increment(-amount)}, {merge:true});
+        batch.set(db.collection('transferLog').doc(String(Date.now())), {
+          dateStr: new Date().toLocaleString('fr-FR'), operator, amount, recipient, createdAt: Date.now()
+        });
+        await batch.commit();
+        refreshAdminSection();
+      } catch(err){
+        console.error('Erreur Firestore (transfert) :', err);
+        errEl.textContent = "Le transfert n'a pas pu être enregistré (connexion à la base indisponible).";
+        errEl.classList.add('show');
+        submitBtn.disabled = false; submitBtn.textContent = 'Faire un transfert';
+      }
     }
   });
 }
@@ -2222,4 +2373,3 @@ render();
 </script>
 </body>
 </html>
-mise à jour du profil administrateur
