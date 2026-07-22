@@ -38,6 +38,7 @@
   button{font-family:inherit;cursor:pointer;}
   img{max-width:100%;}
 
+  /* ---------- Roofline motif (signature element) ---------- */
   .roofline{
     height:22px;
     width:100%;
@@ -48,6 +49,7 @@
   }
   .roofline.flip{transform:scaleY(-1);}
 
+  /* ---------- Header ---------- */
   header{
     background:var(--ink);
     color:var(--panel);
@@ -80,6 +82,7 @@
     border-radius:99px;
   }
 
+  /* ---------- Hero ---------- */
   .hero{
     background:var(--ink);
     color:var(--panel);
@@ -104,6 +107,7 @@
   }
   .skyline{width:100%;height:auto;}
 
+  /* Search card overlapping hero/listing boundary */
   .search-card{
     max-width:1180px;margin:-38px auto 0;
     background:var(--panel);
@@ -111,12 +115,16 @@
     box-shadow:0 18px 40px rgba(0,0,0,0.18);
     padding:22px 22px 18px;
     display:grid;
-    grid-template-columns:1fr 1fr 1fr 1fr;
+    grid-template-columns:1.1fr 0.8fr 1.6fr auto;
     gap:14px;
     position:relative;
     z-index:5;
   }
   .field{display:flex;flex-direction:column;gap:6px;}
+  .budget-controls{display:flex;gap:6px;}
+  .budget-controls select#budget{flex:0 0 auto;width:88px;}
+  .budget-controls input#budgetCustom{flex:1 1 auto;min-width:0;}
+  .budget-controls select#budgetPeriod{flex:0 0 auto;width:104px;}
   .field label{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:#6B6A5A;font-weight:600;}
   .field input,.field select{
     border:1px solid var(--line);
@@ -126,7 +134,6 @@
     font-family:inherit;
     background:var(--white);
     color:var(--ink);
-    width:100%;
   }
   .field input:focus,.field select:focus{outline:2px solid var(--teal);outline-offset:1px;}
   .btn-search{
@@ -137,35 +144,10 @@
     padding:11px 22px;
     font-weight:600;font-size:14.5px;
     transition:background .15s ease;
-    grid-column:4/5;
   }
   .btn-search:hover{background:#983F1F;}
 
-  .autocomplete-dropdown{
-    position:absolute;
-    top:100%;
-    left:0;
-    right:0;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:8px;
-    max-height:200px;
-    overflow-y:auto;
-    z-index:10;
-    display:none;
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
-  }
-  .autocomplete-item{
-    padding:8px 12px;
-    cursor:pointer;
-    border-bottom:1px solid #eee;
-  }
-  .autocomplete-item:hover{
-    background:var(--teal);
-    color:#fff;
-  }
-  .autocomplete-item:last-child{border-bottom:none;}
-
+  /* ---------- Main / listings ---------- */
   main{max-width:1180px;margin:0 auto;padding:56px 6vw 20px;}
   .section-head{
     display:flex;justify-content:space-between;align-items:baseline;
@@ -243,6 +225,7 @@
   }
   .empty .display{font-size:22px;margin-bottom:8px;color:var(--ink);}
 
+  /* ---------- Bien réservé (grisé) ---------- */
   .card.reserved{
     opacity:0.55;filter:grayscale(0.55);
   }
@@ -258,6 +241,7 @@
     padding:4px 9px;border-radius:6px;font-weight:700;
   }
 
+  /* ---------- Galerie photos (modal) ---------- */
   .modal-visual{position:relative;}
   .gallery-caption{
     position:absolute;bottom:10px;left:10px;
@@ -280,6 +264,7 @@
   .thumb svg,.thumb img{width:100%;height:100%;display:block;object-fit:cover;}
   .thumb.active{border-color:var(--teal);}
 
+  /* ---------- Options de paiement partiel ---------- */
   .pay-option-group{margin:4px 0 16px;display:flex;flex-direction:column;gap:8px;}
   .pay-option{
     display:flex;align-items:center;gap:10px;border:1px solid var(--line);
@@ -297,6 +282,7 @@
   }
   .btn-pay:hover{background:#983F1F;}
 
+  /* ---------- Méthodes de paiement ---------- */
   .pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 20px;}
   .pay-method{
     border:1px solid var(--line);border-radius:10px;padding:14px 12px;
@@ -314,6 +300,7 @@
     text-decoration:underline;padding:0 0 16px;
   }
 
+  /* ---------- Étape dépôt (QR / code / redirection) ---------- */
   .deposit-summary{
     display:flex;align-items:center;gap:10px;background:#EFEDDF;border-radius:10px;
     padding:12px 14px;margin-bottom:18px;font-size:13.5px;
@@ -348,6 +335,7 @@
     border:none;border-radius:9px;padding:11px 20px;font-weight:600;font-size:14px;text-decoration:none;
   }
 
+  /* ---------- Modal ---------- */
   .overlay{
     position:fixed;inset:0;background:rgba(20,26,23,0.55);
     display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
@@ -386,6 +374,7 @@
   .btn-reserve{background:var(--clay);color:#fff;border:none;}
   .btn-reserve:hover{background:#983F1F;}
 
+  /* ---------- Réservation / Reçu ---------- */
   .res-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
   .res-field label{font-size:12px;text-transform:uppercase;letter-spacing:0.06em;color:#6B6A5A;font-weight:600;}
   .res-field input{
@@ -446,6 +435,7 @@
     .receipt-actions{display:none;}
   }
 
+  /* ---------- Footer ---------- */
   footer{background:var(--ink);color:#C9C4AE;padding:44px 6vw 30px;}
   .footer-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;}
   .footer-inner .logo-text{color:var(--panel);}
@@ -455,15 +445,20 @@
   @media (max-width:780px){
     .hero-inner{grid-template-columns:1fr;}
     .search-card{grid-template-columns:1fr 1fr;margin-top:-24px;}
+    .budget-field{grid-column:1/-1;}
     .btn-search{grid-column:1/-1;}
   }
   @media (max-width:520px){
     .search-card{grid-template-columns:1fr;}
+    .budget-controls{flex-wrap:wrap;}
+    .budget-controls select#budget,
+    .budget-controls select#budgetPeriod{width:auto;flex:1 1 120px;}
   }
   @media (prefers-reduced-motion:reduce){
     *{transition:none !important;}
   }
 
+  /* ---------- Auth buttons (header) ---------- */
   .nav-actions{display:flex;gap:10px;align-items:center;}
   .btn-nav{
     border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:600;
@@ -479,6 +474,7 @@
   }
   .session-pill button{background:none;border:none;color:var(--gold);font-weight:700;font-size:12px;padding:0;}
 
+  /* ---------- Formulaires (auth / propriétaire) ---------- */
   .form-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
   .form-field label{font-size:12px;text-transform:uppercase;letter-spacing:0.06em;color:#6B6A5A;font-weight:600;}
   .form-field input[type=text],.form-field input[type=password],.form-field input[type=email],
@@ -514,6 +510,7 @@
   .status-pill.pending{background:#F3E3C9;color:#8A5A12;}
   .status-pill.validated{background:#E4F0EC;color:var(--teal);}
 
+  /* ---------- Dashboards (propriétaire / admin) ---------- */
   .dash-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
   .dash-section{margin-bottom:26px;}
   .dash-section h4{font-family:'Fraunces',serif;font-size:16px;margin-bottom:10px;}
@@ -537,6 +534,7 @@
   .wallet-card{border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center;background:var(--white);}
   .wallet-card .op{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;}
 
+  /* ---------- Espace administrateur : menu / sous-menu ---------- */
   #dashContent.admin-wide{max-width:960px;}
   .admin-title{font-family:'Fraunces',serif;font-size:19px;margin-bottom:16px;}
   .admin-layout{display:flex;gap:22px;align-items:flex-start;}
@@ -588,13 +586,32 @@
   .wallet-card .amt{font-family:'Fraunces',serif;font-size:18px;font-weight:600;}
   .empty-note{font-size:13px;color:#8B8A76;padding:10px 0;}
 
-  .owner-tab-panel{padding-top:16px;animation:fadeIn 0.3s ease;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+  /* ---------- Comptes utilisateurs (équipe) & Droits & Privilège ---------- */
+  .section-head-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;}
+  .section-head-row h4{margin-bottom:0;}
+  .staff-add-btn{
+    width:30px;height:30px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--white);
+    font-size:18px;line-height:1;display:inline-flex;align-items:center;justify-content:center;color:var(--ink);
+  }
+  .staff-add-btn:hover{border-color:var(--teal);color:var(--teal);}
+  .staff-role{font-family:'Fraunces',serif;}
+  .staff-select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px;background:var(--white);color:var(--ink);}
 
-  .payment-number-input{transition:border-color .2s ease;}
-  .payment-number-input:focus{border-color:var(--teal)!important;outline:none;}
-  .dash-card[data-user-id]{transition:all .2s ease;}
-  .dash-card[data-user-id]:hover{border-color:var(--teal);}
+  /* iOS-style toggle switch */
+  .switch{position:relative;display:inline-block;width:42px;height:24px;flex:none;}
+  .switch input{opacity:0;width:0;height:0;position:absolute;}
+  .switch .slider{position:absolute;inset:0;background:#CBC7B4;border-radius:99px;cursor:pointer;transition:background .18s ease;}
+  .switch .slider::before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .18s ease;box-shadow:0 1px 2px rgba(0,0,0,.25);}
+  .switch input:checked + .slider{background:var(--teal);}
+  .switch input:checked + .slider::before{transform:translateX(18px);}
+
+  .right-group{border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:12px;background:var(--white);}
+  .right-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .right-group-head strong{font-family:'Fraunces',serif;font-size:14.5px;}
+  .right-items{margin-top:11px;display:flex;flex-direction:column;gap:9px;}
+  .right-item{display:flex;align-items:center;gap:9px;font-size:13.5px;cursor:pointer;}
+  .right-item input[type=checkbox]{width:16px;height:16px;flex:none;accent-color:var(--teal);}
+  .right-item.disabled{opacity:.4;pointer-events:none;}
 </style>
 </head>
 <body>
@@ -641,37 +658,43 @@
 </section>
 
 <form class="search-card" id="searchForm">
-  <div class="field" style="grid-column:1/3;">
-    <label for="citySearch">Ville</label>
-    <div style="position:relative;">
-      <input type="text" id="citySearch" placeholder="Rechercher une ville..." autocomplete="off">
-      <div class="autocomplete-dropdown" id="cityAutocomplete"></div>
-    </div>
+  <div class="field">
+    <label for="q">Ville ou quartier</label>
+    <input type="text" id="q" placeholder="Ex : San-Pédro, Cocody…">
   </div>
-  <div class="field" style="grid-column:3/4;">
-    <label for="neighborhoodSearch">Quartier</label>
-    <div style="position:relative;">
-      <input type="text" id="neighborhoodSearch" placeholder="Rechercher un quartier..." autocomplete="off">
-      <div class="autocomplete-dropdown" id="neighborhoodAutocomplete"></div>
-    </div>
+  <div class="field">
+    <label for="type">Type de bien</label>
+    <select id="type">
+      <option value="">Tous les types</option>
+      <option value="Villa">Villa</option>
+      <option value="Maison">Maison</option>
+      <option value="Appartement">Appartement</option>
+      <option value="Studio">Studio</option>
+    </select>
   </div>
-  <div class="field" style="grid-column:1/2;">
-    <label for="typeSearch">Type de bien</label>
-    <div style="position:relative;">
-      <input type="text" id="typeSearch" placeholder="Villa, maison..." autocomplete="off">
-      <div class="autocomplete-dropdown" id="typeAutocomplete"></div>
+  <div class="field budget-field">
+    <label for="budget">Budget max (FCFA)</label>
+    <div class="budget-controls">
+      <select id="budget">
+        <option value="">Sans limite</option>
+        <option value="15000">15 000</option>
+        <option value="25000">25 000</option>
+        <option value="45000">45 000</option>
+        <option value="65000">65 000</option>
+        <option value="75000">75 000</option>
+        <option value="100000">100 000</option>
+        <option value="200000">200 000</option>
+        <option value="350000">350 000</option>
+        <option value="600000">600 000</option>
+        <option value="1000000">1 000 000</option>
+      </select>
+      <input type="number" id="budgetCustom" min="0" placeholder="Ou saisissez un montant">
+      <select id="budgetPeriod">
+        <option value="mois">Par mois</option>
+        <option value="semaine">Par semaine</option>
+        <option value="jour">Par jour</option>
+      </select>
     </div>
-  </div>
-  <div class="field" style="grid-column:2/3;">
-    <label for="priceSearch">Prix / jour (FCFA)</label>
-    <div style="position:relative;">
-      <input type="text" id="priceSearch" placeholder="15 000 - 70 000" autocomplete="off">
-      <div class="autocomplete-dropdown" id="priceAutocomplete"></div>
-    </div>
-  </div>
-  <div class="field" style="grid-column:3/4;">
-    <label for="reservationDate">Date de réservation</label>
-    <input type="date" id="reservationDate">
   </div>
   <button type="submit" class="btn-search">Rechercher</button>
 </form>
@@ -727,6 +750,16 @@
   ⚠️ Firebase n'est pas configuré : remplacez les valeurs de <code>firebaseConfig</code> tout en haut du fichier (juste avant <code>&lt;script&gt;const LISTINGS…</code>) par celles de votre propre projet Firebase, sinon les comptes et réservations ne seront pas partagés.
 </div>
 
+<!-- ==================== Connexion à Firebase (Firestore) ====================
+     1) Créez un projet gratuit sur https://console.firebase.google.com
+     2) Ajoutez une application Web au projet, puis copiez l'objet de configuration
+        fourni (apiKey, authDomain, projectId, etc.) et collez-le ci-dessous, à la
+        place des valeurs "VOTRE_...".
+     3) Dans la console Firebase > Firestore Database > Créer une base de données
+        (mode production ou test, peu importe pour démarrer).
+     4) Dans l'onglet "Règles" de Firestore, utilisez temporairement des règles
+        ouvertes pour que le site puisse lire/écrire (voir explication fournie
+        avec cette migration) — à sécuriser ensuite avec Firebase Authentication. -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script>
@@ -748,45 +781,6 @@
 </script>
 
 <script>
-// ============================================================
-// DONNÉES
-// ============================================================
-
-// Villes de Côte d'Ivoire
-const IVORY_COAST_CITIES = [
-  "Abidjan", "Abobo", "Adzopé", "Agnibilékrou", "Agboville", "Akouédo", "Anyama", 
-  "Bingerville", "Bondoukou", "Bouaflé", "Bouaké", "Bouna", "Boundiali", 
-  "Dabou", "Daloa", "Danané", "Dimbokro", "Divo", "Duékoué", "Ferkessédougou", 
-  "Gagnoa", "Grand-Bassam", "Guiglo", "Issia", "Korhogo", "Man", "Mankono", 
-  "Odienné", "Oumé", "Sakassou", "San-Pédro", "Sassandra", "Séguéla", "Sinfra", 
-  "Soubré", "Touba", "Toumodi", "Vavoua", "Yamoussoukro", "Zuénoula"
-];
-
-// Quartiers par ville
-const NEIGHBORHOODS = {
-  "Abidjan": ["Plateau", "Cocody", "Marcory", "Treichville", "Adjamé", "Yopougon", 
-              "Port-Bouët", "Koumassi", "Abobo", "Attécoubé", "Songon", "Anyama", 
-              "Bingerville", "Riviera", "Deux-Plateaux", "Aghien", "M'Badon"],
-  "Bouaké": ["Kokoté", "N'Drakou", "Goubi", "Belle-Ville", "Koutou", "Air-France"],
-  "San-Pédro": ["Port", "Rue du Port", "Avenue Sabouraud", "Quartier Administratif"],
-  "Yamoussoukro": ["Quartier Administratif", "Résidentiel", "Nouveau Quartier"],
-  "Grand-Bassam": ["Ancien Bassam", "Nouveau Bassam", "Quartier France"],
-  "Daloa": ["Quartier Administratif", "Camp Militaire", "Cité"],
-  "Korhogo": ["Quartier Commercial", "Résidentiel", "Zone Administratif"],
-  "Man": ["Quartier Administratif", "Résidentiel", "Tonkpi"],
-  "Gagnoa": ["Quartier Administratif", "Cité", "Résidentiel"],
-  "Divo": ["Quartier Administratif", "Cité", "Résidentiel"],
-  "Dabou": ["Quartier Administratif", "Cité", "Résidentiel"],
-  "Abobo": ["Abobo-Baoulé", "Abobo-Doumé", "Abobo-Té", "Gare d'Abobo"],
-  "Cocody": ["Angle", "M'Badon", "Niangon", "Riviera", "Bingerville"],
-  "Marcory": ["Zone 4", "Zone 5", "Anoumabo", "Marcory Centre"],
-  "Treichville": ["Palais", "Sagbo", "Belleville", "Treichville Centre"],
-  "Plateau": ["Banque", "Commerce", "Ministère", "Zone Administrative"]
-};
-
-// Tous les quartiers uniques
-const ALL_NEIGHBORHOODS = [...new Set(Object.values(NEIGHBORHOODS).flat())];
-
 const LISTINGS = [
   {id:1, ref:"SR-014", type:"Villa", title:"Villa avec jardin, quartier calme", city:"San-Pédro", price:280000, rooms:4, baths:3, area:210,
     desc:"Villa de plain-pied entourée d'un jardin clos, proche du port. Idéale pour une famille recherchant calme et sécurité.",
@@ -813,6 +807,8 @@ const LISTINGS = [
     desc:"Petit studio bien agencé en plein centre-ville, à proximité immédiate des transports.",
     amenities:["Centre-ville","Transports à pied","Sécurisé"], color:"#B5562F", phone:"07 78 66 22 93", payOperator:"mtn", images:[]},
 ];
+/* Biens ajoutés par les propriétaires inscrits (persistés séparément) */
+/* Alimenté en temps réel depuis Firestore (collection 'ownerListings'), voir plus bas. */
 let ownerListings = [];
 function getAllListings(){ return LISTINGS.concat(ownerListings); }
 
@@ -823,7 +819,7 @@ let favorites = JSON.parse(localStorage.getItem('seonaresi_favs') || '[]');
 let reservedIds = JSON.parse(localStorage.getItem('seonaresi_reserved') || '[]');
 let activeCityFilter = "";
 
-// Build city chips
+// Build city chips dynamically from data
 const cities = [...new Set(LISTINGS.map(l => l.city))];
 cities.forEach(city => {
   const b = document.createElement('button');
@@ -843,6 +839,8 @@ function houseSVG(color, ref){
   </svg>`;
 }
 
+/* Génère une petite galerie de vues (extérieur / salon / chambre / cuisine)
+   pour donner l'illusion de plusieurs photos du même bien. */
 function galleryFor(l){
   if(l.images && l.images.length){
     return l.images.map((src,i) => ({label:`Photo ${i+1}`, svg:`<img src="${src}" style="width:100%;height:100%;object-fit:cover;display:block;">`}));
@@ -876,101 +874,30 @@ function galleryFor(l){
 
 function money(n){ return n.toLocaleString('fr-FR') + ' FCFA'; }
 
-// ============================================================
-// RECHERCHE AVEC AUTOCOMPLÉTION
-// ============================================================
-
-function setupAutocomplete(inputId, dropdownId, dataSource) {
-  const input = document.getElementById(inputId);
-  const dropdown = document.getElementById(dropdownId);
-  if(!input || !dropdown) return;
-
-  const showOptions = (matches) => {
-    if(matches.length === 0 || document.activeElement !== input) {
-      dropdown.style.display = 'none';
-      return;
-    }
-    dropdown.innerHTML = matches.map(opt => 
-      `<div class="autocomplete-item">${opt}</div>`
-    ).join('');
-    dropdown.style.display = 'block';
-    dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
-      item.addEventListener('click', function() {
-        input.value = this.textContent;
-        dropdown.style.display = 'none';
-        input.dispatchEvent(new Event('input'));
-        input.dispatchEvent(new Event('change'));
-      });
-    });
-  };
-
-  input.addEventListener('input', function() {
-    const value = this.value.toLowerCase();
-    const matches = dataSource.filter(d => d.toLowerCase().includes(value));
-    showOptions(matches);
-  });
-
-  input.addEventListener('focus', function() {
-    const value = this.value.toLowerCase();
-    const matches = value ? dataSource.filter(d => d.toLowerCase().includes(value)) : dataSource;
-    showOptions(matches);
-  });
-
-  input.addEventListener('blur', function() {
-    setTimeout(() => { dropdown.style.display = 'none'; }, 200);
-  });
-}
-
-// Initialiser les autocomplétions
-document.addEventListener('DOMContentLoaded', function() {
-  setupAutocomplete('citySearch', 'cityAutocomplete', IVORY_COAST_CITIES);
-  setupAutocomplete('neighborhoodSearch', 'neighborhoodAutocomplete', ALL_NEIGHBORHOODS);
-  setupAutocomplete('typeSearch', 'typeAutocomplete', ['Villa', 'Maison', 'Appartement', 'Studio']);
-  setupAutocomplete('priceSearch', 'priceAutocomplete', ['15000', '20000', '25000', '30000', '35000', '40000', '45000', '50000', '55000', '60000', '65000', '70000']);
-
-  // Date par défaut
-  const dateInput = document.getElementById('reservationDate');
-  if(dateInput) {
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.min = today;
-    dateInput.value = today;
-  }
-
-  // Mettre à jour les quartiers selon la ville
-  const cityInput = document.getElementById('citySearch');
-  if(cityInput) {
-    cityInput.addEventListener('change', function() {
-      const selectedCity = this.value;
-      const neighborhoods = NEIGHBORHOODS[selectedCity] || ALL_NEIGHBORHOODS;
-      setupAutocomplete('neighborhoodSearch', 'neighborhoodAutocomplete', neighborhoods);
-    });
-  }
-});
-
-// ============================================================
-// RENDU DES BIENS
-// ============================================================
-
 function render(){
-  const citySearch = document.getElementById('citySearch');
-  const neighborhoodSearch = document.getElementById('neighborhoodSearch');
-  const typeSearch = document.getElementById('typeSearch');
-  const priceSearch = document.getElementById('priceSearch');
-  const reservationDate = document.getElementById('reservationDate');
-  
-  const city = citySearch ? citySearch.value.trim().toLowerCase() : '';
-  const neighborhood = neighborhoodSearch ? neighborhoodSearch.value.trim().toLowerCase() : '';
-  const type = typeSearch ? typeSearch.value.trim() : '';
-  const price = priceSearch ? parseInt(priceSearch.value) : null;
-  const date = reservationDate ? reservationDate.value : '';
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const type = document.getElementById('type').value;
+  const budgetCustom = document.getElementById('budgetCustom').value;
+  const budgetPreset = document.getElementById('budget').value;
+  const period = document.getElementById('budgetPeriod').value;
+
+  // La saisie libre prend le pas sur le menu déroulant si elle est renseignée
+  const rawBudget = budgetCustom !== "" ? Number(budgetCustom) : (budgetPreset !== "" ? Number(budgetPreset) : null);
+
+  // Les prix des biens sont enregistrés par mois : on convertit le budget saisi vers un équivalent mensuel
+  let monthlyBudget = null;
+  if(rawBudget !== null && !isNaN(rawBudget)){
+    if(period === "semaine") monthlyBudget = rawBudget * 4.345;
+    else if(period === "jour") monthlyBudget = rawBudget * 30;
+    else monthlyBudget = rawBudget;
+  }
 
   let items = getAllListings().filter(l => {
     if(activeCityFilter === "Favoris") return favorites.includes(l.id);
     if(activeCityFilter && l.city !== activeCityFilter) return false;
-    if(city && !l.city.toLowerCase().includes(city)) return false;
-    if(neighborhood && !l.title.toLowerCase().includes(neighborhood) && !l.desc.toLowerCase().includes(neighborhood)) return false;
+    if(q && !(l.city.toLowerCase().includes(q) || l.title.toLowerCase().includes(q))) return false;
     if(type && l.type !== type) return false;
-    if(price && l.price > price) return false;
+    if(monthlyBudget !== null && l.price > monthlyBudget) return false;
     return true;
   });
 
@@ -1048,10 +975,6 @@ document.getElementById('searchForm').addEventListener('submit', e => {
   render();
 });
 
-// ============================================================
-// MODAL
-// ============================================================
-
 const overlay = document.getElementById('overlay');
 const modalContent = document.getElementById('modalContent');
 
@@ -1089,7 +1012,7 @@ function openModal(id){
           const m = PAYMENT_METHODS.find(pm => pm.id === l.payOperator);
           return `<div class="deposit-summary" style="margin-bottom:16px;">
             <span class="dot" style="background:${m?m.color:'#888'}">${m?m.initials:'?'}</span>
-            <span>Moyen de paiement du propriétaire : <strong>${m?m.label:l.payOperator}</strong> — ${l.phone}</span>
+            <span>Moyen de paiement du propriétaire (identique sur son profil) : <strong>${m?m.label:l.payOperator}</strong> — ${l.phone}</span>
           </div>`;
         })() : ''}
       ${isReserved
@@ -1138,37 +1061,11 @@ function closeModal(){ overlay.classList.remove('open'); }
 overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
 
-// ============================================================
-// RÉSERVATION & PAIEMENT
-// ============================================================
-
+/* ---------- Réservation & paiement ---------- */
 const reservationOverlay = document.getElementById('reservationOverlay');
 const reservationContent = document.getElementById('reservationContent');
 const receiptOverlay = document.getElementById('receiptOverlay');
 const receiptContent = document.getElementById('receiptContent');
-
-const PAYMENT_METHODS = [
-  {id:'orange', label:'Orange Monnaie', color:'#FF7900', initials:'OM', ussd:'#144#'},
-  {id:'mtn', label:'MTN Momo', color:'#FFCC00', initials:'MoMo', ussd:'*133#'},
-  {id:'wave', label:'Wave', color:'#1DC3EA', initials:'W', ussd:null},
-  {id:'moov', label:'Moov Monnaie', color:'#0072CE', initials:'MM', ussd:'*155#'},
-];
-
-function fakeQR(seed){
-  let s = 0;
-  for(let i=0;i<seed.length;i++) s = (s * 31 + seed.charCodeAt(i)) >>> 0;
-  const rand = () => { s = (s * 1103515245 + 12345) >>> 0; return (s >> 16) % 2; };
-  const cells = 11;
-  let rects = '';
-  for(let y=0;y<cells;y++){
-    for(let x=0;x<cells;x++){
-      const isFinder = (x<3&&y<3)||(x>cells-4&&y<3)||(x<3&&y>cells-4);
-      const on = isFinder ? (x===0||x===2||y===0||y===2||(x>=1&&x<=1&&y>=1&&y<=1)) : rand();
-      if(on) rects += `<rect x="${x*20}" y="${y*20}" width="20" height="20" fill="#1F2E2A"/>`;
-    }
-  }
-  return `<svg viewBox="0 0 ${cells*20} ${cells*20}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#fff"/>${rects}</svg>`;
-}
 
 function openReservationModal(l){
   reservationContent.innerHTML = `
@@ -1284,6 +1181,30 @@ function openReservationModal(l){
 function closeReservationModal(){ reservationOverlay.classList.remove('open'); }
 reservationOverlay.addEventListener('click', e => { if(e.target === reservationOverlay) closeReservationModal(); });
 
+const PAYMENT_METHODS = [
+  {id:'orange', label:'Orange Monnaie', color:'#FF7900', initials:'OM', ussd:'#144#'},
+  {id:'mtn', label:'MTN Momo', color:'#FFCC00', initials:'MoMo', ussd:'*133#'},
+  {id:'wave', label:'Wave', color:'#1DC3EA', initials:'W', ussd:null},
+  {id:'moov', label:'Moov Monnaie', color:'#0072CE', initials:'MM', ussd:'*155#'},
+];
+
+/* Génère un faux QR code (motif visuel) à partir d'une graine, pour illustrer le flux de dépôt. */
+function fakeQR(seed){
+  let s = 0;
+  for(let i=0;i<seed.length;i++) s = (s * 31 + seed.charCodeAt(i)) >>> 0;
+  const rand = () => { s = (s * 1103515245 + 12345) >>> 0; return (s >> 16) % 2; };
+  const cells = 11;
+  let rects = '';
+  for(let y=0;y<cells;y++){
+    for(let x=0;x<cells;x++){
+      const isFinder = (x<3&&y<3)||(x>cells-4&&y<3)||(x<3&&y>cells-4);
+      const on = isFinder ? (x===0||x===2||y===0||y===2||(x>=1&&x<=1&&y>=1&&y<=1)) : rand();
+      if(on) rects += `<rect x="${x*20}" y="${y*20}" width="20" height="20" fill="#1F2E2A"/>`;
+    }
+  }
+  return `<svg viewBox="0 0 ${cells*20} ${cells*20}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#fff"/>${rects}</svg>`;
+}
+
 function openPaymentMethods(l, res){
   const method = PAYMENT_METHODS.find(m => m.id === l.payOperator);
 
@@ -1315,7 +1236,7 @@ function openPaymentMethods(l, res){
 
       <div class="deposit-summary" style="margin-bottom:18px;">
         <span class="dot" style="background:${method.color}">${method.initials}</span>
-        <span>Ce bien est réglé via <strong>${method.label}</strong>, au numéro du propriétaire <strong>${l.phone}</strong>.</span>
+        <span>Ce bien est réglé via <strong>${method.label}</strong>, au numéro du propriétaire <strong>${l.phone}</strong> — le même moyen de paiement que celui affiché sur son profil.</span>
       </div>
 
       <button class="btn-validate" id="btnConfirmPayment">Continuer</button>
@@ -1329,6 +1250,7 @@ function openPaymentMethods(l, res){
   document.getElementById('btnConfirmPayment').addEventListener('click', () => openDepositStep(l, res, method));
 }
 
+/* ---------- Étape de finalisation du dépôt : QR code / code à 4 chiffres / redirection ---------- */
 function openDepositStep(l, res, method){
   const depositCode = String(Math.floor(1000 + Math.random() * 9000));
   const qrPayload = `SEONA-RESI|${l.ref}|${method.id}|${res.due}|${depositCode}`;
@@ -1415,6 +1337,10 @@ async function validateReservation(l, res, method){
     localStorage.setItem('seonaresi_reserved', JSON.stringify(reservedIds));
   }
 
+  /* Répartition automatique du paiement : commission plateforme (500 FCFA) vers le
+     portefeuille administrateur (sur le même opérateur que le paiement), le reste
+     part directement au propriétaire du bien. Tout est écrit dans Firestore afin
+     d'être visible immédiatement côté administrateur, sur n'importe quel appareil. */
   const fee = Math.min(500, res.due);
   const ownerNet = res.due - fee;
 
@@ -1498,25 +1424,25 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Escape'){ closeReservationModal(); closeReceipt(); closeAuth(); closeDash(); }
 });
 
-// ============================================================
-// COMPTES & AUTHENTIFICATION
-// ============================================================
+/* ==================== Comptes propriétaires & administration ==================== */
 
 const ADMIN_ACCOUNT = {username:'admin', password:'admin2026'};
-const CONSEIL_ACCOUNT = {username:'conseil', password:'conseil2026'};
 
+/* Ces tableaux sont désormais alimentés en temps réel depuis Firestore (voir les
+   écouteurs onSnapshot plus bas) — ils ne sont plus lus depuis localStorage,
+   afin que les données soient partagées entre tous les appareils/navigateurs. */
 let owners = [];
 let reservationsLog = [];
 let adminWallet = {orange:0, mtn:0, wave:0, moov:0};
 let transferLog = [];
-let users = []; // Comptes utilisateurs créés par l'admin
-
-let session = JSON.parse(localStorage.getItem('seonaresi_session') || 'null');
+/* La session (qui est connecté sur CET appareil) reste locale au navigateur : c'est
+   volontaire, chaque appareil garde son propre état de connexion. */
+let session = JSON.parse(localStorage.getItem('seonaresi_session') || 'null'); // {type:'owner', srCode} | {type:'admin'}
 function saveSession(){ localStorage.setItem('seonaresi_session', JSON.stringify(session)); }
 
-let currentDashView = null;
-
-function getOwnerByCode(code){ return owners.find(o => o.srCode === code); }
+/* Vue actuellement affichée dans la modale « Mon espace », pour savoir si on doit
+   la rafraîchir automatiquement quand de nouvelles données arrivent de Firestore. */
+let currentDashView = null; // 'admin' | 'owner-main' | 'owner-other' | null
 
 function onDataChanged(){
   render();
@@ -1524,8 +1450,6 @@ function onDataChanged(){
   if(!dashOverlay.classList.contains('open') || !session) return;
   if(session.type === 'admin' && currentDashView === 'admin'){
     renderAdminDashboard();
-  } else if(session.type === 'conseil' && currentDashView === 'conseil'){
-    renderConseilDashboard();
   } else if(session.type === 'owner' && currentDashView === 'owner-main'){
     renderOwnerDashboard();
   }
@@ -1551,14 +1475,109 @@ db.collection('transferLog').orderBy('createdAt').onSnapshot(snap => {
   onDataChanged();
 }, err => console.error('Erreur Firestore (transferLog) :', err));
 
+db.collection('staffUsers').onSnapshot(snap => {
+  staffUsers = snap.docs.map(d => d.data());
+  onDataChanged();
+}, err => console.error('Erreur Firestore (staffUsers) :', err));
+
 db.collection('meta').doc('adminWallet').onSnapshot(doc => {
   adminWallet = doc.exists ? doc.data() : {orange:0, mtn:0, wave:0, moov:0};
   onDataChanged();
 }, err => console.error('Erreur Firestore (adminWallet) :', err));
 
-// ============================================================
-// AUTH
-// ============================================================
+/* ---- État de navigation de l'espace administrateur (menus / sous-menus) ---- */
+const ADMIN_MENU = [
+  {id:'parametrages', label:'Paramétrages', items:[
+    {id:'gestion-comptes', label:'Gestion des Comptes Utilisateurs'},
+    {id:'droits-privileges', label:'Droits & Privilège'}
+  ]},
+  {id:'inscriptions', label:'Inscriptions', items:[
+    {id:'attente-validation', label:'En attente de validation'}
+  ]},
+  {id:'comptes-proprietaires', label:'Comptes propriétaires', items:[
+    {id:'valides', label:'Validés'}
+  ]},
+  {id:'reservations-paiements', label:'Réservations & paiements', items:[
+    {id:'historique-reservations', label:'Historique des Réservations'},
+    {id:'rapport-activite', label:"Rapport d'activité"}
+  ]},
+  {id:'comptabilite', label:'Comptabilité', items:[
+    {id:'commission', label:'Commission'},
+    {id:'transfert', label:'Transfert'},
+    {id:'historique-comptabilite', label:'Historique'}
+  ]}
+];
+let adminSection = 'gestion-comptes';
+let adminOpenMenu = 'parametrages';
+let editingOwnerSR = null;
+let resetPwSR = null;
+let commissionView = 'portefeuille';
+/* ---- Comptes utilisateurs (équipe admin) & Droits & Privilège ---- */
+let staffUsers = [];
+let creatingStaff = false;
+let editingStaffId = null;
+let resetPwStaffId = null;
+let rightsStaffId = null;
+let rightsDraft = null;
+function defaultPermissions(perm){
+  perm = perm || {};
+  return {
+    inscriptions: Object.assign({enabled:false, voir:false, valider:false}, perm.inscriptions || {}),
+    comptesProprietaires: Object.assign({enabled:false, voirValides:false}, perm.comptesProprietaires || {}),
+    comptabilite: Object.assign({enabled:false, voirTransferts:false, voirCommission:false}, perm.comptabilite || {})
+  };
+}
+function genStaffId(){
+  const used = new Set(staffUsers.map(s => s.id));
+  let id;
+  do { id = 'ST-' + String(Math.floor(100 + Math.random() * 900)); } while(used.has(id));
+  return id;
+}
+function menuIdForSection(sectionId){ const m = ADMIN_MENU.find(mn => mn.items.some(it => it.id === sectionId)); return m ? m.id : ADMIN_MENU[0].id; }
+const OPS = [
+  {id:'orange', label:'Orange Monnaie'},
+  {id:'mtn', label:'MTN Momo'},
+  {id:'wave', label:'Wave'},
+  {id:'moov', label:'Moov Monnaie'}
+];
+
+function getOwnerByCode(code){ return owners.find(o => o.srCode === code); }
+
+function genSRCode(){
+  const used = new Set(LISTINGS.map(l => l.ref).concat(owners.map(o => o.srCode)));
+  let code;
+  do { code = 'SR-' + String(Math.floor(100 + Math.random() * 900)); } while(used.has(code));
+  return code;
+}
+
+function fileToDataURL(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* Réduit la taille des photos de biens (max 1024px de large, JPEG qualité 0.72)
+   avant stockage dans Firestore, dont chaque document est limité à 1 Mo. */
+function fileToCompressedDataURL(file, maxWidth = 1024, quality = 0.72){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = () => { img.onload = () => {
+      const scale = Math.min(1, maxWidth / img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    }; img.onerror = reject; img.src = reader.result; };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 const authOverlay = document.getElementById('authOverlay');
 const authContent = document.getElementById('authContent');
@@ -1582,10 +1601,7 @@ function renderNav(){
   if(session){
     loginBtn.style.display = 'none';
     regBtn.style.display = 'none';
-    let label = '';
-    if(session.type === 'admin') label = 'Administrateur';
-    else if(session.type === 'conseil') label = 'Conseil client';
-    else label = (getOwnerByCode(session.srCode)||{}).prenom || 'Propriétaire';
+    const label = session.type === 'admin' ? 'Administrateur' : ((getOwnerByCode(session.srCode)||{}).prenom || 'Propriétaire');
     const pill = document.createElement('span');
     pill.className = 'session-pill';
     pill.id = 'sessionPill';
@@ -1631,7 +1647,6 @@ function renderAuthBody(tab){
         <select id="loginType">
           <option value="owner">Propriétaire</option>
           <option value="admin">Administrateur</option>
-          <option value="conseil">Conseil client</option>
         </select>
       </div>
       <div class="form-field"><label>Nom d'utilisateur</label><input type="text" id="loginUser"></div>
@@ -1644,7 +1659,6 @@ function renderAuthBody(tab){
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value;
       const errEl = document.getElementById('loginError');
-      
       if(type === 'admin'){
         if(user === ADMIN_ACCOUNT.username && pass === ADMIN_ACCOUNT.password){
           session = {type:'admin'}; saveSession(); closeAuth(); renderNav(); openDashboard();
@@ -1654,17 +1668,6 @@ function renderAuthBody(tab){
         }
         return;
       }
-      
-      if(type === 'conseil'){
-        if(user === CONSEIL_ACCOUNT.username && pass === CONSEIL_ACCOUNT.password){
-          session = {type:'conseil'}; saveSession(); closeAuth(); renderNav(); openDashboard();
-        } else {
-          errEl.textContent = "Identifiants conseil client incorrects.";
-          errEl.classList.add('show');
-        }
-        return;
-      }
-      
       const owner = owners.find(o => o.username === user && o.password === pass);
       if(!owner){
         errEl.textContent = "Nom d'utilisateur ou mot de passe incorrect.";
@@ -1678,7 +1681,7 @@ function renderAuthBody(tab){
     const srCode = genSRCode();
     body.innerHTML = `
       <h3 style="margin-bottom:4px;">Inscription propriétaire</h3>
-      <p style="font-size:13px;color:#6B6A5A;margin-bottom:16px;">Réservée à toute personne disposant d'un bien immobilier à publier.</p>
+      <p style="font-size:13px;color:#6B6A5A;margin-bottom:16px;">Réservée à toute personne disposant d'un bien immobilier à publier. Un code propriétaire unique vous est attribué automatiquement — il apparaîtra sur tous vos biens à la page d'accueil.</p>
       <div class="sr-badge">Code attribué : ${srCode}</div>
       <div class="form-row">
         <div class="form-field"><label>Nom d'utilisateur</label><input type="text" id="regUsername"></div>
@@ -1693,9 +1696,10 @@ function renderAuthBody(tab){
         <div class="form-field"><label>Contact</label><input type="tel" id="regContact" placeholder="Ex : 07 00 00 00 00"></div>
       </div>
       <div class="form-field">
-        <label>Pièce d'identité (CNI recto)</label>
+        <label>Pièce d'identité (CNI recto — png, jpeg, pdf)</label>
         <input type="file" id="regCNI" accept=".png,.jpg,.jpeg,.pdf" style="display:none;">
         <div class="file-drop" id="regCNIDrop">Cliquez pour joindre votre CNI (recto)</div>
+        <span class="hint">Sans CNI jointe, le compte reste « non validé » et ne peut pas publier de bien.</span>
       </div>
       <div class="res-error" id="regError"></div>
       <button class="btn-validate" id="btnDoRegister">S'inscrire</button>
@@ -1726,7 +1730,7 @@ function renderAuthBody(tab){
         return;
       }
       if(!cniFile){
-        errEl.textContent = "La pièce d'identité (CNI) est obligatoire.";
+        errEl.textContent = "La pièce d'identité (CNI) est obligatoire — sans elle le compte ne peut pas être validé.";
         errEl.classList.add('show');
         return;
       }
@@ -1739,15 +1743,12 @@ function renderAuthBody(tab){
           srCode, username, password, nom, prenom, email, contact,
           cniName: cniFile.name, cniData,
           validated: false,
-          paymentOperators: [],
-          paymentNumbers: [],
           paymentOperator: '', paymentPhone: '',
-          balance: 0,
-          blocked: false
+          balance: 0
         });
       } catch(err){
         console.error('Erreur Firestore (inscription) :', err);
-        errEl.textContent = "L'inscription n'a pas pu être enregistrée.";
+        errEl.textContent = "L'inscription n'a pas pu être enregistrée (connexion à la base indisponible). Réessayez.";
         errEl.classList.add('show');
         document.getElementById('btnDoRegister').disabled = false;
         document.getElementById('btnDoRegister').textContent = "S'inscrire";
@@ -1758,7 +1759,7 @@ function renderAuthBody(tab){
         <div class="receipt-wrap" style="text-align:center;">
           <div class="sr-badge">${srCode}</div>
           <h3 style="margin-bottom:10px;">Inscription envoyée</h3>
-          <p style="font-size:14px;color:#54533F;line-height:1.6;">Votre compte propriétaire a été créé avec le code <strong>${srCode}</strong>. Il sera validé après vérification de votre CNI par un administrateur.</p>
+          <p style="font-size:14px;color:#54533F;line-height:1.6;">Votre compte propriétaire a été créé avec le code <strong>${srCode}</strong>. Il sera <strong>validé</strong> après vérification de votre CNI par un administrateur. Une fois validé, vous pourrez vous connecter, renseigner votre moyen de paiement et ajouter les images de vos biens (7 maximum par bien).</p>
           <button class="btn-validate" style="margin-top:16px;" id="btnAuthDoneClose">Fermer</button>
         </div>
       `;
@@ -1768,112 +1769,19 @@ function renderAuthBody(tab){
   }
 }
 
-function genSRCode(){
-  const used = new Set(LISTINGS.map(l => l.ref).concat(owners.map(o => o.srCode)));
-  let code;
-  do { code = 'SR-' + String(Math.floor(100 + Math.random() * 900)); } while(used.has(code));
-  return code;
-}
-
-function fileToDataURL(file){
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-function fileToCompressedDataURL(file, maxWidth = 1024, quality = 0.72){
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const reader = new FileReader();
-    reader.onload = () => { img.onload = () => {
-      const scale = Math.min(1, maxWidth / img.width);
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL('image/jpeg', quality));
-    }; img.onerror = reject; img.src = reader.result; };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-// ============================================================
-// DASHBOARD
-// ============================================================
-
 function openDashboard(){
   if(!session){ openAuthModal('login'); return; }
   dashOverlay.classList.add('open');
-  
-  if(session.type === 'admin') {
-    dashContent.classList.add('admin-wide');
-    renderAdminDashboard();
-  } else if(session.type === 'conseil') {
-    dashContent.classList.remove('admin-wide');
-    renderConseilDashboard();
-  } else {
-    dashContent.classList.remove('admin-wide');
-    renderOwnerDashboard();
-  }
+  dashContent.classList.toggle('admin-wide', session.type === 'admin');
+  if(session.type === 'admin') renderAdminDashboard();
+  else renderOwnerDashboard();
 }
-
-// ============================================================
-// DASHBOARD CONSEIL CLIENT
-// ============================================================
-
-function renderConseilDashboard(){
-  currentDashView = 'conseil';
-  dashContent.innerHTML = `
-    <button class="modal-close" id="dashClose">✕</button>
-    <div class="receipt-wrap">
-      <h3 style="margin-bottom:4px;">Espace Conseil Client</h3>
-      <p style="font-size:13px;color:#6B6A5A;margin-bottom:20px;">Accès aux réservations et aux clients.</p>
-      
-      <div class="dash-section">
-        <h4>Réservations en cours</h4>
-        ${reservationsLog.length === 0 ? 
-          '<div class="empty-note">Aucune réservation en cours.</div>' :
-          reservationsLog.slice().reverse().slice(0, 10).map(r => `
-            <div class="dash-card">
-              <div>
-                <strong>${r.ref}</strong> — ${r.title}
-                <div class="meta">${r.dateStr} · Client : ${r.clientName}</div>
-                <div class="meta">Montant : ${money(r.due)} · ${r.operator}</div>
-              </div>
-              <span class="status-pill validated">✅ Confirmé</span>
-            </div>
-          `).join('')
-        }
-      </div>
-      
-      <div class="dash-section">
-        <h4>Statistiques</h4>
-        <div class="stat-grid">
-          <div class="stat-card"><div class="lbl">Total réservations</div><div class="val">${reservationsLog.length}</div></div>
-          <div class="stat-card"><div class="lbl">Total encaissé</div><div class="val">${money(reservationsLog.reduce((a,r) => a + (r.due||0), 0))}</div></div>
-          <div class="stat-card"><div class="lbl">Propriétaires</div><div class="val">${owners.filter(o => o.validated).length}</div></div>
-        </div>
-      </div>
-    </div>
-  `;
-  document.getElementById('dashClose').addEventListener('click', closeDash);
-}
-
-// ============================================================
-// DASHBOARD PROPRIÉTAIRE
-// ============================================================
 
 function renderOwnerDashboard(){
   currentDashView = 'owner-main';
   const owner = getOwnerByCode(session.srCode);
   if(!owner){ session = null; saveSession(); renderNav(); closeDash(); return; }
   const myListings = ownerListings.filter(p => p.ownerCode === owner.srCode);
-  
   dashContent.innerHTML = `
     <button class="modal-close" id="dashClose">✕</button>
     <div class="receipt-wrap">
@@ -1885,249 +1793,78 @@ function renderOwnerDashboard(){
         <span class="status-pill ${owner.validated ? 'validated' : 'pending'}">${owner.validated ? '✓ Compte validé' : 'En attente de validation (CNI)'}</span>
       </div>
 
-      ${!owner.validated ? `<div class="empty-note">Votre compte sera activé dès qu'un administrateur aura vérifié votre pièce d'identité (${owner.cniName}).</div>` : ''}
+      ${!owner.validated ? `<div class="empty-note">Votre compte sera activé dès qu'un administrateur aura vérifié votre pièce d'identité (${owner.cniName}). Vous pourrez ensuite renseigner votre moyen de paiement et ajouter les images de vos biens.</div>` : ''}
 
-      <div class="auth-tabs" id="ownerTabs">
-        <button type="button" class="auth-tab active" data-owner-tab="biens">Mes Biens</button>
-        <button type="button" class="auth-tab" data-owner-tab="reservations">Biens Réservés</button>
-        <button type="button" class="auth-tab" data-owner-tab="paiements">Moyen de paiement</button>
+      <div class="dash-section">
+        <h4>Moyen de paiement (réception des loyers)</h4>
+        <p style="font-size:12.5px;color:#6B6A5A;margin-bottom:10px;">Ce numéro est affiché sur vos biens à la page d'accueil et reçoit automatiquement chaque paiement effectué par un client.</p>
+        <div class="form-row">
+          <div class="form-field"><label>Opérateur</label>
+            <select id="ownPayOperator" ${!owner.validated?'disabled':''}>
+              <option value="">Choisir…</option>
+              <option value="orange" ${owner.paymentOperator==='orange'?'selected':''}>Orange Monnaie</option>
+              <option value="mtn" ${owner.paymentOperator==='mtn'?'selected':''}>MTN Momo</option>
+              <option value="wave" ${owner.paymentOperator==='wave'?'selected':''}>Wave</option>
+              <option value="moov" ${owner.paymentOperator==='moov'?'selected':''}>Moov Monnaie</option>
+            </select>
+          </div>
+          <div class="form-field"><label>Numéro</label><input type="tel" id="ownPayPhone" value="${owner.paymentPhone||''}" ${!owner.validated?'disabled':''} placeholder="Ex : 07 47 37 79 39"></div>
+        </div>
+        <button class="dash-btn primary" id="btnSavePay" ${!owner.validated?'disabled':''}>Enregistrer le moyen de paiement</button>
       </div>
-      
-      <div id="ownerTabContent">
-        <!-- Tab 1: Mes Biens -->
-        <div class="owner-tab-panel" id="tab-biens" style="display:block;">
-          <div class="dash-section">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
-              <h4>Mes biens (${myListings.length})</h4>
-              <div style="display:flex;gap:8px;">
-                <div class="form-field" style="margin:0;">
-                  <input type="text" id="propertySearch" placeholder="Rechercher un bien..." style="padding:6px 10px;font-size:13px;width:200px;border:1px solid var(--line);border-radius:8px;">
-                </div>
-                <button class="dash-btn primary" id="btnAddProperty" ${!owner.validated?'disabled':''}>+ Ajouter un bien</button>
-              </div>
-            </div>
-            ${!owner.validated ? '<div class="empty-note">Ajout de biens disponible après validation du compte.</div>' : ''}
-            <div id="ownerPropsList">
-              ${myListings.length === 0 ? '<div class="empty-note">Aucun bien ajouté pour le moment.</div>' : myListings.map(p => `
-                <div class="dash-card" data-property-ref="${p.ref}">
-                  <div>
-                    <strong>${p.title}</strong> — ${p.ref}
-                    <div class="meta">${p.city} · ${money(p.price)}/mois · ${p.images.length}/7 images
-                      ${reservedIds.includes(p.id) ? '<span class="status-pill validated" style="margin-left:8px;">Réservé</span>' : ''}
-                    </div>
-                  </div>
-                  <button class="dash-btn" data-add-img="${p.id}">Ajouter les Images</button>
-                </div>
-              `).join('')}
-            </div>
-          </div>
+
+      <div class="dash-section">
+        <h4>Portefeuille (après commission plateforme de 500 FCFA / paiement)</h4>
+        <div class="wallet-card" style="max-width:200px;">
+          <div class="op">Solde reçu</div>
+          <div class="amt">${money(owner.balance||0)}</div>
         </div>
-        
-        <!-- Tab 2: Biens Réservés -->
-        <div class="owner-tab-panel" id="tab-reservations" style="display:none;">
-          <div class="dash-section">
-            <h4>Biens déjà réservés</h4>
-            ${myListings.filter(p => reservedIds.includes(p.id)).length === 0 ? 
-              '<div class="empty-note">Aucun de vos biens n\'est actuellement réservé.</div>' : 
-              myListings.filter(p => reservedIds.includes(p.id)).map(p => `
-                <div class="dash-card">
-                  <div>
-                    <strong>${p.title}</strong> — ${p.ref}
-                    <div class="meta">${p.city} · ${money(p.price)}/mois</div>
-                    <div class="meta" style="color:var(--clay);">⚠️ Bien réservé</div>
-                  </div>
-                  <span class="status-pill validated">Réservé</span>
-                </div>
-              `).join('')
-            }
-          </div>
+      </div>
+
+      <div class="dash-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <h4>Mes biens (${myListings.length})</h4>
+          <button class="dash-btn primary" id="btnAddProperty" ${!owner.validated?'disabled':''}>+ Ajouter un bien</button>
         </div>
-        
-        <!-- Tab 3: Moyen de paiement -->
-        <div class="owner-tab-panel" id="tab-paiements" style="display:none;">
-          <div class="dash-section">
-            <h4>Moyen de paiement (réception des loyers)</h4>
-            <p style="font-size:12.5px;color:#6B6A5A;margin-bottom:10px;">Sélectionnez un ou plusieurs opérateurs et numéros pour recevoir vos paiements.</p>
-            
-            <!-- Opérateurs multiples -->
-            <div class="form-field">
-              <label>Opérateurs</label>
-              <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;">
-                ${['orange','mtn','wave','moov'].map(op => `
-                  <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;">
-                    <input type="checkbox" name="payOperators" value="${op}" ${owner.paymentOperators && owner.paymentOperators.includes(op) ? 'checked' : ''} ${!owner.validated?'disabled':''}>
-                    ${op.charAt(0).toUpperCase() + op.slice(1)}
-                  </label>
-                `).join('')}
+        ${!owner.validated ? '<div class="empty-note">Ajout de biens disponible après validation du compte.</div>' : ''}
+        <div id="ownerPropsList">
+          ${myListings.length === 0 ? '<div class="empty-note">Aucun bien ajouté pour le moment.</div>' : myListings.map(p => `
+            <div class="dash-card">
+              <div>
+                <strong>${p.title}</strong> — ${p.ref}
+                <div class="meta">${p.city} · ${money(p.price)}/mois · ${p.images.length}/7 images
+                  ${reservedIds.includes(p.id) ? '<span class="status-pill validated" style="margin-left:8px;">Réservé</span>' : ''}
+                </div>
               </div>
+              <button class="dash-btn" data-add-img="${p.id}">Ajouter les Images</button>
             </div>
-            
-            <!-- Numéros multiples -->
-            <div class="form-field">
-              <label>Numéros de paiement</label>
-              <div id="paymentNumbersList">
-                ${owner.paymentNumbers && owner.paymentNumbers.length ? 
-                  owner.paymentNumbers.map((num, index) => `
-                    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
-                      <input type="tel" class="payment-number-input" value="${num}" placeholder="Ex : 07 47 37 79 39" ${!owner.validated?'disabled':''} style="flex:1;padding:8px 12px;border:1px solid var(--line);border-radius:8px;">
-                      <button type="button" class="dash-btn danger" data-remove-payment="${index}" ${!owner.validated?'disabled':''}>✕</button>
-                    </div>
-                  `).join('') :
-                  `<div class="empty-note">Aucun numéro de paiement enregistré.</div>`
-                }
-              </div>
-              <button class="dash-btn" id="addPaymentNumber" ${!owner.validated?'disabled':''}>+ Ajouter un numéro</button>
-            </div>
-            
-            <button class="dash-btn primary" id="btnSavePay" ${!owner.validated?'disabled':''}>Enregistrer les moyens de paiement</button>
-          </div>
-          
-          <!-- Historique des paiements -->
-          <div class="dash-section">
-            <h4>Historique des paiements</h4>
-            <div class="auth-tabs" style="margin-bottom:10px;">
-              <button type="button" class="auth-tab active" data-payment-history="all">Tous</button>
-              <button type="button" class="auth-tab" data-payment-history="incoming">Reçus</button>
-            </div>
-            <div id="paymentHistoryList">
-              ${reservationsLog.filter(r => r.ref && r.ref.startsWith(owner.srCode)).length === 0 ?
-                '<div class="empty-note">Aucun paiement enregistré pour le moment.</div>' :
-                reservationsLog.filter(r => r.ref && r.ref.startsWith(owner.srCode)).slice().reverse().map(r => `
-                  <div class="dash-card">
-                    <div>
-                      <strong>${r.ref}</strong> — ${r.title}
-                      <div class="meta">${r.dateStr} · Client : ${r.clientName}</div>
-                      <div class="meta">Montant : ${money(r.due)} · Commission : ${money(r.fee)} · Reçu : ${money(r.ownerNet)}</div>
-                    </div>
-                    <div class="amt" style="font-family:'Fraunces',serif;font-weight:600;color:var(--teal);">${money(r.ownerNet)}</div>
-                  </div>
-                `).join('')
-              }
-            </div>
-          </div>
+          `).join('')}
         </div>
       </div>
     </div>
   `;
-
-  // Événements des onglets
-  document.querySelectorAll('[data-owner-tab]').forEach(tab => {
-    tab.addEventListener('click', function() {
-      document.querySelectorAll('[data-owner-tab]').forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      document.querySelectorAll('.owner-tab-panel').forEach(p => p.style.display = 'none');
-      const panel = document.getElementById(`tab-${this.dataset.ownerTab}`);
-      if(panel) panel.style.display = 'block';
-    });
-  });
-
-  // Recherche de biens
-  const searchInput = document.getElementById('propertySearch');
-  if(searchInput) {
-    searchInput.addEventListener('input', function() {
-      const searchTerm = this.value.toLowerCase();
-      document.querySelectorAll('#ownerPropsList .dash-card').forEach(card => {
-        const text = card.textContent.toLowerCase();
-        card.style.display = text.includes(searchTerm) ? 'flex' : 'none';
-      });
-    });
-  }
-
-  // Ajouter un numéro de paiement
-  const addPaymentBtn = document.getElementById('addPaymentNumber');
-  if(addPaymentBtn) {
-    addPaymentBtn.addEventListener('click', function() {
-      const container = document.getElementById('paymentNumbersList');
-      const emptyNote = container.querySelector('.empty-note');
-      if(emptyNote) emptyNote.remove();
-      
-      const index = container.querySelectorAll('.payment-number-input').length;
-      const div = document.createElement('div');
-      div.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;align-items:center;';
-      div.innerHTML = `
-        <input type="tel" class="payment-number-input" placeholder="Ex : 07 47 37 79 39" style="flex:1;padding:8px 12px;border:1px solid var(--line);border-radius:8px;">
-        <button type="button" class="dash-btn danger" data-remove-payment="${index}">✕</button>
-      `;
-      container.appendChild(div);
-      div.querySelector('[data-remove-payment]').addEventListener('click', function() { div.remove(); });
-    });
-  }
-
-  // Supprimer un numéro de paiement
-  document.querySelectorAll('[data-remove-payment]').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const index = parseInt(this.dataset.removePayment);
-      const container = document.getElementById('paymentNumbersList');
-      const items = container.querySelectorAll('div');
-      if(items.length > 1 && index < items.length) {
-        items[index].remove();
-      } else if(items.length === 1) {
-        items[0].innerHTML = '<div class="empty-note">Aucun numéro de paiement enregistré.</div>';
-      }
-    });
-  });
-
-  // Historique des paiements - filtres
-  document.querySelectorAll('[data-payment-history]').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('[data-payment-history]').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
-
   document.getElementById('dashClose').addEventListener('click', closeDash);
-  
   const savePayBtn = document.getElementById('btnSavePay');
-  if(savePayBtn) {
-    savePayBtn.addEventListener('click', async function() {
-      const paymentOperators = Array.from(document.querySelectorAll('input[name="payOperators"]:checked')).map(el => el.value);
-      const paymentNumbers = Array.from(document.querySelectorAll('.payment-number-input')).map(el => el.value.trim()).filter(v => v);
-      
-      this.disabled = true;
-      this.textContent = 'Enregistrement…';
-      
-      try {
-        await db.collection('owners').doc(owner.srCode).update({
-          paymentOperators: paymentOperators,
-          paymentNumbers: paymentNumbers,
-          paymentOperator: paymentOperators.join(','),
-          paymentPhone: paymentNumbers.join(',')
-        });
-        
-        const batch = db.batch();
-        ownerListings.filter(p => p.ownerCode === owner.srCode).forEach(p => {
-          batch.update(db.collection('ownerListings').doc(String(p.id)), {
-            payOperators: paymentOperators,
-            payPhones: paymentNumbers,
-            payOperator: paymentOperators.join(','),
-            phone: paymentNumbers.join(',')
-          });
-        });
-        await batch.commit();
-        alert('Moyens de paiement enregistrés avec succès !');
-      } catch(err) {
-        console.error('Erreur Firestore (moyens de paiement) :', err);
-        alert('Erreur lors de l\'enregistrement des moyens de paiement.');
-      }
-      
-      this.disabled = false;
-      this.textContent = 'Enregistrer les moyens de paiement';
+  if(savePayBtn) savePayBtn.addEventListener('click', async () => {
+    const paymentOperator = document.getElementById('ownPayOperator').value;
+    const paymentPhone = document.getElementById('ownPayPhone').value.trim();
+    savePayBtn.disabled = true;
+    savePayBtn.textContent = 'Enregistrement…';
+    const batch = db.batch();
+    batch.update(db.collection('owners').doc(owner.srCode), {paymentOperator, paymentPhone});
+    ownerListings.filter(p => p.ownerCode === owner.srCode).forEach(p => {
+      batch.update(db.collection('ownerListings').doc(String(p.id)), {payOperator: paymentOperator, phone: paymentPhone});
     });
-  }
-  
+    try { await batch.commit(); } catch(err){ console.error('Erreur Firestore (moyen de paiement) :', err); }
+  });
   const addPropBtn = document.getElementById('btnAddProperty');
   if(addPropBtn) addPropBtn.addEventListener('click', () => openPropertyForm(owner));
-  
   document.getElementById('ownerPropsList').addEventListener('click', e => {
     const btn = e.target.closest('[data-add-img]');
     if(!btn) return;
     openImageUpload(Number(btn.dataset.addImg));
   });
 }
-
-// ============================================================
-// FORMULAIRES PROPRIÉTAIRE
-// ============================================================
 
 function openPropertyForm(owner){
   currentDashView = 'owner-other';
@@ -2178,7 +1915,7 @@ function openPropertyForm(owner){
     const colors = ['#3A6F62','#B5562F','#C79A3E'];
     const prop = {
       id: Date.now(),
-      ref: owner.srCode + '-' + String(Math.floor(100 + Math.random() * 900)),
+      ref: owner.srCode,
       ownerCode: owner.srCode,
       type, title, city, price, rooms, baths, area,
       desc: desc || 'Bien proposé par un propriétaire vérifié SEONA RESI.',
@@ -2195,7 +1932,7 @@ function openPropertyForm(owner){
       openImageUpload(prop.id);
     } catch(err){
       console.error('Erreur Firestore (création du bien) :', err);
-      errEl.textContent = "Le bien n'a pas pu être enregistré.";
+      errEl.textContent = "Le bien n'a pas pu être enregistré (connexion à la base indisponible). Réessayez.";
       errEl.classList.add('show');
       btn.disabled = false; btn.textContent = 'Créer le bien';
     }
@@ -2211,12 +1948,12 @@ function openImageUpload(propId){
     <div class="receipt-wrap">
       <h3 style="margin-bottom:4px;">Ajouter les Images</h3>
       <div class="sr-badge" style="margin-bottom:10px;">${prop.ref}</div>
-      <p style="font-size:12.5px;color:#6B6A5A;margin-bottom:14px;">${prop.title} — maximum 7 images par bien.</p>
+      <p style="font-size:12.5px;color:#6B6A5A;margin-bottom:14px;">${prop.title} — maximum 7 images par bien. Elles seront visibles par les clients sur la page d'accueil dès leur ajout.</p>
       <div class="img-thumbs" id="imgThumbs">
         ${prop.images.length ? prop.images.map(src => `<img src="${src}">`).join('') : '<span class="empty-note">Aucune image pour le moment.</span>'}
       </div>
       <input type="file" id="imgInput" accept="image/png,image/jpeg" multiple style="display:none;">
-      <div class="file-drop" id="imgDrop">${prop.images.length >= 7 ? 'Limite de 7 images atteinte' : 'Cliquez pour ajouter des images (PNG / JPEG)'}</div>
+      <div class="file-drop ${prop.images.length >= 7 ? '' : ''}" id="imgDrop">${prop.images.length >= 7 ? 'Limite de 7 images atteinte' : 'Cliquez pour ajouter des images (PNG / JPEG)'}</div>
       <div class="res-error" id="imgError"></div>
       <button type="button" class="btn-back-link" id="btnBackToDash2">← Retour à mon espace</button>
     </div>
@@ -2231,7 +1968,7 @@ function openImageUpload(propId){
       const remaining = 7 - prop.images.length;
       const errEl = document.getElementById('imgError');
       if(files.length > remaining){
-        errEl.textContent = `Vous ne pouvez ajouter que ${remaining} image(s) supplémentaire(s).`;
+        errEl.textContent = `Vous ne pouvez ajouter que ${remaining} image(s) supplémentaire(s) (maximum 7 par bien).`;
         errEl.classList.add('show');
       }
       const toAdd = files.slice(0, remaining);
@@ -2244,7 +1981,7 @@ function openImageUpload(propId){
         await db.collection('ownerListings').doc(String(prop.id)).update({images: prop.images});
       } catch(err){
         console.error('Erreur Firestore (images) :', err);
-        errEl.textContent = "Les images n'ont pas pu être enregistrées.";
+        errEl.textContent = "Les images n'ont pas pu être enregistrées (connexion à la base indisponible, ou photos trop volumineuses). Réessayez avec moins d'images à la fois.";
         errEl.classList.add('show');
       }
       openImageUpload(propId);
@@ -2252,52 +1989,11 @@ function openImageUpload(propId){
   }
 }
 
-// ============================================================
-// DASHBOARD ADMINISTRATEUR
-// ============================================================
-
-const ADMIN_MENU = [
-  {id:'parametrages', label:'Paramétrages', items:[
-    {id:'gestion-comptes', label:'Gestion des Comptes Utilisateurs'}
-  ]},
-  {id:'inscriptions', label:'Inscriptions', items:[
-    {id:'attente-validation', label:'En attente de validation'}
-  ]},
-  {id:'comptes-proprietaires', label:'Comptes propriétaires', items:[
-    {id:'valides', label:'Validés'}
-  ]},
-  {id:'reservations-paiements', label:'Réservations & paiements', items:[
-    {id:'historique-reservations', label:'Historique des Réservations'},
-    {id:'rapport-activite', label:"Rapport d'activité"}
-  ]},
-  {id:'comptabilite', label:'Comptabilité', items:[
-    {id:'commission', label:'Commission'},
-    {id:'transfert', label:'Transfert'},
-    {id:'historique-comptabilite', label:'Historique'}
-  ]}
-];
-
-let adminSection = 'gestion-comptes';
-let adminOpenMenu = 'parametrages';
-let editingOwnerSR = null;
-let resetPwSR = null;
-let commissionView = 'portefeuille';
-
-function menuIdForSection(sectionId){ const m = ADMIN_MENU.find(mn => mn.items.some(it => it.id === sectionId)); return m ? m.id : ADMIN_MENU[0].id; }
-function adminMenuCount(menuId){ if(menuId === 'reservations-paiements') return ` (${reservationsLog.length})`; return ''; }
-function adminSubCount(sectionId){ if(sectionId === 'valides') return ` (${owners.filter(o => o.validated).length})`; return ''; }
-
-const OPS = [
-  {id:'orange', label:'Orange Monnaie'},
-  {id:'mtn', label:'MTN Momo'},
-  {id:'wave', label:'Wave'},
-  {id:'moov', label:'Moov Monnaie'}
-];
+/* ==================== Espace administrateur : menu déroulant + sous-menus ==================== */
 
 function renderAdminDashboard(){
   currentDashView = 'admin';
   adminOpenMenu = menuIdForSection(adminSection);
-  
   dashContent.innerHTML = `
     <button class="modal-close" id="dashCloseA">✕</button>
     <div class="receipt-wrap">
@@ -2317,48 +2013,46 @@ function renderAdminDashboard(){
               </div>
             </div>
           `).join('')}
-          <!-- Menu Comptes utilisateurs -->
-          <div class="admin-menu" data-menu="users">
-            <button type="button" class="admin-menu-btn" data-toggle-menu="users">
-              <span>Comptes utilisateurs</span>
-              <svg class="chev" viewBox="0 0 24 24" width="14" height="14"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <div class="admin-submenu">
-              <button type="button" class="admin-sub-btn" data-section="utilisateurs">Utilisateurs</button>
-            </div>
-          </div>
         </nav>
         <div class="admin-content" id="adminContent">${adminSectionHTML(adminSection)}</div>
       </div>
     </div>
   `;
-  
   document.getElementById('dashCloseA').addEventListener('click', closeDash);
 
   document.getElementById('adminSidebar').addEventListener('click', e => {
     const menuBtn = e.target.closest('[data-toggle-menu]');
     const subBtn = e.target.closest('[data-section]');
     if(menuBtn){
-      const menuId = menuBtn.dataset.toggleMenu;
-      adminOpenMenu = (adminOpenMenu === menuId) ? null : menuId;
+      adminOpenMenu = (adminOpenMenu === menuBtn.dataset.toggleMenu) ? null : menuBtn.dataset.toggleMenu;
       document.querySelectorAll('.admin-menu').forEach(m => m.classList.toggle('open', m.dataset.menu === adminOpenMenu));
       return;
     }
     if(subBtn){
       adminSection = subBtn.dataset.section;
       editingOwnerSR = null; resetPwSR = null; commissionView = 'portefeuille';
+      creatingStaff = false; editingStaffId = null; resetPwStaffId = null; rightsDraft = null;
       document.querySelectorAll('.admin-sub-btn').forEach(b => b.classList.toggle('active', b.dataset.section === adminSection));
       document.getElementById('adminContent').innerHTML = adminSectionHTML(adminSection);
-      bindAdminContentEvents();
     }
   });
-  
+
   bindAdminContentEvents();
+}
+
+function adminMenuCount(menuId){
+  if(menuId === 'reservations-paiements') return ` (${reservationsLog.length})`;
+  return '';
+}
+function adminSubCount(sectionId){
+  if(sectionId === 'valides') return ` (${owners.filter(o => o.validated).length})`;
+  return '';
 }
 
 function adminSectionHTML(sectionId){
   switch(sectionId){
     case 'gestion-comptes': return sectionGestionComptes();
+    case 'droits-privileges': return sectionDroitsPrivileges();
     case 'attente-validation': return sectionAttenteValidation();
     case 'valides': return sectionComptesValides();
     case 'historique-reservations': return sectionHistoriqueReservations();
@@ -2366,15 +2060,90 @@ function adminSectionHTML(sectionId){
     case 'commission': return sectionCommission();
     case 'transfert': return sectionTransfert();
     case 'historique-comptabilite': return sectionHistoriqueComptabilite();
-    case 'utilisateurs': return sectionUtilisateurs();
     default: return '<div class="empty-note">Choisissez une rubrique dans le menu.</div>';
   }
 }
 
+/* ---- Paramétrages > Gestion des Comptes Utilisateurs ---- */
+function staffCardHTML(s){
+  if(editingStaffId === s.id){
+    return `
+      <div class="dash-card">
+        <form class="edit-owner-form" data-edit-staff-form="${s.id}">
+          <div class="form-row">
+            <div class="form-field"><label>Rôle / intitulé</label><input type="text" name="role" value="${s.role}"></div>
+            <div class="form-field"><label>Nom d'utilisateur</label><input type="text" name="username" value="${s.username}"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button type="submit" class="dash-btn primary">Enregistrer</button>
+            <button type="button" class="dash-btn" data-cancel-edit-staff="${s.id}">Annuler</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+  if(resetPwStaffId === s.id){
+    return `
+      <div class="dash-card">
+        <form class="edit-owner-form" data-pw-staff-form="${s.id}">
+          <div class="sr-badge" style="margin-bottom:10px;">${s.role} — ${s.username}</div>
+          <div class="form-field"><label>Nouveau mot de passe</label><input type="text" name="password" placeholder="Nouveau mot de passe" required></div>
+          <div style="display:flex;gap:8px;">
+            <button type="submit" class="dash-btn primary">Enregistrer le mot de passe</button>
+            <button type="button" class="dash-btn" data-cancel-pw-staff="${s.id}">Annuler</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+  return `
+    <div class="dash-card">
+      <div>
+        <strong class="staff-role">${s.role}</strong>
+        <div class="meta">Identifiant : ${s.username}</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="icon-btn key" title="Réinitialiser le mot de passe" data-resetpw-staff="${s.id}">🔑</button>
+        <button type="button" class="icon-btn" title="Modifier" data-edit-staff="${s.id}">✎</button>
+        <button type="button" class="icon-btn danger" title="Supprimer" data-delete-staff="${s.id}">🗑</button>
+      </div>
+    </div>
+  `;
+}
+
+function staffCreateFormHTML(){
+  return `
+    <div class="dash-card">
+      <form id="staffCreateForm" style="width:100%;">
+        <div class="form-row">
+          <div class="form-field"><label>Rôle / intitulé du compte</label><input type="text" name="role" placeholder="Ex : Gérant de l'appli « conseil client »" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label>Nom d'utilisateur</label><input type="text" name="username" required></div>
+          <div class="form-field"><label>Mot de passe</label><input type="text" name="password" required></div>
+        </div>
+        <div class="res-error" id="staffCreateError"></div>
+        <div style="display:flex;gap:8px;">
+          <button type="submit" class="dash-btn primary">Créer le compte</button>
+          <button type="button" class="dash-btn" id="btnCancelAddStaff">Annuler</button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
 function sectionGestionComptes(){
   return `
-    <h4>Gestion des comptes utilisateurs</h4>
-    <p class="sub-hint">Réinitialisez un mot de passe, modifiez les informations d'un propriétaire ou bloquez/supprimez son compte.</p>
+    <div class="section-head-row">
+      <h4>Comptes utilisateurs</h4>
+      <button type="button" class="staff-add-btn" id="btnAddStaff" title="Créer un utilisateur">+</button>
+    </div>
+    <p class="sub-hint">Créez des comptes pour votre équipe (ex. Gérant de l'appli « conseil client »), puis définissez leurs accès dans « Droits &amp; Privilège ».</p>
+    ${creatingStaff ? staffCreateFormHTML() : ''}
+    ${staffUsers.length === 0 && !creatingStaff ? '<div class="empty-note">Aucun compte utilisateur pour le moment.</div>' : staffUsers.map(s => staffCardHTML(s)).join('')}
+
+    <h4 style="margin-top:26px;">Comptes propriétaires</h4>
+    <p class="sub-hint">Réinitialisez un mot de passe, modifiez les informations d'un propriétaire ou supprimez son compte.</p>
     ${owners.length === 0 ? '<div class="empty-note">Aucun compte propriétaire pour le moment.</div>' : owners.map(o => {
       if(editingOwnerSR === o.srCode){
         return `
@@ -2415,11 +2184,9 @@ function sectionGestionComptes(){
           <div>
             <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
             <span class="status-pill ${o.validated ? 'validated' : 'pending'}" style="margin-left:6px;">${o.validated ? 'Validé' : 'En attente'}</span>
-            ${o.blocked ? '<span class="status-pill pending" style="margin-left:6px;">🚫 Bloqué</span>' : ''}
             <div class="meta">Identifiant : ${o.username} · ${o.email} · ${o.contact}</div>
           </div>
           <div style="display:flex;gap:8px;">
-            <button type="button" class="dash-btn ${o.blocked ? 'primary' : 'danger'}" data-toggle-block="${o.srCode}">${o.blocked ? 'Débloquer' : 'Bloquer'}</button>
             <button type="button" class="icon-btn key" title="Réinitialiser le mot de passe" data-resetpw-owner="${o.srCode}">🔑</button>
             <button type="button" class="icon-btn" title="Modifier" data-edit-owner="${o.srCode}">✎</button>
             <button type="button" class="icon-btn danger" title="Supprimer" data-delete-owner="${o.srCode}">🗑</button>
@@ -2430,16 +2197,81 @@ function sectionGestionComptes(){
   `;
 }
 
+/* ---- Paramétrages > Droits & Privilège ---- */
+function sectionDroitsPrivileges(){
+  if(staffUsers.length === 0){
+    return `
+      <h4>Droits &amp; Privilège</h4>
+      <p class="sub-hint">Définissez les rubriques et actions accessibles à chaque compte utilisateur.</p>
+      <div class="empty-note">Aucun compte utilisateur créé pour le moment. Rendez-vous dans « Gestion des Comptes Utilisateurs » pour en créer un.</div>
+    `;
+  }
+  if(!rightsStaffId || !staffUsers.find(s => s.id === rightsStaffId)){
+    rightsStaffId = staffUsers[0].id;
+    rightsDraft = null;
+  }
+  const s = staffUsers.find(x => x.id === rightsStaffId);
+  if(!rightsDraft) rightsDraft = defaultPermissions(s.permissions);
+  const p = rightsDraft;
+
+  return `
+    <h4>Droits &amp; Privilège</h4>
+    <p class="sub-hint">Choisissez un compte utilisateur, activez les rubriques auxquelles il a accès, puis cochez les actions autorisées.</p>
+
+    <div class="form-field" style="max-width:360px;margin-bottom:18px;">
+      <label>Compte utilisateur</label>
+      <select class="staff-select" id="rightsStaffSelect">
+        ${staffUsers.map(u => `<option value="${u.id}" ${u.id === rightsStaffId ? 'selected' : ''}>${u.role} — ${u.username}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="right-group">
+      <div class="right-group-head">
+        <strong>Inscriptions</strong>
+        <label class="switch"><input type="checkbox" data-right-toggle="inscriptions" ${p.inscriptions.enabled ? 'checked' : ''}><span class="slider"></span></label>
+      </div>
+      <div class="right-items">
+        <label class="right-item ${p.inscriptions.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="inscriptions.voir" ${p.inscriptions.voir ? 'checked' : ''}> Voir les inscriptions</label>
+        <label class="right-item ${p.inscriptions.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="inscriptions.valider" ${p.inscriptions.valider ? 'checked' : ''}> Valider les inscriptions</label>
+      </div>
+    </div>
+
+    <div class="right-group">
+      <div class="right-group-head">
+        <strong>Comptes Propriétaires</strong>
+        <label class="switch"><input type="checkbox" data-right-toggle="comptesProprietaires" ${p.comptesProprietaires.enabled ? 'checked' : ''}><span class="slider"></span></label>
+      </div>
+      <div class="right-items">
+        <label class="right-item ${p.comptesProprietaires.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptesProprietaires.voirValides" ${p.comptesProprietaires.voirValides ? 'checked' : ''}> Voir les comptes Validés</label>
+      </div>
+    </div>
+
+    <div class="right-group">
+      <div class="right-group-head">
+        <strong>Comptabilité</strong>
+        <label class="switch"><input type="checkbox" data-right-toggle="comptabilite" ${p.comptabilite.enabled ? 'checked' : ''}><span class="slider"></span></label>
+      </div>
+      <div class="right-items">
+        <label class="right-item ${p.comptabilite.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptabilite.voirTransferts" ${p.comptabilite.voirTransferts ? 'checked' : ''}> Voir les transferts</label>
+        <label class="right-item ${p.comptabilite.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptabilite.voirCommission" ${p.comptabilite.voirCommission ? 'checked' : ''}> Voir commission</label>
+      </div>
+    </div>
+
+    <div class="res-error" id="rightsError"></div>
+    <button type="button" class="dash-btn primary" id="btnSaveRights" style="margin-top:6px;">Enregistrer les droits</button>
+  `;
+}
+
+/* ---- Inscriptions > En attente de validation ---- */
 function sectionAttenteValidation(){
   return `
     <h4>Inscriptions — validation des comptes</h4>
-    <p class="sub-hint">Chaque compte créé apparaît ici. Une fois validé, le propriétaire peut se connecter.</p>
+    <p class="sub-hint">Chaque compte créé apparaît ici. Une fois validé, le propriétaire peut se connecter via le bouton « Se connecter », choisir le type de compte « Propriétaire », puis saisir son nom d'utilisateur et son mot de passe.</p>
     ${owners.length === 0 ? '<div class="empty-note">Aucune inscription pour le moment.</div>' : owners.slice().reverse().map(o => `
       <div class="dash-card">
         <div>
           <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
           <span class="status-pill ${o.validated ? 'validated' : 'pending'}" style="margin-left:6px;">${o.validated ? '✓ Compte créé' : 'Non effectuée'}</span>
-          ${o.blocked ? '<span class="status-pill pending" style="margin-left:6px;">🚫 Bloqué</span>' : ''}
           <div class="meta">${o.username} · ${o.email} · ${o.contact}</div>
           <div class="meta">CNI : <a href="${o.cniData}" target="_blank" rel="noopener">${o.cniName}</a></div>
         </div>
@@ -2454,6 +2286,7 @@ function sectionAttenteValidation(){
   `;
 }
 
+/* ---- Comptes propriétaires > Validés ---- */
 function sectionComptesValides(){
   const validated = owners.filter(o => o.validated);
   return `
@@ -2463,7 +2296,6 @@ function sectionComptesValides(){
       <div class="dash-card">
         <div>
           <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
-          ${o.blocked ? '<span class="status-pill pending">🚫 Bloqué</span>' : ''}
           <div class="meta">Identifiant : ${o.username} · Mot de passe : ${o.password} · ${o.email} · ${o.contact}</div>
           <div class="meta">Paiement : ${o.paymentOperator ? o.paymentOperator + ' — ' + o.paymentPhone : 'non renseigné'} · Solde : ${money(o.balance||0)}</div>
           <div class="meta">${ownerListings.filter(p => p.ownerCode === o.srCode).length} bien(s) publié(s)</div>
@@ -2473,6 +2305,7 @@ function sectionComptesValides(){
   `;
 }
 
+/* ---- Réservations & paiements > Historique des Réservations ---- */
 function sectionHistoriqueReservations(){
   return `
     <h4>Historique des réservations (${reservationsLog.length})</h4>
@@ -2488,6 +2321,7 @@ function sectionHistoriqueReservations(){
   `;
 }
 
+/* ---- Réservations & paiements > Rapport d'activité ---- */
 function sectionRapportActivite(){
   const totalRevenue = reservationsLog.reduce((a,r) => a + (r.due||0), 0);
   const totalCommission = reservationsLog.reduce((a,r) => a + (r.fee||0), 0);
@@ -2509,6 +2343,7 @@ function sectionRapportActivite(){
   `;
 }
 
+/* ---- Comptabilité > Commission ---- */
 function sectionCommission(){
   const totalWallet = Object.values(adminWallet).reduce((a,b) => a + b, 0);
   return `
@@ -2542,6 +2377,7 @@ function sectionCommission(){
   `;
 }
 
+/* ---- Comptabilité > Transfert ---- */
 function sectionTransfert(){
   return `
     <h4>Transfert</h4>
@@ -2571,6 +2407,7 @@ function sectionTransfert(){
   `;
 }
 
+/* ---- Comptabilité > Historique ---- */
 function sectionHistoriqueComptabilite(){
   const commissionEntries = reservationsLog.map(r => ({type:'commission', date:r.dateStr, label:`${r.ref} — ${r.title}`, operator:r.operator, amount:r.fee}));
   const transferEntries = transferLog.map(t => ({type:'transfert', date:t.dateStr, label:`Vers ${t.recipient}`, operator:t.operator, amount:t.amount}));
@@ -2590,42 +2427,9 @@ function sectionHistoriqueComptabilite(){
   `;
 }
 
-function sectionUtilisateurs(){
-  // Utilisateurs stockés en mémoire (à persister dans Firestore)
-  return `
-    <h4>Gestion des utilisateurs</h4>
-    <p class="sub-hint">Gérez tous les comptes utilisateurs de la plateforme (conseils clients, propriétaires, etc.).</p>
-    <div style="margin-bottom:16px;">
-      <div class="form-field" style="max-width:300px;">
-        <input type="text" id="userSearch" placeholder="Rechercher un utilisateur..." style="padding:8px 12px;border:1px solid var(--line);border-radius:8px;width:100%;">
-      </div>
-      <button class="dash-btn primary" id="btnAddUser">+ Créer un utilisateur</button>
-    </div>
-    <div id="usersList">
-      ${users.length === 0 ? '<div class="empty-note">Aucun utilisateur créé pour le moment.</div>' : users.map(u => `
-        <div class="dash-card" data-user-id="${u.id}">
-          <div>
-            <strong>${u.username}</strong> — ${u.email}
-            <div class="meta">Rôle : ${u.role} ${u.blocked ? '⚠️ Bloqué' : '✅ Actif'}</div>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button type="button" class="dash-btn ${u.blocked ? 'primary' : 'danger'}" data-toggle-block-user="${u.id}">${u.blocked ? 'Débloquer' : 'Bloquer'}</button>
-            <button type="button" class="dash-btn" data-edit-user="${u.id}">✎</button>
-            <button type="button" class="dash-btn danger" data-delete-user="${u.id}">🗑</button>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-// ============================================================
-// ÉVÉNEMENTS ADMIN
-// ============================================================
-
+/* ---- Événements du panneau de contenu admin ---- */
 function bindAdminContentEvents(){
   const content = document.getElementById('adminContent');
-  if(!content) return;
 
   content.addEventListener('click', async e => {
     const validateBtn = e.target.closest('[data-validate]');
@@ -2635,11 +2439,15 @@ function bindAdminContentEvents(){
     const resetPwBtn = e.target.closest('[data-resetpw-owner]');
     const cancelPwBtn = e.target.closest('[data-cancel-pw]');
     const deleteBtn = e.target.closest('[data-delete-owner]');
-    const toggleBlockBtn = e.target.closest('[data-toggle-block]');
     const commissionViewBtn = e.target.closest('[data-commission-view]');
-    const addUserBtn = e.target.closest('#btnAddUser');
-    const toggleBlockUserBtn = e.target.closest('[data-toggle-block-user]');
-    const deleteUserBtn = e.target.closest('[data-delete-user]');
+    const addStaffBtn = e.target.closest('#btnAddStaff');
+    const cancelAddStaffBtn = e.target.closest('#btnCancelAddStaff');
+    const editStaffBtn = e.target.closest('[data-edit-staff]');
+    const cancelEditStaffBtn = e.target.closest('[data-cancel-edit-staff]');
+    const resetPwStaffBtn = e.target.closest('[data-resetpw-staff]');
+    const cancelPwStaffBtn = e.target.closest('[data-cancel-pw-staff]');
+    const deleteStaffBtn = e.target.closest('[data-delete-staff]');
+    const saveRightsBtn = e.target.closest('#btnSaveRights');
 
     if(validateBtn){
       try { await db.collection('owners').doc(validateBtn.dataset.validate).update({validated: true}); }
@@ -2659,13 +2467,6 @@ function bindAdminContentEvents(){
     } else if(cancelPwBtn){
       resetPwSR = null;
       refreshAdminSection();
-    } else if(toggleBlockBtn){
-      const code = toggleBlockBtn.dataset.toggleBlock;
-      const owner = getOwnerByCode(code);
-      if(owner){
-        try { await db.collection('owners').doc(code).update({blocked: !owner.blocked}); }
-        catch(err){ console.error('Erreur Firestore (blocage) :', err); alert("Le blocage n'a pas pu être enregistré."); }
-      }
     } else if(deleteBtn){
       const code = deleteBtn.dataset.deleteOwner;
       if(confirm('Supprimer définitivement ce compte propriétaire ?')){
@@ -2683,25 +2484,65 @@ function bindAdminContentEvents(){
     } else if(commissionViewBtn){
       commissionView = commissionViewBtn.dataset.commissionView;
       refreshAdminSection();
-    } else if(addUserBtn){
-      const username = prompt("Nom d'utilisateur :");
-      if(!username) return;
-      const email = prompt("Email :");
-      if(!email) return;
-      const role = prompt("Rôle (client/proprietaire/admin) :") || 'client';
-      const newUser = { id: Date.now(), username, email, role, blocked: false };
-      users.push(newUser);
+    } else if(addStaffBtn){
+      creatingStaff = true;
       refreshAdminSection();
-    } else if(toggleBlockUserBtn){
-      const id = Number(toggleBlockUserBtn.dataset.toggleBlockUser);
-      const user = users.find(u => u.id === id);
-      if(user) { user.blocked = !user.blocked; refreshAdminSection(); }
-    } else if(deleteUserBtn){
-      const id = Number(deleteUserBtn.dataset.deleteUser);
-      if(confirm('Supprimer cet utilisateur ?')){
-        users = users.filter(u => u.id !== id);
-        refreshAdminSection();
+    } else if(cancelAddStaffBtn){
+      creatingStaff = false;
+      refreshAdminSection();
+    } else if(editStaffBtn){
+      editingStaffId = editStaffBtn.dataset.editStaff; resetPwStaffId = null;
+      refreshAdminSection();
+    } else if(cancelEditStaffBtn){
+      editingStaffId = null;
+      refreshAdminSection();
+    } else if(resetPwStaffBtn){
+      resetPwStaffId = resetPwStaffBtn.dataset.resetpwStaff; editingStaffId = null;
+      refreshAdminSection();
+    } else if(cancelPwStaffBtn){
+      resetPwStaffId = null;
+      refreshAdminSection();
+    } else if(deleteStaffBtn){
+      const id = deleteStaffBtn.dataset.deleteStaff;
+      if(confirm('Supprimer définitivement ce compte utilisateur ?')){
+        try { await db.collection('staffUsers').doc(id).delete(); }
+        catch(err){ console.error('Erreur Firestore (suppression utilisateur) :', err); alert("La suppression n'a pas pu être enregistrée."); }
       }
+    } else if(saveRightsBtn){
+      if(!rightsStaffId || !rightsDraft) return;
+      saveRightsBtn.disabled = true; saveRightsBtn.textContent = 'Enregistrement…';
+      try {
+        await db.collection('staffUsers').doc(rightsStaffId).update({permissions: rightsDraft});
+        rightsDraft = null;
+        refreshAdminSection();
+      } catch(err){
+        console.error('Erreur Firestore (droits) :', err);
+        const errEl = document.getElementById('rightsError');
+        if(errEl){ errEl.textContent = "Les droits n'ont pas pu être enregistrés."; errEl.classList.add('show'); }
+        saveRightsBtn.disabled = false; saveRightsBtn.textContent = 'Enregistrer les droits';
+      }
+    }
+  });
+
+  content.addEventListener('change', e => {
+    const staffSelect = e.target.closest('#rightsStaffSelect');
+    const rightToggle = e.target.closest('[data-right-toggle]');
+    const rightCheck = e.target.closest('[data-right-check]');
+
+    if(staffSelect){
+      rightsStaffId = staffSelect.value;
+      rightsDraft = null;
+      refreshAdminSection();
+    } else if(rightToggle){
+      if(!rightsDraft) return;
+      const group = rightToggle.dataset.rightToggle;
+      rightsDraft[group].enabled = rightToggle.checked;
+      refreshAdminSection();
+    } else if(rightCheck){
+      if(!rightsDraft) return;
+      const [group, key] = rightCheck.dataset.rightCheck.split('.');
+      rightsDraft[group][key] = rightCheck.checked;
+      refreshAdminSection();
     }
   });
 
@@ -2709,12 +2550,80 @@ function bindAdminContentEvents(){
     const editForm = e.target.closest('[data-edit-form]');
     const pwForm = e.target.closest('[data-pw-form]');
     const transferForm = e.target.id === 'transferForm' ? e.target : null;
+    const staffCreateForm = e.target.id === 'staffCreateForm' ? e.target : null;
+    const editStaffForm = e.target.closest('[data-edit-staff-form]');
+    const pwStaffForm = e.target.closest('[data-pw-staff-form]');
+
+    if(staffCreateForm){
+      e.preventDefault();
+      const role = staffCreateForm.role.value.trim();
+      const username = staffCreateForm.username.value.trim();
+      const password = staffCreateForm.password.value;
+      const errEl = document.getElementById('staffCreateError');
+      const taken = username === ADMIN_ACCOUNT.username ||
+        owners.some(o => o.username === username) ||
+        staffUsers.some(s => s.username === username);
+      if(!role || !username || !password){
+        errEl.textContent = 'Merci de remplir tous les champs.'; errEl.classList.add('show'); return;
+      }
+      if(taken){
+        errEl.textContent = "Ce nom d'utilisateur est déjà utilisé."; errEl.classList.add('show'); return;
+      }
+      const submitBtn = staffCreateForm.querySelector('button[type=submit]');
+      submitBtn.disabled = true; submitBtn.textContent = 'Création…';
+      try {
+        const id = genStaffId();
+        await db.collection('staffUsers').doc(id).set({
+          id, role, username, password, permissions: defaultPermissions()
+        });
+        creatingStaff = false;
+        refreshAdminSection();
+      } catch(err){
+        console.error('Erreur Firestore (création utilisateur) :', err);
+        errEl.textContent = "Le compte n'a pas pu être créé.";
+        errEl.classList.add('show');
+        submitBtn.disabled = false; submitBtn.textContent = 'Créer le compte';
+      }
+      return;
+    } else if(editStaffForm){
+      e.preventDefault();
+      const staff = staffUsers.find(s => s.id === editStaffForm.dataset.editStaffForm);
+      const submitBtn = editStaffForm.querySelector('button[type=submit]');
+      if(staff){
+        submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
+        try {
+          await db.collection('staffUsers').doc(staff.id).update({
+            role: editStaffForm.role.value.trim() || staff.role,
+            username: editStaffForm.username.value.trim() || staff.username
+          });
+        } catch(err){
+          console.error('Erreur Firestore (modification utilisateur) :', err);
+          alert("La modification n'a pas pu être enregistrée.");
+        }
+      }
+      editingStaffId = null;
+      refreshAdminSection();
+      return;
+    } else if(pwStaffForm){
+      e.preventDefault();
+      const staff = staffUsers.find(s => s.id === pwStaffForm.dataset.pwStaffForm);
+      const newPw = pwStaffForm.password.value.trim();
+      if(staff && newPw){
+        const submitBtn = pwStaffForm.querySelector('button[type=submit]');
+        submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
+        try { await db.collection('staffUsers').doc(staff.id).update({password: newPw}); }
+        catch(err){ console.error('Erreur Firestore (mot de passe utilisateur) :', err); alert("Le mot de passe n'a pas pu être réinitialisé."); }
+      }
+      resetPwStaffId = null;
+      refreshAdminSection();
+      return;
+    }
 
     if(editForm){
       e.preventDefault();
       const owner = getOwnerByCode(editForm.dataset.editForm);
+      const submitBtn = editForm.querySelector('button[type=submit]');
       if(owner){
-        const submitBtn = editForm.querySelector('button[type=submit]');
         submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
         try {
           await db.collection('owners').doc(owner.srCode).update({
@@ -2745,7 +2654,6 @@ function bindAdminContentEvents(){
     } else if(transferForm){
       e.preventDefault();
       const errEl = document.getElementById('transferError');
-      if(!errEl) return;
       const operator = transferForm.operator.value;
       const amount = Number(transferForm.amount.value);
       const recipient = transferForm.recipient.value.trim();
@@ -2772,7 +2680,7 @@ function bindAdminContentEvents(){
         refreshAdminSection();
       } catch(err){
         console.error('Erreur Firestore (transfert) :', err);
-        errEl.textContent = "Le transfert n'a pas pu être enregistré.";
+        errEl.textContent = "Le transfert n'a pas pu être enregistré (connexion à la base indisponible).";
         errEl.classList.add('show');
         submitBtn.disabled = false; submitBtn.textContent = 'Faire un transfert';
       }
@@ -2781,11 +2689,7 @@ function bindAdminContentEvents(){
 }
 
 function refreshAdminSection(){
-  const content = document.getElementById('adminContent');
-  if(content) {
-    content.innerHTML = adminSectionHTML(adminSection);
-    bindAdminContentEvents();
-  }
+  document.getElementById('adminContent').innerHTML = adminSectionHTML(adminSection);
   document.querySelectorAll('.admin-menu-btn[data-toggle-menu]').forEach(btn => {
     const label = ADMIN_MENU.find(m => m.id === btn.dataset.toggleMenu);
     if(label) btn.querySelector('span').textContent = label.label + adminMenuCount(label.id);
@@ -2794,19 +2698,6 @@ function refreshAdminSection(){
     const item = ADMIN_MENU.flatMap(m => m.items).find(it => it.id === btn.dataset.section);
     if(item) btn.textContent = item.label + adminSubCount(item.id);
   });
-}
-
-// ============================================================
-// INITIALISATION
-// ============================================================
-
-// Ajouter des utilisateurs par défaut si la liste est vide
-if(users.length === 0) {
-  users = [
-    { id: 1, username: 'client1', email: 'client1@email.com', role: 'client', blocked: false },
-    { id: 2, username: 'client2', email: 'client2@email.com', role: 'client', blocked: false },
-    { id: 3, username: 'conseil', email: 'conseil@seona.com', role: 'conseil', blocked: false }
-  ];
 }
 
 renderNav();
