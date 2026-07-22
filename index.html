@@ -585,6 +585,33 @@
   }
   .wallet-card .amt{font-family:'Fraunces',serif;font-size:18px;font-weight:600;}
   .empty-note{font-size:13px;color:#8B8A76;padding:10px 0;}
+
+  /* ---------- Comptes utilisateurs (équipe) & Droits & Privilège ---------- */
+  .section-head-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;}
+  .section-head-row h4{margin-bottom:0;}
+  .staff-add-btn{
+    width:30px;height:30px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--white);
+    font-size:18px;line-height:1;display:inline-flex;align-items:center;justify-content:center;color:var(--ink);
+  }
+  .staff-add-btn:hover{border-color:var(--teal);color:var(--teal);}
+  .staff-role{font-family:'Fraunces',serif;}
+  .staff-select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px;background:var(--white);color:var(--ink);}
+
+  /* iOS-style toggle switch */
+  .switch{position:relative;display:inline-block;width:42px;height:24px;flex:none;}
+  .switch input{opacity:0;width:0;height:0;position:absolute;}
+  .switch .slider{position:absolute;inset:0;background:#CBC7B4;border-radius:99px;cursor:pointer;transition:background .18s ease;}
+  .switch .slider::before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .18s ease;box-shadow:0 1px 2px rgba(0,0,0,.25);}
+  .switch input:checked + .slider{background:var(--teal);}
+  .switch input:checked + .slider::before{transform:translateX(18px);}
+
+  .right-group{border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:12px;background:var(--white);}
+  .right-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .right-group-head strong{font-family:'Fraunces',serif;font-size:14.5px;}
+  .right-items{margin-top:11px;display:flex;flex-direction:column;gap:9px;}
+  .right-item{display:flex;align-items:center;gap:9px;font-size:13.5px;cursor:pointer;}
+  .right-item input[type=checkbox]{width:16px;height:16px;flex:none;accent-color:var(--teal);}
+  .right-item.disabled{opacity:.4;pointer-events:none;}
 </style>
 </head>
 <body>
@@ -1448,6 +1475,11 @@ db.collection('transferLog').orderBy('createdAt').onSnapshot(snap => {
   onDataChanged();
 }, err => console.error('Erreur Firestore (transferLog) :', err));
 
+db.collection('staffUsers').onSnapshot(snap => {
+  staffUsers = snap.docs.map(d => d.data());
+  onDataChanged();
+}, err => console.error('Erreur Firestore (staffUsers) :', err));
+
 db.collection('meta').doc('adminWallet').onSnapshot(doc => {
   adminWallet = doc.exists ? doc.data() : {orange:0, mtn:0, wave:0, moov:0};
   onDataChanged();
@@ -1456,7 +1488,8 @@ db.collection('meta').doc('adminWallet').onSnapshot(doc => {
 /* ---- État de navigation de l'espace administrateur (menus / sous-menus) ---- */
 const ADMIN_MENU = [
   {id:'parametrages', label:'Paramétrages', items:[
-    {id:'gestion-comptes', label:'Gestion des Comptes Utilisateurs'}
+    {id:'gestion-comptes', label:'Gestion des Comptes Utilisateurs'},
+    {id:'droits-privileges', label:'Droits & Privilège'}
   ]},
   {id:'inscriptions', label:'Inscriptions', items:[
     {id:'attente-validation', label:'En attente de validation'}
@@ -1479,6 +1512,27 @@ let adminOpenMenu = 'parametrages';
 let editingOwnerSR = null;
 let resetPwSR = null;
 let commissionView = 'portefeuille';
+/* ---- Comptes utilisateurs (équipe admin) & Droits & Privilège ---- */
+let staffUsers = [];
+let creatingStaff = false;
+let editingStaffId = null;
+let resetPwStaffId = null;
+let rightsStaffId = null;
+let rightsDraft = null;
+function defaultPermissions(perm){
+  perm = perm || {};
+  return {
+    inscriptions: Object.assign({enabled:false, voir:false, valider:false}, perm.inscriptions || {}),
+    comptesProprietaires: Object.assign({enabled:false, voirValides:false}, perm.comptesProprietaires || {}),
+    comptabilite: Object.assign({enabled:false, voirTransferts:false, voirCommission:false}, perm.comptabilite || {})
+  };
+}
+function genStaffId(){
+  const used = new Set(staffUsers.map(s => s.id));
+  let id;
+  do { id = 'ST-' + String(Math.floor(100 + Math.random() * 900)); } while(used.has(id));
+  return id;
+}
 function menuIdForSection(sectionId){ const m = ADMIN_MENU.find(mn => mn.items.some(it => it.id === sectionId)); return m ? m.id : ADMIN_MENU[0].id; }
 const OPS = [
   {id:'orange', label:'Orange Monnaie'},
@@ -1977,6 +2031,7 @@ function renderAdminDashboard(){
     if(subBtn){
       adminSection = subBtn.dataset.section;
       editingOwnerSR = null; resetPwSR = null; commissionView = 'portefeuille';
+      creatingStaff = false; editingStaffId = null; resetPwStaffId = null; rightsDraft = null;
       document.querySelectorAll('.admin-sub-btn').forEach(b => b.classList.toggle('active', b.dataset.section === adminSection));
       document.getElementById('adminContent').innerHTML = adminSectionHTML(adminSection);
     }
@@ -1997,6 +2052,7 @@ function adminSubCount(sectionId){
 function adminSectionHTML(sectionId){
   switch(sectionId){
     case 'gestion-comptes': return sectionGestionComptes();
+    case 'droits-privileges': return sectionDroitsPrivileges();
     case 'attente-validation': return sectionAttenteValidation();
     case 'valides': return sectionComptesValides();
     case 'historique-reservations': return sectionHistoriqueReservations();
@@ -2009,9 +2065,84 @@ function adminSectionHTML(sectionId){
 }
 
 /* ---- Paramétrages > Gestion des Comptes Utilisateurs ---- */
+function staffCardHTML(s){
+  if(editingStaffId === s.id){
+    return `
+      <div class="dash-card">
+        <form class="edit-owner-form" data-edit-staff-form="${s.id}">
+          <div class="form-row">
+            <div class="form-field"><label>Rôle / intitulé</label><input type="text" name="role" value="${s.role}"></div>
+            <div class="form-field"><label>Nom d'utilisateur</label><input type="text" name="username" value="${s.username}"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button type="submit" class="dash-btn primary">Enregistrer</button>
+            <button type="button" class="dash-btn" data-cancel-edit-staff="${s.id}">Annuler</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+  if(resetPwStaffId === s.id){
+    return `
+      <div class="dash-card">
+        <form class="edit-owner-form" data-pw-staff-form="${s.id}">
+          <div class="sr-badge" style="margin-bottom:10px;">${s.role} — ${s.username}</div>
+          <div class="form-field"><label>Nouveau mot de passe</label><input type="text" name="password" placeholder="Nouveau mot de passe" required></div>
+          <div style="display:flex;gap:8px;">
+            <button type="submit" class="dash-btn primary">Enregistrer le mot de passe</button>
+            <button type="button" class="dash-btn" data-cancel-pw-staff="${s.id}">Annuler</button>
+          </div>
+        </form>
+      </div>
+    `;
+  }
+  return `
+    <div class="dash-card">
+      <div>
+        <strong class="staff-role">${s.role}</strong>
+        <div class="meta">Identifiant : ${s.username}</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="icon-btn key" title="Réinitialiser le mot de passe" data-resetpw-staff="${s.id}">🔑</button>
+        <button type="button" class="icon-btn" title="Modifier" data-edit-staff="${s.id}">✎</button>
+        <button type="button" class="icon-btn danger" title="Supprimer" data-delete-staff="${s.id}">🗑</button>
+      </div>
+    </div>
+  `;
+}
+
+function staffCreateFormHTML(){
+  return `
+    <div class="dash-card">
+      <form id="staffCreateForm" style="width:100%;">
+        <div class="form-row">
+          <div class="form-field"><label>Rôle / intitulé du compte</label><input type="text" name="role" placeholder="Ex : Gérant de l'appli « conseil client »" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label>Nom d'utilisateur</label><input type="text" name="username" required></div>
+          <div class="form-field"><label>Mot de passe</label><input type="text" name="password" required></div>
+        </div>
+        <div class="res-error" id="staffCreateError"></div>
+        <div style="display:flex;gap:8px;">
+          <button type="submit" class="dash-btn primary">Créer le compte</button>
+          <button type="button" class="dash-btn" id="btnCancelAddStaff">Annuler</button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
 function sectionGestionComptes(){
   return `
-    <h4>Gestion des comptes utilisateurs</h4>
+    <div class="section-head-row">
+      <h4>Comptes utilisateurs</h4>
+      <button type="button" class="staff-add-btn" id="btnAddStaff" title="Créer un utilisateur">+</button>
+    </div>
+    <p class="sub-hint">Créez des comptes pour votre équipe (ex. Gérant de l'appli « conseil client »), puis définissez leurs accès dans « Droits &amp; Privilège ».</p>
+    ${creatingStaff ? staffCreateFormHTML() : ''}
+    ${staffUsers.length === 0 && !creatingStaff ? '<div class="empty-note">Aucun compte utilisateur pour le moment.</div>' : staffUsers.map(s => staffCardHTML(s)).join('')}
+
+    <h4 style="margin-top:26px;">Comptes propriétaires</h4>
     <p class="sub-hint">Réinitialisez un mot de passe, modifiez les informations d'un propriétaire ou supprimez son compte.</p>
     ${owners.length === 0 ? '<div class="empty-note">Aucun compte propriétaire pour le moment.</div>' : owners.map(o => {
       if(editingOwnerSR === o.srCode){
@@ -2063,6 +2194,71 @@ function sectionGestionComptes(){
         </div>
       `;
     }).join('')}
+  `;
+}
+
+/* ---- Paramétrages > Droits & Privilège ---- */
+function sectionDroitsPrivileges(){
+  if(staffUsers.length === 0){
+    return `
+      <h4>Droits &amp; Privilège</h4>
+      <p class="sub-hint">Définissez les rubriques et actions accessibles à chaque compte utilisateur.</p>
+      <div class="empty-note">Aucun compte utilisateur créé pour le moment. Rendez-vous dans « Gestion des Comptes Utilisateurs » pour en créer un.</div>
+    `;
+  }
+  if(!rightsStaffId || !staffUsers.find(s => s.id === rightsStaffId)){
+    rightsStaffId = staffUsers[0].id;
+    rightsDraft = null;
+  }
+  const s = staffUsers.find(x => x.id === rightsStaffId);
+  if(!rightsDraft) rightsDraft = defaultPermissions(s.permissions);
+  const p = rightsDraft;
+
+  return `
+    <h4>Droits &amp; Privilège</h4>
+    <p class="sub-hint">Choisissez un compte utilisateur, activez les rubriques auxquelles il a accès, puis cochez les actions autorisées.</p>
+
+    <div class="form-field" style="max-width:360px;margin-bottom:18px;">
+      <label>Compte utilisateur</label>
+      <select class="staff-select" id="rightsStaffSelect">
+        ${staffUsers.map(u => `<option value="${u.id}" ${u.id === rightsStaffId ? 'selected' : ''}>${u.role} — ${u.username}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="right-group">
+      <div class="right-group-head">
+        <strong>Inscriptions</strong>
+        <label class="switch"><input type="checkbox" data-right-toggle="inscriptions" ${p.inscriptions.enabled ? 'checked' : ''}><span class="slider"></span></label>
+      </div>
+      <div class="right-items">
+        <label class="right-item ${p.inscriptions.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="inscriptions.voir" ${p.inscriptions.voir ? 'checked' : ''}> Voir les inscriptions</label>
+        <label class="right-item ${p.inscriptions.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="inscriptions.valider" ${p.inscriptions.valider ? 'checked' : ''}> Valider les inscriptions</label>
+      </div>
+    </div>
+
+    <div class="right-group">
+      <div class="right-group-head">
+        <strong>Comptes Propriétaires</strong>
+        <label class="switch"><input type="checkbox" data-right-toggle="comptesProprietaires" ${p.comptesProprietaires.enabled ? 'checked' : ''}><span class="slider"></span></label>
+      </div>
+      <div class="right-items">
+        <label class="right-item ${p.comptesProprietaires.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptesProprietaires.voirValides" ${p.comptesProprietaires.voirValides ? 'checked' : ''}> Voir les comptes Validés</label>
+      </div>
+    </div>
+
+    <div class="right-group">
+      <div class="right-group-head">
+        <strong>Comptabilité</strong>
+        <label class="switch"><input type="checkbox" data-right-toggle="comptabilite" ${p.comptabilite.enabled ? 'checked' : ''}><span class="slider"></span></label>
+      </div>
+      <div class="right-items">
+        <label class="right-item ${p.comptabilite.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptabilite.voirTransferts" ${p.comptabilite.voirTransferts ? 'checked' : ''}> Voir les transferts</label>
+        <label class="right-item ${p.comptabilite.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptabilite.voirCommission" ${p.comptabilite.voirCommission ? 'checked' : ''}> Voir commission</label>
+      </div>
+    </div>
+
+    <div class="res-error" id="rightsError"></div>
+    <button type="button" class="dash-btn primary" id="btnSaveRights" style="margin-top:6px;">Enregistrer les droits</button>
   `;
 }
 
@@ -2244,6 +2440,14 @@ function bindAdminContentEvents(){
     const cancelPwBtn = e.target.closest('[data-cancel-pw]');
     const deleteBtn = e.target.closest('[data-delete-owner]');
     const commissionViewBtn = e.target.closest('[data-commission-view]');
+    const addStaffBtn = e.target.closest('#btnAddStaff');
+    const cancelAddStaffBtn = e.target.closest('#btnCancelAddStaff');
+    const editStaffBtn = e.target.closest('[data-edit-staff]');
+    const cancelEditStaffBtn = e.target.closest('[data-cancel-edit-staff]');
+    const resetPwStaffBtn = e.target.closest('[data-resetpw-staff]');
+    const cancelPwStaffBtn = e.target.closest('[data-cancel-pw-staff]');
+    const deleteStaffBtn = e.target.closest('[data-delete-staff]');
+    const saveRightsBtn = e.target.closest('#btnSaveRights');
 
     if(validateBtn){
       try { await db.collection('owners').doc(validateBtn.dataset.validate).update({validated: true}); }
@@ -2280,6 +2484,65 @@ function bindAdminContentEvents(){
     } else if(commissionViewBtn){
       commissionView = commissionViewBtn.dataset.commissionView;
       refreshAdminSection();
+    } else if(addStaffBtn){
+      creatingStaff = true;
+      refreshAdminSection();
+    } else if(cancelAddStaffBtn){
+      creatingStaff = false;
+      refreshAdminSection();
+    } else if(editStaffBtn){
+      editingStaffId = editStaffBtn.dataset.editStaff; resetPwStaffId = null;
+      refreshAdminSection();
+    } else if(cancelEditStaffBtn){
+      editingStaffId = null;
+      refreshAdminSection();
+    } else if(resetPwStaffBtn){
+      resetPwStaffId = resetPwStaffBtn.dataset.resetpwStaff; editingStaffId = null;
+      refreshAdminSection();
+    } else if(cancelPwStaffBtn){
+      resetPwStaffId = null;
+      refreshAdminSection();
+    } else if(deleteStaffBtn){
+      const id = deleteStaffBtn.dataset.deleteStaff;
+      if(confirm('Supprimer définitivement ce compte utilisateur ?')){
+        try { await db.collection('staffUsers').doc(id).delete(); }
+        catch(err){ console.error('Erreur Firestore (suppression utilisateur) :', err); alert("La suppression n'a pas pu être enregistrée."); }
+      }
+    } else if(saveRightsBtn){
+      if(!rightsStaffId || !rightsDraft) return;
+      saveRightsBtn.disabled = true; saveRightsBtn.textContent = 'Enregistrement…';
+      try {
+        await db.collection('staffUsers').doc(rightsStaffId).update({permissions: rightsDraft});
+        rightsDraft = null;
+        refreshAdminSection();
+      } catch(err){
+        console.error('Erreur Firestore (droits) :', err);
+        const errEl = document.getElementById('rightsError');
+        if(errEl){ errEl.textContent = "Les droits n'ont pas pu être enregistrés."; errEl.classList.add('show'); }
+        saveRightsBtn.disabled = false; saveRightsBtn.textContent = 'Enregistrer les droits';
+      }
+    }
+  });
+
+  content.addEventListener('change', e => {
+    const staffSelect = e.target.closest('#rightsStaffSelect');
+    const rightToggle = e.target.closest('[data-right-toggle]');
+    const rightCheck = e.target.closest('[data-right-check]');
+
+    if(staffSelect){
+      rightsStaffId = staffSelect.value;
+      rightsDraft = null;
+      refreshAdminSection();
+    } else if(rightToggle){
+      if(!rightsDraft) return;
+      const group = rightToggle.dataset.rightToggle;
+      rightsDraft[group].enabled = rightToggle.checked;
+      refreshAdminSection();
+    } else if(rightCheck){
+      if(!rightsDraft) return;
+      const [group, key] = rightCheck.dataset.rightCheck.split('.');
+      rightsDraft[group][key] = rightCheck.checked;
+      refreshAdminSection();
     }
   });
 
@@ -2287,6 +2550,74 @@ function bindAdminContentEvents(){
     const editForm = e.target.closest('[data-edit-form]');
     const pwForm = e.target.closest('[data-pw-form]');
     const transferForm = e.target.id === 'transferForm' ? e.target : null;
+    const staffCreateForm = e.target.id === 'staffCreateForm' ? e.target : null;
+    const editStaffForm = e.target.closest('[data-edit-staff-form]');
+    const pwStaffForm = e.target.closest('[data-pw-staff-form]');
+
+    if(staffCreateForm){
+      e.preventDefault();
+      const role = staffCreateForm.role.value.trim();
+      const username = staffCreateForm.username.value.trim();
+      const password = staffCreateForm.password.value;
+      const errEl = document.getElementById('staffCreateError');
+      const taken = username === ADMIN_ACCOUNT.username ||
+        owners.some(o => o.username === username) ||
+        staffUsers.some(s => s.username === username);
+      if(!role || !username || !password){
+        errEl.textContent = 'Merci de remplir tous les champs.'; errEl.classList.add('show'); return;
+      }
+      if(taken){
+        errEl.textContent = "Ce nom d'utilisateur est déjà utilisé."; errEl.classList.add('show'); return;
+      }
+      const submitBtn = staffCreateForm.querySelector('button[type=submit]');
+      submitBtn.disabled = true; submitBtn.textContent = 'Création…';
+      try {
+        const id = genStaffId();
+        await db.collection('staffUsers').doc(id).set({
+          id, role, username, password, permissions: defaultPermissions()
+        });
+        creatingStaff = false;
+        refreshAdminSection();
+      } catch(err){
+        console.error('Erreur Firestore (création utilisateur) :', err);
+        errEl.textContent = "Le compte n'a pas pu être créé.";
+        errEl.classList.add('show');
+        submitBtn.disabled = false; submitBtn.textContent = 'Créer le compte';
+      }
+      return;
+    } else if(editStaffForm){
+      e.preventDefault();
+      const staff = staffUsers.find(s => s.id === editStaffForm.dataset.editStaffForm);
+      const submitBtn = editStaffForm.querySelector('button[type=submit]');
+      if(staff){
+        submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
+        try {
+          await db.collection('staffUsers').doc(staff.id).update({
+            role: editStaffForm.role.value.trim() || staff.role,
+            username: editStaffForm.username.value.trim() || staff.username
+          });
+        } catch(err){
+          console.error('Erreur Firestore (modification utilisateur) :', err);
+          alert("La modification n'a pas pu être enregistrée.");
+        }
+      }
+      editingStaffId = null;
+      refreshAdminSection();
+      return;
+    } else if(pwStaffForm){
+      e.preventDefault();
+      const staff = staffUsers.find(s => s.id === pwStaffForm.dataset.pwStaffForm);
+      const newPw = pwStaffForm.password.value.trim();
+      if(staff && newPw){
+        const submitBtn = pwStaffForm.querySelector('button[type=submit]');
+        submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
+        try { await db.collection('staffUsers').doc(staff.id).update({password: newPw}); }
+        catch(err){ console.error('Erreur Firestore (mot de passe utilisateur) :', err); alert("Le mot de passe n'a pas pu être réinitialisé."); }
+      }
+      resetPwStaffId = null;
+      refreshAdminSection();
+      return;
+    }
 
     if(editForm){
       e.preventDefault();
@@ -2374,3 +2705,4 @@ render();
 </script>
 </body>
 </html>
+Mise à jour et Modification
