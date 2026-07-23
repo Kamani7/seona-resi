@@ -383,7 +383,8 @@
   }
   .res-field input:read-only{background:#EFEDDF;color:#54533F;}
   .res-field input:focus{outline:2px solid var(--teal);outline-offset:1px;}
-  .res-row{display:flex;gap:14px;}
+  .res-row{display:flex;gap:14px;flex-wrap:wrap;}
+  .res-row .res-field{min-width:150px;}
   .res-row .res-field{flex:1;}
   .res-total{
     display:flex;justify-content:space-between;align-items:center;
@@ -659,42 +660,42 @@
 
 <form class="search-card" id="searchForm">
   <div class="field">
-    <label for="q">Ville ou quartier</label>
-    <input type="text" id="q" placeholder="Ex : San-Pédro, Cocody…">
+    <label for="q">Ville</label>
+    <input type="text" id="q" list="villesDatalist" placeholder="Rechercher ou choisir une ville…" autocomplete="off">
+    <datalist id="villesDatalist"></datalist>
+  </div>
+  <div class="field">
+    <label for="quartier">Quartier</label>
+    <input type="text" id="quartier" list="quartiersDatalist" placeholder="Rechercher ou choisir un quartier…" autocomplete="off">
+    <datalist id="quartiersDatalist"></datalist>
   </div>
   <div class="field">
     <label for="type">Type de bien</label>
-    <select id="type">
-      <option value="">Tous les types</option>
-      <option value="Villa">Villa</option>
-      <option value="Maison">Maison</option>
-      <option value="Appartement">Appartement</option>
-      <option value="Studio">Studio</option>
-    </select>
+    <input type="text" id="type" list="typeDatalist" placeholder="Villa, Maison, Appartement, Studio…" autocomplete="off">
+    <datalist id="typeDatalist">
+      <option value="Villa"></option>
+      <option value="Maison"></option>
+      <option value="Appartement"></option>
+      <option value="Studio"></option>
+    </datalist>
   </div>
-  <div class="field budget-field">
-    <label for="budget">Budget max (FCFA)</label>
-    <div class="budget-controls">
-      <select id="budget">
-        <option value="">Sans limite</option>
-        <option value="15000">15 000</option>
-        <option value="25000">25 000</option>
-        <option value="45000">45 000</option>
-        <option value="65000">65 000</option>
-        <option value="75000">75 000</option>
-        <option value="100000">100 000</option>
-        <option value="200000">200 000</option>
-        <option value="350000">350 000</option>
-        <option value="600000">600 000</option>
-        <option value="1000000">1 000 000</option>
-      </select>
-      <input type="number" id="budgetCustom" min="0" placeholder="Ou saisissez un montant">
-      <select id="budgetPeriod">
-        <option value="mois">Par mois</option>
-        <option value="semaine">Par semaine</option>
-        <option value="jour">Par jour</option>
-      </select>
-    </div>
+  <div class="field">
+    <label for="prixJour">Prix / jour (FCFA)</label>
+    <input type="number" id="prixJour" list="prixJourDatalist" min="0" step="1000" placeholder="Ex : 15 000 à 70 000 FCFA" autocomplete="off">
+    <datalist id="prixJourDatalist">
+      <option value="15000"></option>
+      <option value="20000"></option>
+      <option value="25000"></option>
+      <option value="30000"></option>
+      <option value="35000"></option>
+      <option value="40000"></option>
+      <option value="45000"></option>
+      <option value="50000"></option>
+      <option value="55000"></option>
+      <option value="60000"></option>
+      <option value="65000"></option>
+      <option value="70000"></option>
+    </datalist>
   </div>
   <button type="submit" class="btn-search">Rechercher</button>
 </form>
@@ -829,6 +830,41 @@ cities.forEach(city => {
   chipsWrap.insertBefore(b, document.querySelector('[data-city="Favoris"]'));
 });
 
+/* ---------- Référentiel Villes / Quartiers de Côte d'Ivoire (recherche & inscription) ---------- */
+const CI_VILLES = [
+  "Abidjan","San-Pédro","Yamoussoukro","Bouaké","Daloa","Korhogo","Man","Divo","Gagnoa",
+  "Abengourou","Anyama","Agboville","Grand-Bassam","Dabou","Bingerville","Soubré","Odienné",
+  "Séguéla","Bondoukou","Aboisso","Sassandra","Toumodi","Tiassalé","Adzopé","Ferkessédougou",
+  "Issia","Katiola","Guiglo","Bouaflé","Danané","Duékoué","Lakota","Oumé","Sinfra","Tabou","Touba"
+];
+const CI_QUARTIERS = {
+  "Abidjan": ["Cocody","Plateau","Marcory","Treichville","Yopougon","Abobo","Koumassi","Adjamé","Riviera","Angré","II Plateaux","Bingerville","Port-Bouët","Attécoubé"],
+  "San-Pédro": ["Bardo","Balmer","Cité Lac","Zone Portuaire","Séwéké","Grand-Béréby","Digboué","Lac"],
+  "Yamoussoukro": ["Habitat","Kokrenou","N'Zuessy","Millionnaire","Dioulakro","Assabou"],
+  "Bouaké": ["Air France","Koko","Dar-es-Salam","Belleville","Ahougnansou","Sokoura"],
+  "Daloa": ["Tazibouo","Orly","Lobia","Gbeuliville","Abattoir"],
+  "Korhogo": ["Petit Paris","Soba","Résidentiel","Haoussabougou"],
+  "Man": ["Dioulabougou","Domoraud","Libreville","Bapleu"],
+  "Divo": ["Gonaté","Résidentiel","Old Town"],
+  "Gagnoa": ["Dioulabougou","Bassinko","Petit Paris"],
+  "Abengourou": ["Zongo","Résidentiel"],
+  "Grand-Bassam": ["Quartier France","Impérial","Moossou"],
+  "Bondoukou": ["Kotokouassikro","Résidentiel"]
+};
+function populateVillesDatalist(){
+  document.getElementById('villesDatalist').innerHTML =
+    CI_VILLES.map(v => `<option value="${v}"></option>`).join('');
+}
+function populateQuartiersDatalist(ville){
+  const dl = document.getElementById('quartiersDatalist');
+  if(!dl) return;
+  const list = CI_QUARTIERS[ville] || [].concat(...Object.values(CI_QUARTIERS));
+  dl.innerHTML = [...new Set(list)].map(q => `<option value="${q}"></option>`).join('');
+}
+populateVillesDatalist();
+populateQuartiersDatalist('');
+document.getElementById('q').addEventListener('input', e => populateQuartiersDatalist(e.target.value.trim()));
+
 function houseSVG(color, ref){
   return `<svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice">
     <rect width="300" height="150" fill="${color}"/>
@@ -876,28 +912,18 @@ function money(n){ return n.toLocaleString('fr-FR') + ' FCFA'; }
 
 function render(){
   const q = document.getElementById('q').value.trim().toLowerCase();
-  const type = document.getElementById('type').value;
-  const budgetCustom = document.getElementById('budgetCustom').value;
-  const budgetPreset = document.getElementById('budget').value;
-  const period = document.getElementById('budgetPeriod').value;
-
-  // La saisie libre prend le pas sur le menu déroulant si elle est renseignée
-  const rawBudget = budgetCustom !== "" ? Number(budgetCustom) : (budgetPreset !== "" ? Number(budgetPreset) : null);
-
-  // Les prix des biens sont enregistrés par mois : on convertit le budget saisi vers un équivalent mensuel
-  let monthlyBudget = null;
-  if(rawBudget !== null && !isNaN(rawBudget)){
-    if(period === "semaine") monthlyBudget = rawBudget * 4.345;
-    else if(period === "jour") monthlyBudget = rawBudget * 30;
-    else monthlyBudget = rawBudget;
-  }
+  const quartier = document.getElementById('quartier').value.trim().toLowerCase();
+  const type = document.getElementById('type').value.trim().toLowerCase();
+  const prixJourRaw = document.getElementById('prixJour').value;
+  const prixJour = prixJourRaw !== "" ? Number(prixJourRaw) : null;
 
   let items = getAllListings().filter(l => {
     if(activeCityFilter === "Favoris") return favorites.includes(l.id);
     if(activeCityFilter && l.city !== activeCityFilter) return false;
     if(q && !(l.city.toLowerCase().includes(q) || l.title.toLowerCase().includes(q))) return false;
-    if(type && l.type !== type) return false;
-    if(monthlyBudget !== null && l.price > monthlyBudget) return false;
+    if(quartier && !((l.quartier || '').toLowerCase().includes(quartier) || l.title.toLowerCase().includes(quartier) || l.desc.toLowerCase().includes(quartier))) return false;
+    if(type && !l.type.toLowerCase().includes(type)) return false;
+    if(prixJour !== null && !isNaN(prixJour) && l.price > prixJour) return false;
     return true;
   });
 
@@ -1099,6 +1125,10 @@ function openReservationModal(l){
           <label for="resStays">Nombre de séjour(s)</label>
           <input type="number" id="resStays" min="1" value="1">
         </div>
+        <div class="res-field">
+          <label for="resDate">Date de réservation (période)</label>
+          <input type="date" id="resDate" min="${new Date().toISOString().slice(0,10)}">
+        </div>
       </div>
 
       <div class="res-error" id="resError"></div>
@@ -1162,10 +1192,11 @@ function openReservationModal(l){
     const phone = document.getElementById('resPhone').value.trim();
     const amount = Number(amountInput.value);
     const stays = Number(staysInput.value);
+    const resDate = document.getElementById('resDate').value;
     const errorEl = document.getElementById('resError');
 
-    if(!name || !phone || !amount || amount <= 0 || !stays || stays <= 0){
-      errorEl.textContent = "Merci de renseigner votre nom, votre téléphone, un montant et un nombre de séjour valides.";
+    if(!name || !phone || !amount || amount <= 0 || !stays || stays <= 0 || !resDate){
+      errorEl.textContent = "Merci de renseigner votre nom, votre téléphone, un montant, un nombre de séjour et une date de réservation valides.";
       errorEl.classList.add('show');
       return;
     }
@@ -1174,7 +1205,7 @@ function openReservationModal(l){
     const total = amount * stays;
     const portion = getPortion();
     const due = portion === '30' ? Math.round(total * 0.3) : total;
-    openPaymentMethods(l, {name, phone, amount, stays, total, portion, due});
+    openPaymentMethods(l, {name, phone, amount, stays, resDate, total, portion, due});
   });
 }
 
@@ -1356,7 +1387,7 @@ async function validateReservation(l, res, method){
   }
 
   await db.collection('reservationsLog').add({
-    ref:l.ref, title:l.title, dateStr, clientName:res.name,
+    ref:l.ref, title:l.title, dateStr, clientName:res.name, resDate: res.resDate || '',
     due:res.due, operator:method.label, operatorId:method.id, fee, ownerNet,
     createdAt: Date.now()
   });
@@ -1366,7 +1397,7 @@ async function validateReservation(l, res, method){
   openReceipt({
     receiptNumber, dateStr, l,
     name: res.name, phone: res.phone,
-    amount: res.amount, stays: res.stays,
+    amount: res.amount, stays: res.stays, resDate: res.resDate,
     total: res.total, due: res.due, portion: res.portion,
     method
   });
@@ -1393,6 +1424,7 @@ function openReceipt(r){
         <div class="receipt-row"><span>Ville</span><span>${r.l.city}</span></div>
         <div class="receipt-row"><span>Montant unitaire</span><span>${money(r.amount)}</span></div>
         <div class="receipt-row"><span>Nombre de séjour(s)</span><span>${r.stays}</span></div>
+        <div class="receipt-row"><span>Date de réservation</span><span>${r.resDate ? new Date(r.resDate).toLocaleDateString('fr-FR') : '—'}</span></div>
         <div class="receipt-row"><span>Montant total</span><span>${money(r.total)}</span></div>
         <div class="receipt-row"><span>Formule de paiement</span><span>${r.portion === '30' ? 'Acompte 30%' : 'Totalité'}</span></div>
         <div class="receipt-row"><span>Mode de paiement</span><span>${r.method ? r.method.label : '—'}</span></div>
@@ -1452,6 +1484,8 @@ function onDataChanged(){
     renderAdminDashboard();
   } else if(session.type === 'owner' && currentDashView === 'owner-main'){
     renderOwnerDashboard();
+  } else if(session.type === 'staff' && currentDashView === 'staff-main'){
+    renderStaffDashboard();
   }
 }
 
@@ -1490,6 +1524,9 @@ const ADMIN_MENU = [
   {id:'parametrages', label:'Paramétrages', items:[
     {id:'gestion-comptes', label:'Gestion des Comptes Utilisateurs'},
     {id:'droits-privileges', label:'Droits & Privilège'}
+  ]},
+  {id:'comptes-utilisateurs', label:'Comptes utilisateurs', items:[
+    {id:'utilisateurs', label:'Utilisateurs'}
   ]},
   {id:'inscriptions', label:'Inscriptions', items:[
     {id:'attente-validation', label:'En attente de validation'}
@@ -1542,6 +1579,7 @@ const OPS = [
 ];
 
 function getOwnerByCode(code){ return owners.find(o => o.srCode === code); }
+function getStaffById(id){ return staffUsers.find(s => s.id === id); }
 
 function genSRCode(){
   const used = new Set(LISTINGS.map(l => l.ref).concat(owners.map(o => o.srCode)));
@@ -1601,7 +1639,9 @@ function renderNav(){
   if(session){
     loginBtn.style.display = 'none';
     regBtn.style.display = 'none';
-    const label = session.type === 'admin' ? 'Administrateur' : ((getOwnerByCode(session.srCode)||{}).prenom || 'Propriétaire');
+    const label = session.type === 'admin' ? 'Administrateur'
+      : session.type === 'staff' ? ('Gestionnaire — ' + ((getStaffById(session.staffId)||{}).role || ''))
+      : ((getOwnerByCode(session.srCode)||{}).prenom || 'Propriétaire');
     const pill = document.createElement('span');
     pill.className = 'session-pill';
     pill.id = 'sessionPill';
@@ -1646,6 +1686,7 @@ function renderAuthBody(tab){
         <label>Type de compte</label>
         <select id="loginType">
           <option value="owner">Propriétaire</option>
+          <option value="staff">Gestionnaire</option>
           <option value="admin">Administrateur</option>
         </select>
       </div>
@@ -1668,9 +1709,35 @@ function renderAuthBody(tab){
         }
         return;
       }
+      if(type === 'staff'){
+        const staff = staffUsers.find(s => s.username === user && s.password === pass);
+        if(!staff){
+          errEl.textContent = "Nom d'utilisateur ou mot de passe incorrect.";
+          errEl.classList.add('show');
+          return;
+        }
+        if(!staff.validated){
+          errEl.textContent = "Ce compte gestionnaire n'a pas encore été validé par un administrateur (droits & privilèges en attente).";
+          errEl.classList.add('show');
+          return;
+        }
+        if(staff.blocked){
+          errEl.textContent = "Ce compte gestionnaire a été bloqué par un administrateur.";
+          errEl.classList.add('show');
+          return;
+        }
+        session = {type:'staff', staffId: staff.id};
+        saveSession(); closeAuth(); renderNav(); openDashboard();
+        return;
+      }
       const owner = owners.find(o => o.username === user && o.password === pass);
       if(!owner){
         errEl.textContent = "Nom d'utilisateur ou mot de passe incorrect.";
+        errEl.classList.add('show');
+        return;
+      }
+      if(owner.blocked){
+        errEl.textContent = "Ce compte propriétaire a été bloqué par un administrateur.";
         errEl.classList.add('show');
         return;
       }
@@ -1695,6 +1762,10 @@ function renderAuthBody(tab){
         <div class="form-field"><label>Email</label><input type="email" id="regEmail"></div>
         <div class="form-field"><label>Contact</label><input type="tel" id="regContact" placeholder="Ex : 07 00 00 00 00"></div>
       </div>
+      <div class="form-row">
+        <div class="form-field"><label>Ville</label><input type="text" id="regVille" list="villesDatalist" placeholder="Ex : San-Pédro" autocomplete="off"></div>
+        <div class="form-field"><label>Quartier</label><input type="text" id="regQuartier" list="quartiersDatalist" placeholder="Ex : Cocody" autocomplete="off"></div>
+      </div>
       <div class="form-field">
         <label>Pièce d'identité (CNI recto — png, jpeg, pdf)</label>
         <input type="file" id="regCNI" accept=".png,.jpg,.jpeg,.pdf" style="display:none;">
@@ -1705,6 +1776,9 @@ function renderAuthBody(tab){
       <button class="btn-validate" id="btnDoRegister">S'inscrire</button>
     `;
     let cniFile = null;
+    populateVillesDatalist();
+    populateQuartiersDatalist(document.getElementById('regVille').value.trim());
+    document.getElementById('regVille').addEventListener('input', e => populateQuartiersDatalist(e.target.value.trim()));
     document.getElementById('regCNIDrop').addEventListener('click', () => document.getElementById('regCNI').click());
     document.getElementById('regCNI').addEventListener('change', e => {
       const f = e.target.files[0];
@@ -1718,9 +1792,11 @@ function renderAuthBody(tab){
       const prenom = document.getElementById('regPrenom').value.trim();
       const email = document.getElementById('regEmail').value.trim();
       const contact = document.getElementById('regContact').value.trim();
+      const ville = document.getElementById('regVille').value.trim();
+      const quartier = document.getElementById('regQuartier').value.trim();
       const errEl = document.getElementById('regError');
-      if(!username || !password || !nom || !prenom || !email || !contact){
-        errEl.textContent = "Merci de remplir tous les champs.";
+      if(!username || !password || !nom || !prenom || !email || !contact || !ville){
+        errEl.textContent = "Merci de remplir tous les champs, dont la localité (ville).";
         errEl.classList.add('show');
         return;
       }
@@ -1741,9 +1817,11 @@ function renderAuthBody(tab){
       try {
         await db.collection('owners').doc(srCode).set({
           srCode, username, password, nom, prenom, email, contact,
+          ville, quartier,
           cniName: cniFile.name, cniData,
-          validated: false,
+          validated: false, blocked: false,
           paymentOperator: '', paymentPhone: '',
+          paymentOperators: [], paymentPhones: [],
           balance: 0
         });
       } catch(err){
@@ -1772,16 +1850,34 @@ function renderAuthBody(tab){
 function openDashboard(){
   if(!session){ openAuthModal('login'); return; }
   dashOverlay.classList.add('open');
-  dashContent.classList.toggle('admin-wide', session.type === 'admin');
+  dashContent.classList.toggle('admin-wide', session.type === 'admin' || session.type === 'staff');
   if(session.type === 'admin') renderAdminDashboard();
+  else if(session.type === 'staff') renderStaffDashboard();
   else renderOwnerDashboard();
 }
+
+let ownerSection = 'bien-ajouter';
+let ownerOpenMenu = 'mes-biens';
+let ownerPropSearch = '';
+const OWNER_MENU = [
+  {id:'mes-biens', label:'Mes Biens', items:[
+    {id:'bien-ajouter', label:'Bien Ajouter'}
+  ]},
+  {id:'biens-reserves', label:'Biens réservés', items:[
+    {id:'deja-reserve', label:'Déjà réservé'}
+  ]},
+  {id:'moyen-paiement', label:'Moyen de paiement', items:[
+    {id:'infos-paiement', label:'Opérateurs & numéros'},
+    {id:'historique-paiements', label:'Historique des paiements'}
+  ]}
+];
+function ownerMenuIdForSection(sectionId){ const m = OWNER_MENU.find(mn => mn.items.some(it => it.id === sectionId)); return m ? m.id : OWNER_MENU[0].id; }
 
 function renderOwnerDashboard(){
   currentDashView = 'owner-main';
   const owner = getOwnerByCode(session.srCode);
   if(!owner){ session = null; saveSession(); renderNav(); closeDash(); return; }
-  const myListings = ownerListings.filter(p => p.ownerCode === owner.srCode);
+  ownerOpenMenu = ownerMenuIdForSection(ownerSection);
   dashContent.innerHTML = `
     <button class="modal-close" id="dashClose">✕</button>
     <div class="receipt-wrap">
@@ -1796,24 +1892,6 @@ function renderOwnerDashboard(){
       ${!owner.validated ? `<div class="empty-note">Votre compte sera activé dès qu'un administrateur aura vérifié votre pièce d'identité (${owner.cniName}). Vous pourrez ensuite renseigner votre moyen de paiement et ajouter les images de vos biens.</div>` : ''}
 
       <div class="dash-section">
-        <h4>Moyen de paiement (réception des loyers)</h4>
-        <p style="font-size:12.5px;color:#6B6A5A;margin-bottom:10px;">Ce numéro est affiché sur vos biens à la page d'accueil et reçoit automatiquement chaque paiement effectué par un client.</p>
-        <div class="form-row">
-          <div class="form-field"><label>Opérateur</label>
-            <select id="ownPayOperator" ${!owner.validated?'disabled':''}>
-              <option value="">Choisir…</option>
-              <option value="orange" ${owner.paymentOperator==='orange'?'selected':''}>Orange Monnaie</option>
-              <option value="mtn" ${owner.paymentOperator==='mtn'?'selected':''}>MTN Momo</option>
-              <option value="wave" ${owner.paymentOperator==='wave'?'selected':''}>Wave</option>
-              <option value="moov" ${owner.paymentOperator==='moov'?'selected':''}>Moov Monnaie</option>
-            </select>
-          </div>
-          <div class="form-field"><label>Numéro</label><input type="tel" id="ownPayPhone" value="${owner.paymentPhone||''}" ${!owner.validated?'disabled':''} placeholder="Ex : 07 47 37 79 39"></div>
-        </div>
-        <button class="dash-btn primary" id="btnSavePay" ${!owner.validated?'disabled':''}>Enregistrer le moyen de paiement</button>
-      </div>
-
-      <div class="dash-section">
         <h4>Portefeuille (après commission plateforme de 500 FCFA / paiement)</h4>
         <div class="wallet-card" style="max-width:200px;">
           <div class="op">Solde reçu</div>
@@ -1821,48 +1899,227 @@ function renderOwnerDashboard(){
         </div>
       </div>
 
-      <div class="dash-section">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-          <h4>Mes biens (${myListings.length})</h4>
-          <button class="dash-btn primary" id="btnAddProperty" ${!owner.validated?'disabled':''}>+ Ajouter un bien</button>
-        </div>
-        ${!owner.validated ? '<div class="empty-note">Ajout de biens disponible après validation du compte.</div>' : ''}
-        <div id="ownerPropsList">
-          ${myListings.length === 0 ? '<div class="empty-note">Aucun bien ajouté pour le moment.</div>' : myListings.map(p => `
-            <div class="dash-card">
-              <div>
-                <strong>${p.title}</strong> — ${p.ref}
-                <div class="meta">${p.city} · ${money(p.price)}/mois · ${p.images.length}/7 images
-                  ${reservedIds.includes(p.id) ? '<span class="status-pill validated" style="margin-left:8px;">Réservé</span>' : ''}
-                </div>
+      <div class="admin-layout">
+        <nav class="admin-sidebar" id="ownerSidebar">
+          ${OWNER_MENU.map(menu => `
+            <div class="admin-menu ${menu.id === ownerOpenMenu ? 'open' : ''}" data-menu="${menu.id}">
+              <button type="button" class="admin-menu-btn" data-toggle-menu="${menu.id}">
+                <span>${menu.label}</span>
+                <svg class="chev" viewBox="0 0 24 24" width="14" height="14"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="admin-submenu">
+                ${menu.items.map(it => `
+                  <button type="button" class="admin-sub-btn ${ownerSection === it.id ? 'active' : ''}" data-section="${it.id}">${it.label}</button>
+                `).join('')}
               </div>
-              <button class="dash-btn" data-add-img="${p.id}">Ajouter les Images</button>
             </div>
           `).join('')}
-        </div>
+        </nav>
+        <div class="admin-content" id="ownerContent">${ownerSectionHTML(ownerSection, owner)}</div>
       </div>
     </div>
   `;
   document.getElementById('dashClose').addEventListener('click', closeDash);
-  const savePayBtn = document.getElementById('btnSavePay');
-  if(savePayBtn) savePayBtn.addEventListener('click', async () => {
-    const paymentOperator = document.getElementById('ownPayOperator').value;
-    const paymentPhone = document.getElementById('ownPayPhone').value.trim();
-    savePayBtn.disabled = true;
-    savePayBtn.textContent = 'Enregistrement…';
-    const batch = db.batch();
-    batch.update(db.collection('owners').doc(owner.srCode), {paymentOperator, paymentPhone});
-    ownerListings.filter(p => p.ownerCode === owner.srCode).forEach(p => {
-      batch.update(db.collection('ownerListings').doc(String(p.id)), {payOperator: paymentOperator, phone: paymentPhone});
-    });
-    try { await batch.commit(); } catch(err){ console.error('Erreur Firestore (moyen de paiement) :', err); }
+
+  document.getElementById('ownerSidebar').addEventListener('click', e => {
+    const menuBtn = e.target.closest('[data-toggle-menu]');
+    const subBtn = e.target.closest('[data-section]');
+    if(menuBtn){
+      ownerOpenMenu = (ownerOpenMenu === menuBtn.dataset.toggleMenu) ? null : menuBtn.dataset.toggleMenu;
+      document.querySelectorAll('#ownerSidebar .admin-menu').forEach(m => m.classList.toggle('open', m.dataset.menu === ownerOpenMenu));
+      return;
+    }
+    if(subBtn){
+      ownerSection = subBtn.dataset.section;
+      ownerPropSearch = '';
+      document.querySelectorAll('#ownerSidebar .admin-sub-btn').forEach(b => b.classList.toggle('active', b.dataset.section === ownerSection));
+      document.getElementById('ownerContent').innerHTML = ownerSectionHTML(ownerSection, owner);
+    }
   });
-  const addPropBtn = document.getElementById('btnAddProperty');
-  if(addPropBtn) addPropBtn.addEventListener('click', () => openPropertyForm(owner));
-  document.getElementById('ownerPropsList').addEventListener('click', e => {
-    const btn = e.target.closest('[data-add-img]');
-    if(!btn) return;
-    openImageUpload(Number(btn.dataset.addImg));
+
+  bindOwnerContentEvents(owner);
+}
+
+function ownerSectionHTML(sectionId, owner){
+  const myListings = ownerListings.filter(p => p.ownerCode === owner.srCode);
+  switch(sectionId){
+    case 'bien-ajouter': return ownerSectionBienAjouter(owner, myListings);
+    case 'deja-reserve': return ownerSectionDejaReserve(myListings);
+    case 'infos-paiement': return ownerSectionInfosPaiement(owner);
+    case 'historique-paiements': return ownerSectionHistoriquePaiements(owner);
+    default: return '<div class="empty-note">Choisissez une rubrique dans le menu.</div>';
+  }
+}
+
+/* ---- Mes Biens > Bien Ajouter ---- */
+function ownerPropsListHTML(filtered){
+  return filtered.length === 0 ? '<div class="empty-note">Aucun bien trouvé.</div>' : filtered.map(p => `
+    <div class="dash-card">
+      <div>
+        <strong>${p.title}</strong> — ${p.ref}
+        <div class="meta">${p.city} · ${money(p.price)}/mois · ${p.images.length}/7 images
+          ${reservedIds.includes(p.id) ? '<span class="status-pill validated" style="margin-left:8px;">Réservé</span>' : ''}
+        </div>
+      </div>
+      <button class="dash-btn" data-add-img="${p.id}">Ajouter les Images</button>
+    </div>
+  `).join('');
+}
+function ownerSectionBienAjouter(owner, myListings){
+  const filtered = ownerPropSearch
+    ? myListings.filter(p => (p.title + ' ' + p.city + ' ' + p.ref).toLowerCase().includes(ownerPropSearch.toLowerCase()))
+    : myListings;
+  return `
+    <div class="section-head-row">
+      <h4>Bien Ajouter</h4>
+      <button class="dash-btn primary" id="btnAddProperty" ${!owner.validated?'disabled':''}>+ Ajouter un bien</button>
+    </div>
+    <p class="sub-hint">Mes biens (${myListings.length}) — recherchez un bien déjà publié ou ajoutez-en un nouveau.</p>
+    <div class="form-field" style="max-width:340px;">
+      <label>Rechercher un bien</label>
+      <input type="text" id="ownerPropSearchInput" placeholder="Titre, ville, référence…" value="${ownerPropSearch}">
+    </div>
+    ${!owner.validated ? '<div class="empty-note">Ajout de biens disponible après validation du compte.</div>' : ''}
+    <div id="ownerPropsList">${ownerPropsListHTML(filtered)}</div>
+  `;
+}
+
+/* ---- Biens réservés > Déjà réservé ---- */
+function ownerSectionDejaReserve(myListings){
+  const reserved = myListings.filter(p => reservedIds.includes(p.id));
+  return `
+    <h4>Biens déjà réservés (${reserved.length})</h4>
+    <p class="sub-hint">Liste de vos biens actuellement marqués comme réservés.</p>
+    ${reserved.length === 0 ? '<div class="empty-note">Aucun bien réservé pour le moment.</div>' : reserved.map(p => `
+      <div class="dash-card">
+        <div>
+          <strong>${p.title}</strong> — ${p.ref}
+          <div class="meta">${p.city} · ${money(p.price)}/mois</div>
+        </div>
+        <span class="status-pill validated">Réservé</span>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ---- Moyen de paiement ---- */
+function ownerSectionInfosPaiement(owner){
+  const selectedOps = (owner.paymentOperators && owner.paymentOperators.length) ? owner.paymentOperators : (owner.paymentOperator ? [owner.paymentOperator] : []);
+  const phones = (owner.paymentPhones && owner.paymentPhones.length) ? owner.paymentPhones : (owner.paymentPhone ? [owner.paymentPhone] : ['']);
+  return `
+    <h4>Moyen de paiement (réception des loyers)</h4>
+    <p class="sub-hint">Cochez un ou plusieurs opérateurs, puis ajoutez un ou plusieurs numéros qui recevront vos paiements.</p>
+    <div class="form-field">
+      <label>Opérateur(s)</label>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:4px;">
+        ${OPS.map(op => `
+          <label class="right-item" style="width:auto;">
+            <input type="checkbox" name="ownPayOps" value="${op.id}" ${selectedOps.includes(op.id)?'checked':''} ${!owner.validated?'disabled':''}> ${op.label}
+          </label>
+        `).join('')}
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Numéro(s) de réception</label>
+      <div id="ownPayPhonesList">${ownPayPhonesListHTML(phones)}</div>
+      <button type="button" class="dash-btn" id="btnAddPhone" ${!owner.validated?'disabled':''}>+ Ajouter un numéro</button>
+    </div>
+    <div class="res-error" id="payError"></div>
+    <button class="dash-btn primary" id="btnSavePay" ${!owner.validated?'disabled':''} style="margin-top:10px;">Enregistrer le moyen de paiement</button>
+  `;
+}
+function ownPayPhonesListHTML(values){
+  return values.map((ph,i) => `
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <input type="tel" class="ownPayPhoneInput" value="${ph}" placeholder="Ex : 07 47 37 79 39" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14.5px;font-family:inherit;">
+      ${values.length > 1 ? `<button type="button" class="icon-btn danger" data-remove-phone="${i}" title="Retirer">🗑</button>` : ''}
+    </div>
+  `).join('');
+}
+
+/* ---- Moyen de paiement > Historique des paiements ---- */
+function ownerSectionHistoriquePaiements(owner){
+  const history = reservationsLog.filter(r => r.ref === owner.srCode).slice().reverse();
+  return `
+    <h4>Historique des paiements (${history.length})</h4>
+    <p class="sub-hint">Tous les paiements reçus pour vos biens, commission plateforme déduite.</p>
+    ${history.length === 0 ? '<div class="empty-note">Aucun paiement reçu pour le moment.</div>' : history.map(r => `
+      <div class="dash-card">
+        <div>
+          <strong>${r.title}</strong>
+          <div class="meta">${r.dateStr} · Client : ${r.clientName} · via ${r.operator}</div>
+          <div class="meta">Montant payé : ${money(r.due)} · Reçu net : ${money(r.ownerNet)}</div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function bindOwnerContentEvents(owner){
+  const content = document.getElementById('ownerContent');
+  if(!content) return;
+
+  const searchInput = document.getElementById('ownerPropSearchInput');
+  if(searchInput){
+    searchInput.addEventListener('input', e => {
+      ownerPropSearch = e.target.value;
+      const myListings = ownerListings.filter(p => p.ownerCode === owner.srCode);
+      const filtered = ownerPropSearch
+        ? myListings.filter(p => (p.title + ' ' + p.city + ' ' + p.ref).toLowerCase().includes(ownerPropSearch.toLowerCase()))
+        : myListings;
+      const list = document.getElementById('ownerPropsList');
+      if(list) list.innerHTML = ownerPropsListHTML(filtered);
+    });
+  }
+
+  content.addEventListener('click', async e => {
+    const addPropBtn = e.target.closest('#btnAddProperty');
+    const addImgBtn = e.target.closest('[data-add-img]');
+    const addPhoneBtn = e.target.closest('#btnAddPhone');
+    const removePhoneBtn = e.target.closest('[data-remove-phone]');
+    const savePayBtn = e.target.closest('#btnSavePay');
+
+    if(addPropBtn){
+      openPropertyForm(owner);
+    } else if(addImgBtn){
+      openImageUpload(Number(addImgBtn.dataset.addImg));
+    } else if(addPhoneBtn){
+      const values = Array.from(document.querySelectorAll('.ownPayPhoneInput')).map(i => i.value);
+      values.push('');
+      document.getElementById('ownPayPhonesList').innerHTML = ownPayPhonesListHTML(values);
+    } else if(removePhoneBtn){
+      const idx = Number(removePhoneBtn.dataset.removePhone);
+      const values = Array.from(document.querySelectorAll('.ownPayPhoneInput')).map(i => i.value);
+      values.splice(idx, 1);
+      document.getElementById('ownPayPhonesList').innerHTML = ownPayPhonesListHTML(values.length ? values : ['']);
+    } else if(savePayBtn){
+      const ops = Array.from(document.querySelectorAll('input[name="ownPayOps"]:checked')).map(i => i.value);
+      const phones = Array.from(document.querySelectorAll('.ownPayPhoneInput')).map(i => i.value.trim()).filter(Boolean);
+      const errEl = document.getElementById('payError');
+      if(ops.length === 0 || phones.length === 0){
+        errEl.textContent = "Merci de choisir au moins un opérateur et de renseigner au moins un numéro.";
+        errEl.classList.add('show');
+        return;
+      }
+      errEl.classList.remove('show');
+      savePayBtn.disabled = true; savePayBtn.textContent = 'Enregistrement…';
+      try {
+        const batch = db.batch();
+        batch.update(db.collection('owners').doc(owner.srCode), {
+          paymentOperators: ops, paymentPhones: phones,
+          paymentOperator: ops[0], paymentPhone: phones[0]
+        });
+        ownerListings.filter(p => p.ownerCode === owner.srCode).forEach(p => {
+          batch.update(db.collection('ownerListings').doc(String(p.id)), {payOperator: ops[0], phone: phones[0]});
+        });
+        await batch.commit();
+      } catch(err){
+        console.error('Erreur Firestore (moyen de paiement) :', err);
+        errEl.textContent = "Le moyen de paiement n'a pas pu être enregistré.";
+        errEl.classList.add('show');
+      }
+      savePayBtn.disabled = false; savePayBtn.textContent = 'Enregistrer le moyen de paiement';
+    }
   });
 }
 
@@ -1880,11 +2137,14 @@ function openPropertyForm(owner){
         </div>
       </div>
       <div class="form-row">
-        <div class="form-field"><label>Ville</label><input type="text" id="pfCity"></div>
-        <div class="form-field"><label>Prix / mois (FCFA)</label><input type="number" id="pfPrice" min="1"></div>
+        <div class="form-field"><label>Ville</label><input type="text" id="pfCity" list="villesDatalist"></div>
+        <div class="form-field"><label>Quartier</label><input type="text" id="pfQuartier" list="quartiersDatalist"></div>
       </div>
       <div class="form-row">
+        <div class="form-field"><label>Prix / mois (FCFA)</label><input type="number" id="pfPrice" min="1"></div>
         <div class="form-field"><label>Pièces</label><input type="number" id="pfRooms" min="1" value="1"></div>
+      </div>
+      <div class="form-row">
         <div class="form-field"><label>Salles de bain</label><input type="number" id="pfBaths" min="1" value="1"></div>
         <div class="form-field"><label>Surface (m²)</label><input type="number" id="pfArea" min="1" value="30"></div>
       </div>
@@ -1896,10 +2156,12 @@ function openPropertyForm(owner){
   `;
   document.getElementById('propFormClose').addEventListener('click', closeDash);
   document.getElementById('btnBackToDash').addEventListener('click', renderOwnerDashboard);
+  document.getElementById('pfCity').addEventListener('input', e => populateQuartiersDatalist(e.target.value.trim()));
   document.getElementById('btnCreateProp').addEventListener('click', async () => {
     const title = document.getElementById('pfTitle').value.trim();
     const type = document.getElementById('pfType').value;
     const city = document.getElementById('pfCity').value.trim();
+    const quartier = document.getElementById('pfQuartier').value.trim();
     const price = Number(document.getElementById('pfPrice').value);
     const rooms = Number(document.getElementById('pfRooms').value) || 1;
     const baths = Number(document.getElementById('pfBaths').value) || 1;
@@ -1913,16 +2175,18 @@ function openPropertyForm(owner){
     }
     errEl.classList.remove('show');
     const colors = ['#3A6F62','#B5562F','#C79A3E'];
+    const opsArr = owner.paymentOperators || (owner.paymentOperator ? [owner.paymentOperator] : []);
+    const phonesArr = owner.paymentPhones || (owner.paymentPhone ? [owner.paymentPhone] : []);
     const prop = {
       id: Date.now(),
       ref: owner.srCode,
       ownerCode: owner.srCode,
-      type, title, city, price, rooms, baths, area,
+      type, title, city, quartier, price, rooms, baths, area,
       desc: desc || 'Bien proposé par un propriétaire vérifié SEONA RESI.',
       amenities: [],
       color: colors[Math.floor(Math.random() * colors.length)],
-      phone: owner.paymentPhone || '',
-      payOperator: owner.paymentOperator || '',
+      phone: phonesArr[0] || '',
+      payOperator: opsArr[0] || '',
       images: []
     };
     const btn = document.getElementById('btnCreateProp');
@@ -2040,12 +2304,96 @@ function renderAdminDashboard(){
   bindAdminContentEvents();
 }
 
+/* ==================== Espace gestionnaire (compte « Comptes utilisateurs » validé) ==================== */
+let staffSection = null;
+let staffOpenMenu = null;
+
+function staffMenuFor(staff){
+  const p = (staff && staff.permissions) || defaultPermissions();
+  const menu = [];
+  if(p.inscriptions.enabled){
+    menu.push({id:'inscriptions', label:'Inscriptions', items:[{id:'attente-validation', label:'En attente de validation'}]});
+  }
+  if(p.comptesProprietaires.enabled){
+    menu.push({id:'comptes-proprietaires', label:'Comptes propriétaires', items:[{id:'valides', label:'Validés'}]});
+  }
+  if(p.comptabilite.enabled){
+    const items = [];
+    if(p.comptabilite.voirCommission) items.push({id:'commission', label:'Commission'});
+    if(p.comptabilite.voirTransferts) items.push({id:'transfert', label:'Transfert'}, {id:'historique-comptabilite', label:'Historique'});
+    if(items.length) menu.push({id:'comptabilite', label:'Comptabilité', items});
+  }
+  return menu;
+}
+
+function renderStaffDashboard(){
+  currentDashView = 'staff-main';
+  const staff = getStaffById(session.staffId);
+  if(!staff || staff.blocked || !staff.validated){ session = null; saveSession(); renderNav(); closeDash(); return; }
+  const menu = staffMenuFor(staff);
+  if(!staffSection || !menu.some(m => m.items.some(it => it.id === staffSection))){
+    staffSection = menu.length ? menu[0].items[0].id : null;
+  }
+  const activeMenu = menu.find(m => m.items.some(it => it.id === staffSection));
+  staffOpenMenu = activeMenu ? activeMenu.id : (menu[0] ? menu[0].id : null);
+
+  dashContent.innerHTML = `
+    <button class="modal-close" id="dashCloseS">✕</button>
+    <div class="receipt-wrap">
+      <h3 class="admin-title">Espace gestionnaire — ${staff.role}</h3>
+      ${menu.length === 0
+        ? '<div class="empty-note">Aucun droit &amp; privilège n\'est encore activé pour votre compte. Contactez un administrateur.</div>'
+        : `
+      <div class="admin-layout">
+        <nav class="admin-sidebar" id="staffSidebar">
+          ${menu.map(m => `
+            <div class="admin-menu ${m.id === staffOpenMenu ? 'open' : ''}" data-menu="${m.id}">
+              <button type="button" class="admin-menu-btn" data-toggle-menu="${m.id}">
+                <span>${m.label}</span>
+                <svg class="chev" viewBox="0 0 24 24" width="14" height="14"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="admin-submenu">
+                ${m.items.map(it => `<button type="button" class="admin-sub-btn ${staffSection === it.id ? 'active' : ''}" data-section="${it.id}">${it.label}</button>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </nav>
+        <div class="admin-content" id="adminContent">${adminSectionHTML(staffSection)}</div>
+      </div>
+      `}
+    </div>
+  `;
+  document.getElementById('dashCloseS').addEventListener('click', closeDash);
+
+  const sidebar = document.getElementById('staffSidebar');
+  if(sidebar){
+    sidebar.addEventListener('click', e => {
+      const menuBtn = e.target.closest('[data-toggle-menu]');
+      const subBtn = e.target.closest('[data-section]');
+      if(menuBtn){
+        staffOpenMenu = (staffOpenMenu === menuBtn.dataset.toggleMenu) ? null : menuBtn.dataset.toggleMenu;
+        document.querySelectorAll('#staffSidebar .admin-menu').forEach(m => m.classList.toggle('open', m.dataset.menu === staffOpenMenu));
+        return;
+      }
+      if(subBtn){
+        staffSection = subBtn.dataset.section;
+        commissionView = 'portefeuille';
+        document.querySelectorAll('#staffSidebar .admin-sub-btn').forEach(b => b.classList.toggle('active', b.dataset.section === staffSection));
+        document.getElementById('adminContent').innerHTML = adminSectionHTML(staffSection);
+      }
+    });
+    bindAdminContentEvents();
+  }
+}
+
+
 function adminMenuCount(menuId){
   if(menuId === 'reservations-paiements') return ` (${reservationsLog.length})`;
   return '';
 }
 function adminSubCount(sectionId){
   if(sectionId === 'valides') return ` (${owners.filter(o => o.validated).length})`;
+  if(sectionId === 'utilisateurs') return ` (${staffUsers.length})`;
   return '';
 }
 
@@ -2053,6 +2401,7 @@ function adminSectionHTML(sectionId){
   switch(sectionId){
     case 'gestion-comptes': return sectionGestionComptes();
     case 'droits-privileges': return sectionDroitsPrivileges();
+    case 'utilisateurs': return sectionUtilisateurs();
     case 'attente-validation': return sectionAttenteValidation();
     case 'valides': return sectionComptesValides();
     case 'historique-reservations': return sectionHistoriqueReservations();
@@ -2100,9 +2449,11 @@ function staffCardHTML(s){
     <div class="dash-card">
       <div>
         <strong class="staff-role">${s.role}</strong>
+        <span class="status-pill ${s.blocked ? 'pending' : 'validated'}" style="margin-left:6px;">${s.blocked ? 'Bloqué' : 'Actif'}</span>
         <div class="meta">Identifiant : ${s.username}</div>
       </div>
       <div style="display:flex;gap:8px;">
+        <button type="button" class="dash-btn ${s.blocked ? '' : 'danger'}" data-block-staff="${s.id}">${s.blocked ? 'Débloquer' : 'Bloquer'}</button>
         <button type="button" class="icon-btn key" title="Réinitialiser le mot de passe" data-resetpw-staff="${s.id}">🔑</button>
         <button type="button" class="icon-btn" title="Modifier" data-edit-staff="${s.id}">✎</button>
         <button type="button" class="icon-btn danger" title="Supprimer" data-delete-staff="${s.id}">🗑</button>
@@ -2184,9 +2535,11 @@ function sectionGestionComptes(){
           <div>
             <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
             <span class="status-pill ${o.validated ? 'validated' : 'pending'}" style="margin-left:6px;">${o.validated ? 'Validé' : 'En attente'}</span>
+            ${o.blocked ? '<span class="status-pill pending" style="margin-left:6px;">Bloqué</span>' : ''}
             <div class="meta">Identifiant : ${o.username} · ${o.email} · ${o.contact}</div>
           </div>
           <div style="display:flex;gap:8px;">
+            <button type="button" class="dash-btn ${o.blocked ? '' : 'danger'}" data-block-owner="${o.srCode}">${o.blocked ? 'Débloquer' : 'Bloquer'}</button>
             <button type="button" class="icon-btn key" title="Réinitialiser le mot de passe" data-resetpw-owner="${o.srCode}">🔑</button>
             <button type="button" class="icon-btn" title="Modifier" data-edit-owner="${o.srCode}">✎</button>
             <button type="button" class="icon-btn danger" title="Supprimer" data-delete-owner="${o.srCode}">🗑</button>
@@ -2262,7 +2615,35 @@ function sectionDroitsPrivileges(){
   `;
 }
 
-/* ---- Inscriptions > En attente de validation ---- */
+/* ---- Comptes utilisateurs > Utilisateurs ---- */
+function permissionsActive(perm){
+  if(!perm) return false;
+  return perm.inscriptions.enabled || perm.comptesProprietaires.enabled || perm.comptabilite.enabled;
+}
+function sectionUtilisateurs(){
+  return `
+    <h4>Utilisateurs</h4>
+    <p class="sub-hint">Tous les comptes utilisateurs créés par l'administrateur (voir « Paramétrages » &gt; « Gestion des Comptes Utilisateurs »). Une fois les droits &amp; privilèges activés pour un compte, cliquez sur « Valider » pour terminer sa création : il pourra alors se connecter en choisissant le profil « Gestionnaire ».</p>
+    ${staffUsers.length === 0 ? '<div class="empty-note">Aucun compte utilisateur créé pour le moment. Rendez-vous dans « Paramétrages » &gt; « Gestion des Comptes Utilisateurs » pour en créer un.</div>' : staffUsers.map(s => {
+      const active = permissionsActive(s.permissions);
+      return `
+        <div class="dash-card">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            ${!s.validated && active ? `<button type="button" class="dash-btn primary" data-validate-staff="${s.id}">Valider</button>` : ''}
+            <div>
+              <strong class="staff-role">${s.role}</strong>
+              <span class="status-pill ${s.validated ? 'validated' : 'pending'}" style="margin-left:6px;">${s.validated ? '✓ Compte créé (Gestionnaire)' : 'Non finalisé'}</span>
+              ${s.blocked ? '<span class="status-pill pending" style="margin-left:6px;">Bloqué</span>' : ''}
+              <div class="meta">Identifiant : ${s.username} · Droits &amp; privilèges : ${active ? 'activés' : 'non activés'}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+
 function sectionAttenteValidation(){
   return `
     <h4>Inscriptions — validation des comptes</h4>
@@ -2448,6 +2829,9 @@ function bindAdminContentEvents(){
     const cancelPwStaffBtn = e.target.closest('[data-cancel-pw-staff]');
     const deleteStaffBtn = e.target.closest('[data-delete-staff]');
     const saveRightsBtn = e.target.closest('#btnSaveRights');
+    const blockOwnerBtn = e.target.closest('[data-block-owner]');
+    const blockStaffBtn = e.target.closest('[data-block-staff]');
+    const validateStaffBtn = e.target.closest('[data-validate-staff]');
 
     if(validateBtn){
       try { await db.collection('owners').doc(validateBtn.dataset.validate).update({validated: true}); }
@@ -2521,6 +2905,24 @@ function bindAdminContentEvents(){
         if(errEl){ errEl.textContent = "Les droits n'ont pas pu être enregistrés."; errEl.classList.add('show'); }
         saveRightsBtn.disabled = false; saveRightsBtn.textContent = 'Enregistrer les droits';
       }
+    } else if(blockOwnerBtn){
+      const code = blockOwnerBtn.dataset.blockOwner;
+      const owner = getOwnerByCode(code);
+      if(owner){
+        try { await db.collection('owners').doc(code).update({blocked: !owner.blocked}); }
+        catch(err){ console.error('Erreur Firestore (blocage propriétaire) :', err); alert("L'opération n'a pas pu être enregistrée."); }
+      }
+    } else if(blockStaffBtn){
+      const id = blockStaffBtn.dataset.blockStaff;
+      const staff = staffUsers.find(s => s.id === id);
+      if(staff){
+        try { await db.collection('staffUsers').doc(id).update({blocked: !staff.blocked}); }
+        catch(err){ console.error('Erreur Firestore (blocage utilisateur) :', err); alert("L'opération n'a pas pu être enregistrée."); }
+      }
+    } else if(validateStaffBtn){
+      const id = validateStaffBtn.dataset.validateStaff;
+      try { await db.collection('staffUsers').doc(id).update({validated: true}); }
+      catch(err){ console.error('Erreur Firestore (validation utilisateur) :', err); alert("La validation n'a pas pu être enregistrée."); }
     }
   });
 
@@ -2574,7 +2976,8 @@ function bindAdminContentEvents(){
       try {
         const id = genStaffId();
         await db.collection('staffUsers').doc(id).set({
-          id, role, username, password, permissions: defaultPermissions()
+          id, role, username, password, permissions: defaultPermissions(),
+          validated: false, blocked: false
         });
         creatingStaff = false;
         refreshAdminSection();
@@ -2689,14 +3092,17 @@ function bindAdminContentEvents(){
 }
 
 function refreshAdminSection(){
-  document.getElementById('adminContent').innerHTML = adminSectionHTML(adminSection);
+  const isStaff = session && session.type === 'staff';
+  const sectionId = isStaff ? staffSection : adminSection;
+  const menuList = isStaff ? staffMenuFor(getStaffById(session.staffId)) : ADMIN_MENU;
+  document.getElementById('adminContent').innerHTML = adminSectionHTML(sectionId);
   document.querySelectorAll('.admin-menu-btn[data-toggle-menu]').forEach(btn => {
-    const label = ADMIN_MENU.find(m => m.id === btn.dataset.toggleMenu);
-    if(label) btn.querySelector('span').textContent = label.label + adminMenuCount(label.id);
+    const label = menuList.find(m => m.id === btn.dataset.toggleMenu);
+    if(label) btn.querySelector('span').textContent = label.label + (isStaff ? '' : adminMenuCount(label.id));
   });
   document.querySelectorAll('.admin-sub-btn[data-section]').forEach(btn => {
-    const item = ADMIN_MENU.flatMap(m => m.items).find(it => it.id === btn.dataset.section);
-    if(item) btn.textContent = item.label + adminSubCount(item.id);
+    const item = menuList.flatMap(m => m.items).find(it => it.id === btn.dataset.section);
+    if(item) btn.textContent = item.label + (isStaff ? '' : adminSubCount(item.id));
   });
 }
 
@@ -2705,3 +3111,4 @@ render();
 </script>
 </body>
 </html>
+Mise à jour et modification
