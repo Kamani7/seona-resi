@@ -818,7 +818,30 @@ const resultCount = document.getElementById('resultCount');
 const chipsWrap = document.getElementById('chips');
 let favorites = JSON.parse(localStorage.getItem('seonaresi_favs') || '[]');
 let reservedIds = JSON.parse(localStorage.getItem('seonaresi_reserved') || '[]');
+let reservedUntil = JSON.parse(localStorage.getItem('seonaresi_reserved_until') || '{}');
 let activeCityFilter = "";
+
+/* Remet automatiquement en service les biens dont la date de fin de réservation est dépassée */
+function releaseExpiredReservations(){
+  const today = new Date().toISOString().slice(0,10);
+  let changed = false;
+  reservedIds = reservedIds.filter(id => {
+    const until = reservedUntil[id];
+    if(until && until < today){
+      delete reservedUntil[id];
+      changed = true;
+      return false;
+    }
+    return true;
+  });
+  if(changed){
+    localStorage.setItem('seonaresi_reserved', JSON.stringify(reservedIds));
+    localStorage.setItem('seonaresi_reserved_until', JSON.stringify(reservedUntil));
+  }
+  return changed;
+}
+releaseExpiredReservations();
+setInterval(() => { if(releaseExpiredReservations()) render(); }, 60 * 60 * 1000);
 
 // Build city chips dynamically from data
 const cities = [...new Set(LISTINGS.map(l => l.city))];
@@ -909,8 +932,19 @@ function galleryFor(l){
 }
 
 function money(n){ return n.toLocaleString('fr-FR') + ' FCFA'; }
+function addDays(dateStr, days){
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
+}
+function diffDays(dateStr1, dateStr2){
+  const d1 = new Date(dateStr1 + 'T00:00:00');
+  const d2 = new Date(dateStr2 + 'T00:00:00');
+  return Math.round((d2 - d1) / 86400000);
+}
 
 function render(){
+  releaseExpiredReservations();
   const q = document.getElementById('q').value.trim().toLowerCase();
   const quartier = document.getElementById('quartier').value.trim().toLowerCase();
   const type = document.getElementById('type').value.trim().toLowerCase();
@@ -1134,6 +1168,7 @@ function openReservationModal(l){
           <input type="date" id="resEndDate" min="${new Date().toISOString().slice(0,10)}">
         </div>
       </div>
+      <div class="res-hint" style="font-size:12.5px;color:#6B6A5A;margin:-8px 0 14px;">La date de fin se calcule automatiquement à partir du nombre de séjour(s). Vous pouvez aussi la modifier directement : le nombre de séjour(s) sera alors recalculé. Le bien redevient automatiquement disponible dès que la date de fin est passée.</div>
 
       <div class="res-error" id="resError"></div>
 
@@ -1182,7 +1217,10 @@ function openReservationModal(l){
     dueEl.textContent = money(due);
   }
   amountInput.addEventListener('input', updateTotal);
-  staysInput.addEventListener('input', updateTotal);
+  staysInput.addEventListener('input', () => {
+    updateTotal();
+    syncEndDateFromStays();
+  });
   payOptionGroup.addEventListener('change', () => {
     document.querySelectorAll('.pay-option').forEach(opt => {
       opt.classList.toggle('checked', opt.querySelector('input').checked);
@@ -1190,11 +1228,33 @@ function openReservationModal(l){
     updateTotal();
   });
 
-  document.getElementById('resDate').addEventListener('change', e => {
-    const endInput = document.getElementById('resEndDate');
-    endInput.min = e.target.value || new Date().toISOString().slice(0,10);
-    if(endInput.value && endInput.value < endInput.min) endInput.value = endInput.min;
+  document.getElementById('resDate').addEventListener('change', () => {
+    syncEndDateFromStays();
   });
+  document.getElementById('resEndDate').addEventListener('change', () => {
+    syncStaysFromEndDate();
+  });
+
+  function syncEndDateFromStays(){
+    const dateInput = document.getElementById('resDate');
+    const endInput = document.getElementById('resEndDate');
+    if(!dateInput.value) return;
+    const stays = Number(staysInput.value) || 1;
+    endInput.min = dateInput.value;
+    endInput.value = addDays(dateInput.value, stays);
+  }
+  function syncStaysFromEndDate(){
+    const dateInput = document.getElementById('resDate');
+    const endInput = document.getElementById('resEndDate');
+    if(!dateInput.value || !endInput.value) return;
+    let stays = diffDays(dateInput.value, endInput.value);
+    if(stays < 1){
+      stays = 1;
+      endInput.value = addDays(dateInput.value, stays);
+    }
+    staysInput.value = stays;
+    updateTotal();
+  }
 
   document.getElementById('reservationClose').addEventListener('click', closeReservationModal);
   document.getElementById('btnProceedPayment').addEventListener('click', () => {
@@ -1383,6 +1443,10 @@ async function validateReservation(l, res, method){
     reservedIds.push(l.id);
     localStorage.setItem('seonaresi_reserved', JSON.stringify(reservedIds));
   }
+  if(res.resEndDate){
+    reservedUntil[l.id] = res.resEndDate;
+    localStorage.setItem('seonaresi_reserved_until', JSON.stringify(reservedUntil));
+  }
 
   /* Répartition automatique du paiement : commission plateforme (500 FCFA) vers le
      portefeuille administrateur (sur le même opérateur que le paiement), le reste
@@ -1453,7 +1517,7 @@ function openReceipt(r){
         <span class="amount">${money(r.due)}</span>
       </div>
 
-      <div class="receipt-note">Ce reçu confirme votre réservation sur SEONA RESI. Conservez-le et présentez-le lors de votre arrivée. Pour toute question, contactez-nous via WhatsApp au <strong>${r.l.phone || '—'}</strong>.</div>
+      <div class="receipt-note">Ce reçu confirme votre réservation sur SEONA RESI. Conservez-le et présentez-le lors de votre arrivée. Pour toute question, Contactez le propriétaire du bien via WhatsApp ou par Appel au <strong>${r.l.phone || '—'}</strong>.</div>
 
       <div class="receipt-actions">
         <button class="btn-print" id="btnPrintReceipt">🖨️ Imprimer / Enregistrer en PDF</button>
