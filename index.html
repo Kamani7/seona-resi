@@ -1129,6 +1129,10 @@ function openReservationModal(l){
           <label for="resDate">Date de réservation (période)</label>
           <input type="date" id="resDate" min="${new Date().toISOString().slice(0,10)}">
         </div>
+        <div class="res-field">
+          <label for="resEndDate">Date de fin de réservation</label>
+          <input type="date" id="resEndDate" min="${new Date().toISOString().slice(0,10)}">
+        </div>
       </div>
 
       <div class="res-error" id="resError"></div>
@@ -1186,6 +1190,12 @@ function openReservationModal(l){
     updateTotal();
   });
 
+  document.getElementById('resDate').addEventListener('change', e => {
+    const endInput = document.getElementById('resEndDate');
+    endInput.min = e.target.value || new Date().toISOString().slice(0,10);
+    if(endInput.value && endInput.value < endInput.min) endInput.value = endInput.min;
+  });
+
   document.getElementById('reservationClose').addEventListener('click', closeReservationModal);
   document.getElementById('btnProceedPayment').addEventListener('click', () => {
     const name = document.getElementById('resName').value.trim();
@@ -1193,10 +1203,16 @@ function openReservationModal(l){
     const amount = Number(amountInput.value);
     const stays = Number(staysInput.value);
     const resDate = document.getElementById('resDate').value;
+    const resEndDate = document.getElementById('resEndDate').value;
     const errorEl = document.getElementById('resError');
 
     if(!name || !phone || !amount || amount <= 0 || !stays || stays <= 0 || !resDate){
       errorEl.textContent = "Merci de renseigner votre nom, votre téléphone, un montant, un nombre de séjour et une date de réservation valides.";
+      errorEl.classList.add('show');
+      return;
+    }
+    if(resEndDate && resEndDate < resDate){
+      errorEl.textContent = "La date de fin de réservation doit être postérieure ou égale à la date de réservation.";
       errorEl.classList.add('show');
       return;
     }
@@ -1205,7 +1221,7 @@ function openReservationModal(l){
     const total = amount * stays;
     const portion = getPortion();
     const due = portion === '30' ? Math.round(total * 0.3) : total;
-    openPaymentMethods(l, {name, phone, amount, stays, resDate, total, portion, due});
+    openPaymentMethods(l, {name, phone, amount, stays, resDate, resEndDate, total, portion, due});
   });
 }
 
@@ -1387,7 +1403,7 @@ async function validateReservation(l, res, method){
   }
 
   await db.collection('reservationsLog').add({
-    ref:l.ref, title:l.title, dateStr, clientName:res.name, resDate: res.resDate || '',
+    ref:l.ref, title:l.title, dateStr, clientName:res.name, resDate: res.resDate || '', resEndDate: res.resEndDate || '',
     due:res.due, operator:method.label, operatorId:method.id, fee, ownerNet,
     createdAt: Date.now()
   });
@@ -1397,7 +1413,7 @@ async function validateReservation(l, res, method){
   openReceipt({
     receiptNumber, dateStr, l,
     name: res.name, phone: res.phone,
-    amount: res.amount, stays: res.stays, resDate: res.resDate,
+    amount: res.amount, stays: res.stays, resDate: res.resDate, resEndDate: res.resEndDate,
     total: res.total, due: res.due, portion: res.portion,
     method
   });
@@ -1425,6 +1441,7 @@ function openReceipt(r){
         <div class="receipt-row"><span>Montant unitaire</span><span>${money(r.amount)}</span></div>
         <div class="receipt-row"><span>Nombre de séjour(s)</span><span>${r.stays}</span></div>
         <div class="receipt-row"><span>Date de réservation</span><span>${r.resDate ? new Date(r.resDate).toLocaleDateString('fr-FR') : '—'}</span></div>
+        <div class="receipt-row"><span>Date de fin de réservation</span><span>${r.resEndDate ? new Date(r.resEndDate).toLocaleDateString('fr-FR') : '—'}</span></div>
         <div class="receipt-row"><span>Montant total</span><span>${money(r.total)}</span></div>
         <div class="receipt-row"><span>Formule de paiement</span><span>${r.portion === '30' ? 'Acompte 30%' : 'Totalité'}</span></div>
         <div class="receipt-row"><span>Mode de paiement</span><span>${r.method ? r.method.label : '—'}</span></div>
@@ -1436,7 +1453,7 @@ function openReceipt(r){
         <span class="amount">${money(r.due)}</span>
       </div>
 
-      <div class="receipt-note">Ce reçu confirme votre réservation sur SEONA RESI. Conservez-le et présentez-le lors de votre arrivée. Pour toute question, contactez-nous via WhatsApp au 07 47 37 79 39 ou 07 78 66 22 93.</div>
+      <div class="receipt-note">Ce reçu confirme votre réservation sur SEONA RESI. Conservez-le et présentez-le lors de votre arrivée. Pour toute question, contactez-nous via WhatsApp au <strong>${r.l.phone || '—'}</strong>.</div>
 
       <div class="receipt-actions">
         <button class="btn-print" id="btnPrintReceipt">🖨️ Imprimer / Enregistrer en PDF</button>
@@ -1556,12 +1573,16 @@ let editingStaffId = null;
 let resetPwStaffId = null;
 let rightsStaffId = null;
 let rightsDraft = null;
+let droitsPrivilegesTab = 'droits';
 function defaultPermissions(perm){
   perm = perm || {};
   return {
     inscriptions: Object.assign({enabled:false, voir:false, valider:false}, perm.inscriptions || {}),
-    comptesProprietaires: Object.assign({enabled:false, voirValides:false}, perm.comptesProprietaires || {}),
-    comptabilite: Object.assign({enabled:false, voirTransferts:false, voirCommission:false}, perm.comptabilite || {})
+    comptesProprietaires: Object.assign({enabled:false, voirValides:false, voirTransferts:false}, perm.comptesProprietaires || {}),
+    comptesUtilisateurs: Object.assign({enabled:false}, perm.comptesUtilisateurs || {}),
+    comptabilite: Object.assign({enabled:false, voirTransferts:false, voirCommission:false}, perm.comptabilite || {}),
+    reservationsPaiements: Object.assign({enabled:false, historique:false, rapport:false}, perm.reservationsPaiements || {}),
+    privileges: Object.assign({valide:false, bloquer:false, supprimer:false, modifier:false}, perm.privileges || {})
   };
 }
 function genStaffId(){
@@ -2578,6 +2599,12 @@ function sectionDroitsPrivileges(){
       </select>
     </div>
 
+    <div class="admin-toggle-row">
+      <button type="button" class="dash-btn ${droitsPrivilegesTab === 'droits' ? 'active' : ''}" data-droits-tab="droits">Droits</button>
+      <button type="button" class="dash-btn ${droitsPrivilegesTab === 'privileges' ? 'active' : ''}" data-droits-tab="privileges">Privilèges</button>
+    </div>
+
+    ${droitsPrivilegesTab === 'droits' ? `
     <div class="right-group">
       <div class="right-group-head">
         <strong>Inscriptions</strong>
@@ -2596,6 +2623,14 @@ function sectionDroitsPrivileges(){
       </div>
       <div class="right-items">
         <label class="right-item ${p.comptesProprietaires.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptesProprietaires.voirValides" ${p.comptesProprietaires.voirValides ? 'checked' : ''}> Voir les comptes Validés</label>
+        <label class="right-item ${p.comptesProprietaires.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptesProprietaires.voirTransferts" ${p.comptesProprietaires.voirTransferts ? 'checked' : ''}> Voir les transferts</label>
+      </div>
+    </div>
+
+    <div class="right-group">
+      <div class="right-group-head">
+        <strong>Comptes utilisateurs</strong>
+        <label class="switch"><input type="checkbox" data-right-toggle="comptesUtilisateurs" ${p.comptesUtilisateurs.enabled ? 'checked' : ''}><span class="slider"></span></label>
       </div>
     </div>
 
@@ -2610,6 +2645,30 @@ function sectionDroitsPrivileges(){
       </div>
     </div>
 
+    <div class="right-group">
+      <div class="right-group-head">
+        <strong>Réservations &amp; paiements</strong>
+        <label class="switch"><input type="checkbox" data-right-toggle="reservationsPaiements" ${p.reservationsPaiements.enabled ? 'checked' : ''}><span class="slider"></span></label>
+      </div>
+      <div class="right-items">
+        <label class="right-item ${p.reservationsPaiements.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="reservationsPaiements.historique" ${p.reservationsPaiements.historique ? 'checked' : ''}> Historique des réservations</label>
+        <label class="right-item ${p.reservationsPaiements.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="reservationsPaiements.rapport" ${p.reservationsPaiements.rapport ? 'checked' : ''}> Rapport d'activité</label>
+      </div>
+    </div>
+    ` : `
+    <div class="right-group">
+      <div class="right-group-head">
+        <strong>Privilèges</strong>
+      </div>
+      <div class="right-items">
+        <label class="right-item"><input type="checkbox" data-right-check="privileges.valide" ${p.privileges.valide ? 'checked' : ''}> Valider</label>
+        <label class="right-item"><input type="checkbox" data-right-check="privileges.bloquer" ${p.privileges.bloquer ? 'checked' : ''}> Bloquer</label>
+        <label class="right-item"><input type="checkbox" data-right-check="privileges.supprimer" ${p.privileges.supprimer ? 'checked' : ''}> Supprimer</label>
+        <label class="right-item"><input type="checkbox" data-right-check="privileges.modifier" ${p.privileges.modifier ? 'checked' : ''}> Modifier</label>
+      </div>
+    </div>
+    `}
+
     <div class="res-error" id="rightsError"></div>
     <button type="button" class="dash-btn primary" id="btnSaveRights" style="margin-top:6px;">Enregistrer les droits</button>
   `;
@@ -2618,7 +2677,7 @@ function sectionDroitsPrivileges(){
 /* ---- Comptes utilisateurs > Utilisateurs ---- */
 function permissionsActive(perm){
   if(!perm) return false;
-  return perm.inscriptions.enabled || perm.comptesProprietaires.enabled || perm.comptabilite.enabled;
+  return perm.inscriptions.enabled || perm.comptesProprietaires.enabled || (perm.comptesUtilisateurs && perm.comptesUtilisateurs.enabled) || perm.comptabilite.enabled || (perm.reservationsPaiements && perm.reservationsPaiements.enabled);
 }
 function sectionUtilisateurs(){
   return `
@@ -2829,6 +2888,7 @@ function bindAdminContentEvents(){
     const cancelPwStaffBtn = e.target.closest('[data-cancel-pw-staff]');
     const deleteStaffBtn = e.target.closest('[data-delete-staff]');
     const saveRightsBtn = e.target.closest('#btnSaveRights');
+    const droitsTabBtn = e.target.closest('[data-droits-tab]');
     const blockOwnerBtn = e.target.closest('[data-block-owner]');
     const blockStaffBtn = e.target.closest('[data-block-staff]');
     const validateStaffBtn = e.target.closest('[data-validate-staff]');
@@ -2905,6 +2965,9 @@ function bindAdminContentEvents(){
         if(errEl){ errEl.textContent = "Les droits n'ont pas pu être enregistrés."; errEl.classList.add('show'); }
         saveRightsBtn.disabled = false; saveRightsBtn.textContent = 'Enregistrer les droits';
       }
+    } else if(droitsTabBtn){
+      droitsPrivilegesTab = droitsTabBtn.dataset.droitsTab;
+      refreshAdminSection();
     } else if(blockOwnerBtn){
       const code = blockOwnerBtn.dataset.blockOwner;
       const owner = getOwnerByCode(code);
