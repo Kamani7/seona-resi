@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEONA RESI - Résidences Meublées</title>
+  
+  <!-- CSS External & Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- SDKs Firebase (v9 Compat pour préserver la structure) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="logo">
+      <i class="fa-solid fa-house-signal"></i>
+      <span>SEONA <strong>RESI</strong></span>
+    </div>
+    
+    <nav class="nav-links">
+      <button class="btn-nav" id="btn-home"><i class="fa-solid fa-compass"></i> Explorer</button>
+      <button class="btn-nav" id="btn-favorites"><i class="fa-solid fa-heart"></i> Favoris</button>
+      <button class="btn-primary" id="btn-auth-modal"><i class="fa-solid fa-user"></i> Connexion / Espace Pro</button>
+    </nav>
+  </header>
+
+  <!-- Filtres de recherche -->
+  <section class="search-bar">
+    <div class="filter-group">
+      <i class="fa-solid fa-location-dot"></i>
+      <input type="text" id="filter-city" placeholder="Ville (ex: San-Pédro, Abidjan)">
+    </div>
+    <div class="filter-group">
+      <i class="fa-solid fa-tag"></i>
+      <select id="filter-type">
+        <option value="">Tous les types</option>
+        <option value="Studio">Studio</option>
+        <option value="Appartement">Appartement</option>
+        <option value="Villa">Villa</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <i class="fa-solid fa-coins"></i>
+      <input type="number" id="filter-max-price" placeholder="Prix max / nuit (FCFA)">
+    </div>
+    <button class="btn-search" id="btn-apply-filters"><i class="fa-solid fa-magnifying-glass"></i> Rechercher</button>
+  </section>
+
+  <!-- Grille des Annonces -->
+  <main class="container">
+    <h2 class="section-title">Résidences disponibles</h2>
+    <div id="listings-grid" class="grid-listings">
+      <!-- Les cartes d'annonces seront injectées dynamiquement -->
+    </div>
+  </main>
+
+  <!-- Modale d'Authentification / Espace Pro -->
+  <div class="modal" id="modal-auth">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3>Connexion / Inscription Pro</h3>
+      <form id="form-login">
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="login-email" required>
+        </div>
+        <div class="input-group">
+          <label>Mot de passe</label>
+          <input type="password" id="login-password" required>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Se connecter</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts Application -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
