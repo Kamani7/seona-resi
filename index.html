@@ -2,7 +2,11 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F2E2A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <title>SEONA RESI — Résidences & maisons à louer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -386,6 +390,30 @@
   .res-row{display:flex;gap:14px;flex-wrap:wrap;}
   .res-row .res-field{min-width:150px;}
   .res-row .res-field{flex:1;}
+
+  /* ---------- Mini calendrier de disponibilité (réservation) ---------- */
+  .date-picker-field{position:relative;}
+  .date-picker-display{cursor:pointer;background:var(--white);}
+  .mini-cal{
+    position:absolute;z-index:40;top:calc(100% + 6px);left:0;
+    background:var(--white);border:1px solid var(--line);border-radius:12px;
+    box-shadow:0 10px 28px rgba(0,0,0,0.2);padding:12px;width:250px;display:none;
+  }
+  .mini-cal.open{display:block;}
+  .mini-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-family:'Fraunces',serif;font-size:13.5px;font-weight:600;}
+  .mini-cal-nav{border:none;background:none;font-size:16px;cursor:pointer;color:var(--ink);width:24px;height:24px;border-radius:50%;padding:0;}
+  .mini-cal-nav:hover{background:#EFEDDF;}
+  .mini-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+  .mini-cal-dow{font-size:10px;text-transform:uppercase;color:#6B6A5A;text-align:center;padding:2px 0;font-weight:600;}
+  .mini-cal-day{font-size:12.5px;text-align:center;padding:6px 0;border-radius:6px;cursor:pointer;background:transparent;border:none;font-family:inherit;color:var(--ink);}
+  .mini-cal-day:hover:not(:disabled){background:#EFEDDF;}
+  .mini-cal-day.selected{background:var(--teal);color:#fff;font-weight:600;}
+  .mini-cal-day.reserved{background:#E7E4D6;color:#9C9A87;text-decoration:line-through;cursor:not-allowed;}
+  .mini-cal-day.disabled-past{color:#C9C4AE;cursor:not-allowed;}
+  .mini-cal-day.empty{visibility:hidden;cursor:default;}
+  .mini-cal-legend{display:flex;gap:10px;margin-top:10px;font-size:10px;color:#6B6A5A;flex-wrap:wrap;}
+  .mini-cal-legend span{display:inline-flex;align-items:center;gap:4px;}
+  .mini-cal-legend i{width:9px;height:9px;border-radius:3px;display:inline-block;}
   .res-total{
     display:flex;justify-content:space-between;align-items:center;
     background:#EFEDDF;border-radius:10px;padding:14px 16px;margin:6px 0 20px;
@@ -461,6 +489,12 @@
 
   /* ---------- Auth buttons (header) ---------- */
   .nav-actions{display:flex;gap:10px;align-items:center;}
+  .auth-buttons-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+  .auth-hint{font-size:11px;color:#C9C4AE;font-style:italic;text-align:right;max-width:220px;line-height:1.3;}
+  .auth-buttons-row{display:flex;gap:10px;}
+  @media (max-width:680px){
+    .auth-hint{text-align:left;max-width:none;}
+  }
   .btn-nav{
     border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:600;
     border:1px solid #43544F;background:transparent;color:var(--panel);
@@ -487,6 +521,12 @@
   .form-field .hint{font-size:11.5px;color:#8B8A76;font-weight:400;text-transform:none;letter-spacing:0;}
   .form-row{display:flex;gap:14px;}
   .form-row .form-field{flex:1;}
+  .form-field textarea{
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-size:14px;font-family:inherit;background:var(--white);color:var(--ink);
+    resize:vertical;min-height:110px;
+  }
+  .form-field textarea:focus{outline:2px solid var(--teal);outline-offset:1px;}
   .file-drop{
     border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;
     background:#FBFAF4;font-size:13px;color:#6B6A5A;cursor:pointer;
@@ -613,6 +653,109 @@
   .right-item{display:flex;align-items:center;gap:9px;font-size:13.5px;cursor:pointer;}
   .right-item input[type=checkbox]{width:16px;height:16px;flex:none;accent-color:var(--teal);}
   .right-item.disabled{opacity:.4;pointer-events:none;}
+
+  /* =========================================================================
+     ADAPTATION MOBILE (Android / iOS / iPadOS / navigateurs tactiles)
+     ========================================================================= */
+
+  /* Empêche tout débordement horizontal parasite sur petits écrans */
+  html,body{max-width:100%;overflow-x:hidden;}
+  /* Tap plus agréable sur mobile (pas de flash gris + pas de sélection au double-tap) */
+  *{-webkit-tap-highlight-color:transparent;}
+  button,a,.chip,.btn-nav,.card-btn{touch-action:manipulation;}
+  /* Confort de défilement dans les modales sur iOS */
+  .modal,.admin-content,.overlay{-webkit-overflow-scrolling:touch;}
+  /* Respect de l'encoche / barre d'accueil (iPhone) */
+  header{padding-top:calc(22px + env(safe-area-inset-top));}
+  footer{padding-bottom:calc(30px + env(safe-area-inset-bottom));}
+  #fbSetupBanner{padding-bottom:calc(12px + env(safe-area-inset-bottom)) !important;}
+
+  /* ---------- Menu burger (nav) ---------- */
+  .nav-burger{
+    display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;
+    width:42px;height:42px;flex:none;border:1px solid #43544F;border-radius:8px;
+    background:transparent;padding:0;
+  }
+  .nav-burger span{display:block;width:20px;height:2px;background:var(--panel);border-radius:2px;transition:transform .2s ease,opacity .2s ease;}
+  .nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .nav-burger.open span:nth-child(2){opacity:0;}
+  .nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .nav-backdrop{display:none;position:fixed;inset:0;background:rgba(20,26,23,0.5);z-index:39;}
+  .nav-backdrop.open{display:block;}
+
+  @media (max-width:900px){
+    .nav-burger{display:flex;}
+    .nav-actions{
+      display:flex;flex-direction:column;align-items:stretch;gap:12px;
+      position:fixed;top:0;right:0;height:100vh;height:100dvh;width:min(300px,84vw);
+      background:var(--ink);z-index:40;padding:calc(20px + env(safe-area-inset-top)) 20px 20px;
+      transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;
+      box-shadow:-8px 0 30px rgba(0,0,0,0.3);
+    }
+    .nav-actions.open{transform:translateX(0);}
+    .nav-actions .tag{align-self:flex-start;}
+    .auth-buttons-wrap{align-items:stretch;}
+    .auth-hint{max-width:none;text-align:left;}
+    .auth-buttons-row{flex-direction:column;}
+    .btn-nav{width:100%;text-align:center;padding:12px 16px;}
+  }
+
+  /* ---------- Ajustements généraux tactiles ---------- */
+  @media (max-width:680px){
+    header{padding-left:5vw;padding-right:5vw;}
+    .hero{padding-left:0;padding-right:0;}
+    h1{font-size:clamp(28px,7vw,40px);}
+    main{padding-left:5vw;padding-right:5vw;}
+    .section-head{flex-direction:column;align-items:flex-start;gap:6px;}
+    .card-visual{height:130px;}
+    .modal-specs{flex-wrap:wrap;gap:14px;}
+    .contact-row,.res-row{flex-direction:column;}
+    .contact-row a,.res-row .res-field{min-width:0;width:100%;}
+    .deposit-tabs{gap:6px;}
+    .deposit-tab{min-width:0;flex:1 1 45%;}
+    .pay-methods{grid-template-columns:1fr;}
+    .thumbs{flex-wrap:wrap;}
+    .mini-cal{width:min(280px,88vw);}
+    .footer-inner{flex-direction:column;gap:18px;}
+    footer p{max-width:none;}
+  }
+
+  /* Empêche le zoom automatique iOS Safari sur les champs de formulaire
+     (Safari zoome dès qu'un champ a une taille de police < 16px au focus) */
+  @media (max-width:680px){
+    .field input,.field select,
+    .form-field input,.form-field select,.form-field textarea,
+    .staff-select,#budgetCustom{
+      font-size:16px !important;
+    }
+  }
+
+  /* Cibles tactiles confortables (recommandation Apple/Google : 44x44px min) */
+  @media (max-width:680px){
+    .btn-nav,.chip,.card-btn,.btn-search,.btn-pay,.btn-validate,.btn-reserve,
+    .btn-print,.btn-close-receipt,.dash-btn,.icon-btn,.modal-close,.thumb,
+    .mini-cal-nav,.mini-cal-day{
+      min-height:40px;
+    }
+    .icon-btn,.modal-close{min-width:40px;}
+  }
+
+  /* Overlay/modale : marges réduites et plein écran confortable sur mobile */
+  @media (max-width:600px){
+    .overlay{padding:0;align-items:flex-end;}
+    .modal{
+      max-width:100%;width:100%;max-height:92vh;max-height:92dvh;
+      border-radius:16px 16px 0 0;
+      padding-bottom:env(safe-area-inset-bottom);
+    }
+  }
+
+  /* Petits écrans (iPhone SE et similaires) */
+  @media (max-width:380px){
+    .logo-text{font-size:17px;}
+    .modal-body{padding:20px 16px 24px;}
+    .deposit-tab{flex:1 1 100%;}
+  }
 </style>
 </head>
 <body>
@@ -627,12 +770,23 @@
       </svg>
       <div class="logo-text">SEONA <span>RESI</span></div>
     </div>
+    <button class="nav-burger" id="navBurger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navActions">
+      <span></span><span></span><span></span>
+    </button>
     <div class="nav-actions" id="navActions">
       <span class="tag">Location de résidences</span>
-      <button class="btn-nav" id="btnOpenLogin">Se connecter</button>
-      <button class="btn-nav solid" id="btnOpenRegister">S'inscrire</button>
+      <button class="btn-nav" id="btnOpenReceiptCode">🧾 Générer reçu de paiement</button>
+      <div class="auth-buttons-wrap">
+        <div class="auth-hint">Pour les Clients pas besoin d'avoir un compte avant de passer une réservation</div>
+        <div class="auth-buttons-row">
+          <button class="btn-nav" id="btnOpenLogin">Se connecter</button>
+          <button class="btn-nav solid" id="btnOpenRegister">S'inscrire</button>
+        </div>
+      </div>
+      <button class="btn-nav" id="btnOpenSuggestion">💬 Boîte de suggestions</button>
     </div>
   </div>
+  <div class="nav-backdrop" id="navBackdrop"></div>
 </header>
 
 <section class="hero">
@@ -743,6 +897,10 @@
   <div class="modal" id="authContent" style="max-width:520px;"></div>
 </div>
 
+<div class="overlay" id="suggestionOverlay">
+  <div class="modal" id="suggestionContent" style="max-width:480px;"></div>
+</div>
+
 <div class="overlay" id="dashOverlay">
   <div class="modal" id="dashContent" style="max-width:760px;"></div>
 </div>
@@ -817,31 +975,125 @@ const grid = document.getElementById('grid');
 const resultCount = document.getElementById('resultCount');
 const chipsWrap = document.getElementById('chips');
 let favorites = JSON.parse(localStorage.getItem('seonaresi_favs') || '[]');
-let reservedIds = JSON.parse(localStorage.getItem('seonaresi_reserved') || '[]');
-let reservedUntil = JSON.parse(localStorage.getItem('seonaresi_reserved_until') || '{}');
 let activeCityFilter = "";
 
-/* Remet automatiquement en service les biens dont la date de fin de réservation est dépassée */
-function releaseExpiredReservations(){
+/* ---------- Disponibilité par période (plutôt que par bien entier) ----------
+   Un bien reste toujours visible et réservable à la page d'accueil, même s'il a déjà
+   une réservation en cours : seules les dates déjà couvertes par une réservation active
+   (non annulée) sont grisées dans le calendrier de réservation, pour que d'autres clients
+   puissent réserver ce même bien sur d'autres dates. La source de vérité est la liste
+   `reservationsLog`, synchronisée en temps réel depuis Firestore (voir plus bas), ce qui
+   garantit que ce blocage par date fonctionne de la même façon sur tous les appareils. */
+function getActiveReservationRanges(ref){
   const today = new Date().toISOString().slice(0,10);
-  let changed = false;
-  reservedIds = reservedIds.filter(id => {
-    const until = reservedUntil[id];
-    if(until && until < today){
-      delete reservedUntil[id];
-      changed = true;
-      return false;
-    }
-    return true;
-  });
-  if(changed){
-    localStorage.setItem('seonaresi_reserved', JSON.stringify(reservedIds));
-    localStorage.setItem('seonaresi_reserved_until', JSON.stringify(reservedUntil));
-  }
-  return changed;
+  return reservationsLog
+    /* Une fois la date de fin de séjour (resEndDate) dépassée, la réservation n'est
+       plus "active" : ses dates redeviennent immédiatement disponibles pour de
+       nouvelles réservations (seules les périodes annulées ou dont le séjour n'est
+       pas encore terminé continuent de griser le calendrier). */
+    .filter(r => r.ref === ref && r.status !== 'annulee' && r.resDate && r.resEndDate && r.resEndDate >= today)
+    .map(r => ({start: r.resDate, end: r.resEndDate}));
 }
-releaseExpiredReservations();
-setInterval(() => { if(releaseExpiredReservations()) render(); }, 60 * 60 * 1000);
+function isDateInRanges(dateStr, ranges){
+  return ranges.some(r => dateStr >= r.start && dateStr <= r.end);
+}
+function rangesOverlap(aStart, aEnd, bStart, bEnd){
+  return aStart <= bEnd && bStart <= aEnd;
+}
+function hasActiveReservation(ref){
+  const today = new Date().toISOString().slice(0,10);
+  return reservationsLog.some(r => r.ref === ref && r.status !== 'annulee' && r.resEndDate && r.resEndDate >= today);
+}
+function formatFR(dateStr){
+  if(!dateStr) return '';
+  const [y,m,d] = dateStr.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+/* Mini calendrier réutilisable pour choisir une date tout en grisant les dates déjà
+   réservées pour un bien donné (voir getActiveReservationRanges). Remplace les champs
+   <input type="date"> natifs, qui ne permettent pas de griser des jours précis. */
+function initDatePicker(opts){
+  const displayEl = document.getElementById(opts.displayId);
+  const hiddenEl = document.getElementById(opts.inputId);
+  const calEl = document.getElementById(opts.calId);
+  if(!displayEl || !hiddenEl || !calEl) return null;
+  let viewDate = new Date();
+  viewDate.setDate(1);
+  const monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+  function renderCalendar(){
+    const minDate = opts.getMinDate ? opts.getMinDate() : new Date().toISOString().slice(0,10);
+    const ranges = getActiveReservationRanges(opts.ref);
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    const first = new Date(year, month, 1);
+    const startWeekDay = (first.getDay() + 6) % 7; // semaine commençant le lundi
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    let cellsHtml = '';
+    for(let i = 0; i < startWeekDay; i++) cellsHtml += `<span class="mini-cal-day empty"></span>`;
+    for(let d = 1; d <= daysInMonth; d++){
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isPast = dateStr < minDate;
+      const isReservedDay = isDateInRanges(dateStr, ranges);
+      const isSelected = hiddenEl.value === dateStr;
+      const disabled = isPast || isReservedDay;
+      cellsHtml += `<button type="button" class="mini-cal-day${isSelected?' selected':''}${isReservedDay?' reserved':''}${(isPast && !isReservedDay)?' disabled-past':''}" data-date="${dateStr}" ${disabled?'disabled':''} title="${isReservedDay?'Déjà réservé':''}">${d}</button>`;
+    }
+    calEl.innerHTML = `
+      <div class="mini-cal-head">
+        <button type="button" class="mini-cal-nav" data-nav="-1" aria-label="Mois précédent">‹</button>
+        <span>${monthNames[month]} ${year}</span>
+        <button type="button" class="mini-cal-nav" data-nav="1" aria-label="Mois suivant">›</button>
+      </div>
+      <div class="mini-cal-grid">
+        <span class="mini-cal-dow">Lu</span><span class="mini-cal-dow">Ma</span><span class="mini-cal-dow">Me</span><span class="mini-cal-dow">Je</span><span class="mini-cal-dow">Ve</span><span class="mini-cal-dow">Sa</span><span class="mini-cal-dow">Di</span>
+        ${cellsHtml}
+      </div>
+      <div class="mini-cal-legend">
+        <span><i style="background:#E7E4D6"></i>Déjà réservé</span>
+        <span><i style="background:var(--teal)"></i>Sélectionné</span>
+      </div>
+    `;
+    calEl.querySelectorAll('[data-nav]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        viewDate.setMonth(viewDate.getMonth() + Number(btn.dataset.nav));
+        renderCalendar();
+      });
+    });
+    calEl.querySelectorAll('.mini-cal-day[data-date]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const dateStr = btn.dataset.date;
+        hiddenEl.value = dateStr;
+        displayEl.value = formatFR(dateStr);
+        calEl.classList.remove('open');
+        renderCalendar();
+        if(opts.onPick) opts.onPick(dateStr);
+      });
+    });
+  }
+
+  displayEl.addEventListener('click', e => {
+    e.stopPropagation();
+    document.querySelectorAll('.mini-cal.open').forEach(c => { if(c !== calEl) c.classList.remove('open'); });
+    if(hiddenEl.value){
+      const d = new Date(hiddenEl.value + 'T00:00:00');
+      viewDate = new Date(d.getFullYear(), d.getMonth(), 1);
+    }
+    renderCalendar();
+    calEl.classList.toggle('open');
+  });
+  document.addEventListener('click', e => {
+    if(!calEl.contains(e.target) && e.target !== displayEl){
+      calEl.classList.remove('open');
+    }
+  });
+
+  renderCalendar();
+  return { rerender: renderCalendar };
+}
 
 // Build city chips dynamically from data
 const cities = [...new Set(LISTINGS.map(l => l.city))];
@@ -944,7 +1196,6 @@ function diffDays(dateStr1, dateStr2){
 }
 
 function render(){
-  releaseExpiredReservations();
   const q = document.getElementById('q').value.trim().toLowerCase();
   const quartier = document.getElementById('quartier').value.trim().toLowerCase();
   const type = document.getElementById('type').value.trim().toLowerCase();
@@ -974,8 +1225,7 @@ function render(){
 
   items.forEach(l => {
     const card = document.createElement('div');
-    const isReserved = reservedIds.includes(l.id);
-    card.className = 'card' + (isReserved ? ' reserved' : '');
+    card.className = 'card';
     card.dataset.open = l.id;
     const isFav = favorites.includes(l.id);
     const cardVisual = (l.images && l.images.length) ? `<img src="${l.images[0]}" style="width:100%;height:100%;object-fit:cover;display:block;">` : houseSVG(l.color, l.ref);
@@ -983,12 +1233,12 @@ function render(){
       <div class="card-visual" style="background:${l.color}">
         ${cardVisual}
         <span class="ref-tag">${l.ref}</span>
-        ${isReserved ? `<span class="reserved-tag">Réservé</span>` : `<button class="fav-btn ${isFav?'active':''}" data-id="${l.id}" aria-label="Ajouter aux favoris">${isFav?'♥':'♡'}</button>`}
+        <button class="fav-btn ${isFav?'active':''}" data-id="${l.id}" aria-label="Ajouter aux favoris">${isFav?'♥':'♡'}</button>
       </div>
       <div class="card-body">
-        <div class="card-type">${l.type}</div>
-        <div class="card-title">${l.title}</div>
-        <div class="card-loc">📍 ${l.city}</div>
+        <div class="card-type">${escapeHtml(l.type)}</div>
+        <div class="card-title">${escapeHtml(l.title)}</div>
+        <div class="card-loc">📍 ${escapeHtml(l.city)}</div>
         <div class="card-specs">
           <span>${l.rooms} pièce${l.rooms>1?'s':''}</span>
           <span>${l.baths} SdB</span>
@@ -996,9 +1246,7 @@ function render(){
         </div>
         <div class="card-footer">
           <div class="price">${money(l.price)}<br><small>par mois</small></div>
-          ${isReserved
-            ? `<button class="card-btn" disabled>Indisponible</button>`
-            : `<button class="card-btn" data-open="${l.id}">Voir le bien</button>`}
+          <button class="card-btn" data-open="${l.id}">Voir le bien</button>
         </div>
       </div>
     `;
@@ -1041,10 +1289,10 @@ const modalContent = document.getElementById('modalContent');
 function openModal(id){
   const l = getAllListings().find(x => x.id === id);
   if(!l) return;
-  const isReserved = reservedIds.includes(l.id);
+  const activeRanges = getActiveReservationRanges(l.ref);
   const images = galleryFor(l);
   let currentImg = 0;
-  const waMsg = encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien ${l.ref} - ${l.title} (${l.city}) publié sur SEONA RESI.`);
+  const waMsg = encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien ${l.ref} - ${escapeHtml(l.title)} (${escapeHtml(l.city)}) publié sur SEONA RESI.`);
   modalContent.innerHTML = `
     <div class="modal-visual" style="background:${l.color}" id="modalVisual">
       ${images[0].svg}
@@ -1057,27 +1305,26 @@ function openModal(id){
     </div>
     <button class="modal-close" id="modalClose">✕</button>
     <div class="modal-body">
-      <div class="card-type">${l.type} · Réf. ${l.ref}</div>
-      <h3>${l.title}</h3>
-      <div class="modal-loc">📍 ${l.city}</div>
+      <div class="card-type">${escapeHtml(l.type)} · Réf. ${l.ref}</div>
+      <h3>${escapeHtml(l.title)}</h3>
+      <div class="modal-loc">📍 ${escapeHtml(l.city)}</div>
       <div class="modal-price display">${money(l.price)} <small style="font-family:'Work Sans';font-size:13px;color:#6B6A5A;">/ mois</small></div>
       <div class="modal-specs">
         <div><strong>${l.rooms}</strong>pièces</div>
         <div><strong>${l.baths}</strong>salles de bain</div>
         <div><strong>${l.area}</strong>m²</div>
       </div>
-      <p class="modal-desc">${l.desc}</p>
-      <div class="amenities">${l.amenities.map(a=>`<span>${a}</span>`).join('')}</div>
+      <p class="modal-desc">${escapeHtml(l.desc)}</p>
+      <div class="amenities">${l.amenities.map(a=>`<span>${escapeHtml(a)}</span>`).join('')}</div>
       ${(l.payOperator && l.phone) ? (() => {
           const m = PAYMENT_METHODS.find(pm => pm.id === l.payOperator);
           return `<div class="deposit-summary" style="margin-bottom:16px;">
             <span class="dot" style="background:${m?m.color:'#888'}">${m?m.initials:'?'}</span>
-            <span>Moyen de paiement du propriétaire (identique sur son profil) : <strong>${m?m.label:l.payOperator}</strong> — ${l.phone}</span>
+            <span>Moyen de paiement du propriétaire (identique sur son profil) : <strong>${m?m.label:l.payOperator}</strong> <span style="color:#8A8874;">— numéro masqué, communiqué sur votre reçu une fois la réservation validée</span></span>
           </div>`;
         })() : ''}
-      ${isReserved
-        ? `<button class="btn-reserve" disabled style="width:100%;padding:13px 16px;border-radius:9px;font-weight:600;font-size:15px;margin-bottom:12px;background:#9C9A87;cursor:not-allowed;">Bien déjà réservé</button>`
-        : `<button class="btn-reserve" id="btnReserve" data-id="${l.id}" style="width:100%;padding:13px 16px;border-radius:9px;font-weight:600;font-size:15px;margin-bottom:12px;">Réservation</button>`}
+      ${activeRanges.length ? `<div style="font-size:12.5px;color:#6B6A5A;background:#EFEDDF;border-radius:8px;padding:9px 12px;margin-bottom:12px;">📅 Ce bien a déjà ${activeRanges.length > 1 ? 'des périodes réservées' : 'une période réservée'} (${activeRanges.map(r => new Date(r.start+'T00:00:00').toLocaleDateString('fr-FR') + ' → ' + new Date(r.end+'T00:00:00').toLocaleDateString('fr-FR')).join(', ')}). Vous pouvez le réserver sur d'autres dates, elles seront grisées à l'étape suivante.</div>` : ''}
+      <button class="btn-reserve" id="btnReserve" data-id="${l.id}" style="width:100%;padding:13px 16px;border-radius:9px;font-weight:600;font-size:15px;margin-bottom:12px;">Réservation</button>
       <div class="contact-row">
         <a class="btn-whatsapp" target="_blank" href="https://wa.me/225747377939?text=${waMsg}">WhatsApp — 07 47 37 79 39</a>
         <a class="btn-whatsapp" target="_blank" href="https://wa.me/225778662293?text=${waMsg}">WhatsApp — 07 78 66 22 93</a>
@@ -1132,7 +1379,7 @@ function openReservationModal(l){
     <button class="modal-close" id="reservationClose">✕</button>
     <div class="receipt-wrap">
       <div class="card-type" style="margin-bottom:4px;">Réservation</div>
-      <h3 style="margin-bottom:20px;">${l.title}</h3>
+      <h3 style="margin-bottom:20px;">${escapeHtml(l.title)}</h3>
 
       <div class="res-field">
         <label for="resCode">Numéro / Code du bien</label>
@@ -1159,16 +1406,20 @@ function openReservationModal(l){
           <label for="resStays">Nombre de séjour(s)</label>
           <input type="number" id="resStays" min="1" value="1">
         </div>
-        <div class="res-field">
-          <label for="resDate">Date de réservation (période)</label>
-          <input type="date" id="resDate" min="${new Date().toISOString().slice(0,10)}">
+        <div class="res-field date-picker-field">
+          <label for="resDateDisplay">Date de réservation (période)</label>
+          <input type="text" id="resDateDisplay" class="date-picker-display" placeholder="jj/mm/aaaa" readonly>
+          <input type="hidden" id="resDate">
+          <div class="mini-cal" id="resDateCal"></div>
         </div>
-        <div class="res-field">
-          <label for="resEndDate">Date de fin de réservation</label>
-          <input type="date" id="resEndDate" min="${new Date().toISOString().slice(0,10)}">
+        <div class="res-field date-picker-field">
+          <label for="resEndDateDisplay">Date de fin de réservation</label>
+          <input type="text" id="resEndDateDisplay" class="date-picker-display" placeholder="jj/mm/aaaa" readonly>
+          <input type="hidden" id="resEndDate">
+          <div class="mini-cal" id="resEndDateCal"></div>
         </div>
       </div>
-      <div class="res-hint" style="font-size:12.5px;color:#6B6A5A;margin:-8px 0 14px;">La date de fin se calcule automatiquement à partir du nombre de séjour(s). Vous pouvez aussi la modifier directement : le nombre de séjour(s) sera alors recalculé. Le bien redevient automatiquement disponible dès que la date de fin est passée.</div>
+      <div class="res-hint" style="font-size:12.5px;color:#6B6A5A;margin:-8px 0 14px;">La date de fin se calcule automatiquement à partir du nombre de séjour(s). Vous pouvez aussi la modifier directement : le nombre de séjour(s) sera alors recalculé. Les dates déjà réservées pour ce bien apparaissent grisées dans le calendrier.</div>
 
       <div class="res-error" id="resError"></div>
 
@@ -1228,33 +1479,45 @@ function openReservationModal(l){
     updateTotal();
   });
 
-  document.getElementById('resDate').addEventListener('change', () => {
-    syncEndDateFromStays();
-  });
-  document.getElementById('resEndDate').addEventListener('change', () => {
-    syncStaysFromEndDate();
-  });
-
   function syncEndDateFromStays(){
     const dateInput = document.getElementById('resDate');
     const endInput = document.getElementById('resEndDate');
+    const endDisplay = document.getElementById('resEndDateDisplay');
     if(!dateInput.value) return;
     const stays = Number(staysInput.value) || 1;
-    endInput.min = dateInput.value;
     endInput.value = addDays(dateInput.value, stays);
+    endDisplay.value = formatFR(endInput.value);
+    if(endPicker) endPicker.rerender();
   }
   function syncStaysFromEndDate(){
     const dateInput = document.getElementById('resDate');
     const endInput = document.getElementById('resEndDate');
+    const endDisplay = document.getElementById('resEndDateDisplay');
     if(!dateInput.value || !endInput.value) return;
     let stays = diffDays(dateInput.value, endInput.value);
     if(stays < 1){
       stays = 1;
       endInput.value = addDays(dateInput.value, stays);
+      endDisplay.value = formatFR(endInput.value);
     }
     staysInput.value = stays;
     updateTotal();
   }
+
+  /* Calendriers de disponibilité : les dates déjà couvertes par une réservation
+     active de ce bien (voir getActiveReservationRanges) apparaissent grisées et
+     ne peuvent pas être sélectionnées, sans jamais empêcher la réservation du
+     bien lui-même sur d'autres dates. */
+  const startPicker = initDatePicker({
+    inputId:'resDate', displayId:'resDateDisplay', calId:'resDateCal', ref:l.ref,
+    getMinDate: () => new Date().toISOString().slice(0,10),
+    onPick: () => { syncEndDateFromStays(); }
+  });
+  const endPicker = initDatePicker({
+    inputId:'resEndDate', displayId:'resEndDateDisplay', calId:'resEndDateCal', ref:l.ref,
+    getMinDate: () => document.getElementById('resDate').value || new Date().toISOString().slice(0,10),
+    onPick: () => { syncStaysFromEndDate(); }
+  });
 
   document.getElementById('reservationClose').addEventListener('click', closeReservationModal);
   document.getElementById('btnProceedPayment').addEventListener('click', () => {
@@ -1273,6 +1536,12 @@ function openReservationModal(l){
     }
     if(resEndDate && resEndDate < resDate){
       errorEl.textContent = "La date de fin de réservation doit être postérieure ou égale à la date de réservation.";
+      errorEl.classList.add('show');
+      return;
+    }
+    const conflict = getActiveReservationRanges(l.ref).some(r => rangesOverlap(resDate, resEndDate, r.start, r.end));
+    if(conflict){
+      errorEl.textContent = "Ces dates chevauchent une réservation déjà en cours pour ce bien. Merci de choisir d'autres dates (grisées dans le calendrier).";
       errorEl.classList.add('show');
       return;
     }
@@ -1320,7 +1589,7 @@ function openPaymentMethods(l, res){
       <button class="modal-close" id="reservationCloseErr">✕</button>
       <div class="receipt-wrap">
         <div class="card-type" style="margin-bottom:4px;">Mode de paiement</div>
-        <h3 style="margin-bottom:14px;">${l.title}</h3>
+        <h3 style="margin-bottom:14px;">${escapeHtml(l.title)}</h3>
         <div class="res-error show">Le propriétaire de ce bien n'a pas encore renseigné de moyen de paiement. La réservation n'est pas possible pour le moment.</div>
         <button type="button" class="btn-back-link" id="btnBackToReservationErr">← Revenir aux informations de réservation</button>
       </div>
@@ -1335,7 +1604,7 @@ function openPaymentMethods(l, res){
     <button class="modal-close" id="reservationClose2">✕</button>
     <div class="receipt-wrap">
       <div class="card-type" style="margin-bottom:4px;">Mode de paiement</div>
-      <h3 style="margin-bottom:6px;">${l.title}</h3>
+      <h3 style="margin-bottom:6px;">${escapeHtml(l.title)}</h3>
       <div class="res-total" style="margin-bottom:18px;">
         <span class="label">Montant à payer</span>
         <span class="amount">${money(res.due)}</span>
@@ -1343,7 +1612,7 @@ function openPaymentMethods(l, res){
 
       <div class="deposit-summary" style="margin-bottom:18px;">
         <span class="dot" style="background:${method.color}">${method.initials}</span>
-        <span>Ce bien est réglé via <strong>${method.label}</strong>, au numéro du propriétaire <strong>${l.phone}</strong> — le même moyen de paiement que celui affiché sur son profil.</span>
+        <span>Ce bien est réglé via <strong>${method.label}</strong> — le même moyen de paiement que celui affiché sur son profil. Le numéro du propriétaire reste confidentiel : il figurera sur votre reçu une fois la réservation validée.</span>
       </div>
 
       <button class="btn-validate" id="btnConfirmPayment">Continuer</button>
@@ -1367,7 +1636,7 @@ function openDepositStep(l, res, method){
     <button class="modal-close" id="reservationClose3">✕</button>
     <div class="receipt-wrap">
       <div class="card-type" style="margin-bottom:4px;">Finaliser le dépôt</div>
-      <h3 style="margin-bottom:14px;">${l.title}</h3>
+      <h3 style="margin-bottom:14px;">${escapeHtml(l.title)}</h3>
 
       <div class="deposit-summary">
         <span class="dot" style="background:${method.color}">${method.initials}</span>
@@ -1439,20 +1708,25 @@ async function validateReservation(l, res, method){
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
 
-  if(!reservedIds.includes(l.id)){
-    reservedIds.push(l.id);
-    localStorage.setItem('seonaresi_reserved', JSON.stringify(reservedIds));
-  }
-  if(res.resEndDate){
-    reservedUntil[l.id] = res.resEndDate;
-    localStorage.setItem('seonaresi_reserved_until', JSON.stringify(reservedUntil));
-  }
+  /* La période réservée (res.resDate → res.resEndDate) est enregistrée plus bas dans
+     reservationsLog sur Firestore : c'est cette liste, synchronisée en temps réel, qui
+     grise automatiquement les bonnes dates du calendrier pour ce bien (voir
+     getActiveReservationRanges). Le bien reste toujours affiché comme disponible à la
+     page d'accueil pour que d'autres clients puissent le réserver sur d'autres dates. */
 
-  /* Répartition automatique du paiement : commission plateforme (500 FCFA) vers le
-     portefeuille administrateur (sur le même opérateur que le paiement), le reste
-     part directement au propriétaire du bien. Tout est écrit dans Firestore afin
-     d'être visible immédiatement côté administrateur, sur n'importe quel appareil. */
-  const fee = Math.min(500, res.due);
+  /* Répartition automatique du paiement : commission plateforme vers le portefeuille
+     administrateur (sur le même opérateur que le paiement), le reste part directement
+     au propriétaire du bien. Tout est écrit dans Firestore afin d'être visible
+     immédiatement côté administrateur, sur n'importe quel appareil.
+     Règles de commission :
+       - 10% de commission sur chaque paiement (calculée sur le montant réglé maintenant).
+       - Si le nombre de séjour(s) dépasse 2 jours, une commission additionnelle de 6%
+         est prélevée sur le Montant Total (res.total) du séjour. */
+  const stays = res.stays || 1;
+  const total = res.total || res.due;
+  const feeBase = Math.round(res.due * 0.10);
+  const feeLongStay = stays > 2 ? Math.round(total * 0.06) : 0;
+  const fee = feeBase + feeLongStay;
   const ownerNet = res.due - fee;
 
   await db.collection('meta').doc('adminWallet').set(
@@ -1466,20 +1740,123 @@ async function validateReservation(l, res, method){
     });
   }
 
-  await db.collection('reservationsLog').add({
-    ref:l.ref, title:l.title, dateStr, clientName:res.name, resDate: res.resDate || '', resEndDate: res.resEndDate || '',
-    due:res.due, operator:method.label, operatorId:method.id, fee, ownerNet,
+  const resDocRef = db.collection('reservationsLog').doc();
+  const logEntry = {
+    id: resDocRef.id,
+    ref:l.ref, title:l.title, city:l.city || '', ownerPhone:l.phone || '',
+    dateStr, clientName:res.name, phone: res.phone || '',
+    resDate: res.resDate || '', resEndDate: res.resEndDate || '',
+    amount: res.amount || 0, stays: res.stays || 1, total: res.total || res.due, portion: res.portion || 'full',
+    due:res.due, operator:method.label, operatorId:method.id, fee, feeBase, feeLongStay, ownerNet,
+    receiptNumber, receiptCode: null, codeSentAt: null,
+    status: 'en_attente', blocked: false,
     createdAt: Date.now()
-  });
+  };
+  await resDocRef.set(logEntry);
 
   closeReservationModal();
   render();
-  openReceipt({
-    receiptNumber, dateStr, l,
-    name: res.name, phone: res.phone,
-    amount: res.amount, stays: res.stays, resDate: res.resDate, resEndDate: res.resEndDate,
-    total: res.total, due: res.due, portion: res.portion,
-    method
+  openReservationPending(logEntry);
+}
+
+/* Convertit un numéro local (ex : 07 47 37 79 39) au format international WhatsApp (2250747...) */
+function waPhoneCI(phone){
+  let digits = String(phone || '').replace(/\D/g, '');
+  if(digits.startsWith('225')) return digits;
+  if(digits.startsWith('0')) digits = digits.slice(1);
+  return '225' + digits;
+}
+
+/* Écran affiché au client juste après le dépôt : la réservation est enregistrée mais
+   pas encore validée par l'administration. Le reçu officiel n'est généré qu'une fois
+   la réservation validée, grâce au code transmis par WhatsApp (voir « Envoyer code »). */
+function openReservationPending(r){
+  reservationContent.innerHTML = `
+    <button class="modal-close" id="pendingClose">✕</button>
+    <div class="receipt-wrap">
+      <div class="card-type" style="margin-bottom:4px;">Réservation enregistrée</div>
+      <h3 style="margin-bottom:14px;">${r.title}</h3>
+      <div class="res-error show" style="background:#EFEAD8;color:#6B5A2A;border-color:#E3D9B4;">
+        ⏳ Votre réservation est <strong>en attente de validation</strong> par notre équipe.
+      </div>
+      <div class="receipt-rows" style="margin-top:16px;">
+        <div class="receipt-row"><span>Client</span><span>${escapeHtml(r.clientName)}</span></div>
+        <div class="receipt-row"><span>Téléphone</span><span>${escapeHtml(r.phone)}</span></div>
+        <div class="receipt-row"><span>Code du bien</span><span>${r.ref}</span></div>
+        <div class="receipt-row"><span>Montant versé</span><span>${money(r.due)}</span></div>
+      </div>
+      <div class="receipt-note" style="margin-top:14px;">Dès que votre réservation sera validée, vous recevrez un message <strong>WhatsApp</strong> contenant un code. Revenez sur le site, cliquez sur « 🧾 Récupérer mon reçu » et saisissez ce code avec votre numéro de téléphone pour générer votre reçu officiel.</div>
+      <div class="receipt-actions">
+        <button class="btn-close-receipt" id="btnClosePending">Fermer</button>
+      </div>
+    </div>
+  `;
+  reservationOverlay.classList.add('open');
+  document.getElementById('pendingClose').addEventListener('click', closeReservationModal);
+  document.getElementById('btnClosePending').addEventListener('click', closeReservationModal);
+}
+
+/* Reconstruit les données d'un reçu à partir d'un enregistrement Firestore (reservationsLog),
+   pour l'écran de récupération de reçu par code (voir openReceiptCodeModal). */
+function buildReceiptFromLog(r){
+  return {
+    receiptNumber: r.receiptNumber || ('REC-' + String(r.createdAt || Date.now()).slice(-8)),
+    dateStr: r.dateStr,
+    l: {ref:r.ref, title:r.title, city:r.city || '', phone:r.ownerPhone || ''},
+    name: r.clientName, phone: r.phone || '',
+    amount: r.amount || 0, stays: r.stays || 1,
+    resDate: r.resDate, resEndDate: r.resEndDate,
+    total: r.total || r.due, due: r.due, portion: r.portion || 'full',
+    method: {label: r.operator}
+  };
+}
+
+/* Écran « Récupérer mon reçu » : le client saisit son téléphone + le code reçu par
+   WhatsApp après validation, afin de générer son reçu officiel. */
+function openReceiptCodeModal(){
+  reservationContent.innerHTML = `
+    <button class="modal-close" id="codeModalClose">✕</button>
+    <div class="receipt-wrap">
+      <div class="card-type" style="margin-bottom:4px;">Récupérer mon reçu</div>
+      <h3 style="margin-bottom:14px;">Générer le reçu de ma réservation</h3>
+      <p style="font-size:13.5px;color:#6B6A5A;line-height:1.5;margin-bottom:16px;">Une fois votre réservation validée par notre équipe, vous recevez un code par WhatsApp. Saisissez-le ci-dessous avec votre numéro de téléphone pour générer votre reçu officiel.</p>
+      <div class="res-field">
+        <label for="codePhone">Téléphone utilisé pour la réservation</label>
+        <input type="tel" id="codePhone" placeholder="Ex : 07 00 00 00 00">
+      </div>
+      <div class="res-field" style="margin-top:12px;">
+        <label for="codeInput">Code reçu par WhatsApp</label>
+        <input type="text" id="codeInput" placeholder="Ex : 483920">
+      </div>
+      <div class="res-error" id="codeError"></div>
+      <button class="btn-validate" id="btnCheckCode" style="margin-top:16px;">Générer mon reçu</button>
+    </div>
+  `;
+  reservationOverlay.classList.add('open');
+  document.getElementById('codeModalClose').addEventListener('click', closeReservationModal);
+  document.getElementById('btnCheckCode').addEventListener('click', () => {
+    const phone = document.getElementById('codePhone').value.trim();
+    const code = document.getElementById('codeInput').value.trim();
+    const errEl = document.getElementById('codeError');
+    if(!phone || !code){
+      errEl.textContent = "Merci de renseigner votre téléphone et le code reçu par WhatsApp.";
+      errEl.classList.add('show');
+      return;
+    }
+    const phoneDigits = phone.replace(/\D/g, '').slice(-8);
+    const match = reservationsLog.find(r =>
+      r.receiptCode && r.receiptCode === code &&
+      r.status === 'validee' &&
+      String(r.phone || '').replace(/\D/g, '').endsWith(phoneDigits)
+    );
+    if(!match){
+      errEl.textContent = "Code invalide, ou réservation pas encore validée. Vérifiez vos informations.";
+      errEl.classList.add('show');
+      return;
+    }
+    errEl.classList.remove('show');
+    closeReservationModal();
+    openReceipt(buildReceiptFromLog(match));
   });
 }
 
@@ -1497,10 +1874,10 @@ function openReceipt(r){
       </div>
 
       <div class="receipt-rows">
-        <div class="receipt-row"><span>Client</span><span>${r.name}</span></div>
-        <div class="receipt-row"><span>Téléphone</span><span>${r.phone}</span></div>
+        <div class="receipt-row"><span>Client</span><span>${escapeHtml(r.name)}</span></div>
+        <div class="receipt-row"><span>Téléphone</span><span>${escapeHtml(r.phone)}</span></div>
         <div class="receipt-row"><span>Code du bien</span><span>${r.l.ref}</span></div>
-        <div class="receipt-row"><span>Bien réservé</span><span>${r.l.title}</span></div>
+        <div class="receipt-row"><span>Bien réservé</span><span>${escapeHtml(r.l.title)}</span></div>
         <div class="receipt-row"><span>Ville</span><span>${r.l.city}</span></div>
         <div class="receipt-row"><span>Montant unitaire</span><span>${money(r.amount)}</span></div>
         <div class="receipt-row"><span>Nombre de séjour(s)</span><span>${r.stays}</span></div>
@@ -1539,7 +1916,43 @@ document.addEventListener('keydown', e => {
 
 /* ==================== Comptes propriétaires & administration ==================== */
 
-const ADMIN_ACCOUNT = {username:'admin', password:'admin2026'};
+/* ==================== Sécurité : hachage des mots de passe ====================
+   Aucun mot de passe n'est plus stocké ni comparé en clair. On calcule un hash
+   SHA-256 (via l'API native du navigateur, crypto.subtle) et on ne stocke/compare
+   QUE ce hash. Le "PEPPER" ajoute une chaîne fixe avant le hachage : ça complique
+   un peu la tâche de quelqu'un qui utiliserait des tables précalculées génériques,
+   mais ce n'est PAS un vrai salage individuel (voir SECURITY_NOTES.md pour la
+   limite réelle de cette protection et la vraie solution : Firebase Authentication). */
+const PASSWORD_PEPPER = 'SEONA-RESI-PEPPER-2026-Kx9pQ';
+async function hashPassword(plain){
+  const enc = new TextEncoder().encode(String(plain) + PASSWORD_PEPPER);
+  const digest = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/* ==================== Sécurité : anti-XSS ====================
+   Toute donnée saisie par un utilisateur (nom, prénom, email, description d'un
+   bien, nom d'un client lors d'une réservation, suggestion...) est stockée dans
+   Firestore puis réaffichée via innerHTML ailleurs dans l'appli (ex : côté admin).
+   Sans échappement, quelqu'un pourrait saisir du code HTML/JavaScript (ex :
+   <img src=x onerror=...>) qui s'exécuterait dans le navigateur de la personne qui
+   consulte cette donnée (souvent l'administrateur). escapeHtml() neutralise ça en
+   transformant les caractères spéciaux HTML en entités inoffensives. */
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+/* Le mot de passe admin n'est plus visible en clair dans le code source : c'est
+   son hash qui est comparé. Pour changer ce mot de passe, calculez le nouveau hash
+   avec hashPassword('nouveauMotDePasse') dans la console du navigateur et collez
+   le résultat ci-dessous. */
+const ADMIN_ACCOUNT = {username:'admin', passwordHash:'41f230cadcdf1bd676395ea4808e7d8ac0c795870e43f3ca2088e3523600624a'};
 
 /* Ces tableaux sont désormais alimentés en temps réel depuis Firestore (voir les
    écouteurs onSnapshot plus bas) — ils ne sont plus lus depuis localStorage,
@@ -1548,6 +1961,8 @@ let owners = [];
 let reservationsLog = [];
 let adminWallet = {orange:0, mtn:0, wave:0, moov:0};
 let transferLog = [];
+let ownerTransferLog = [];
+let suggestions = [];
 /* La session (qui est connecté sur CET appareil) reste locale au navigateur : c'est
    volontaire, chaque appareil garde son propre état de connexion. */
 let session = JSON.parse(localStorage.getItem('seonaresi_session') || 'null'); // {type:'owner', srCode} | {type:'admin'}
@@ -1590,18 +2005,76 @@ db.collection('transferLog').orderBy('createdAt').onSnapshot(snap => {
   onDataChanged();
 }, err => console.error('Erreur Firestore (transferLog) :', err));
 
+/* Historique des transferts effectués par les propriétaires depuis leur Solde
+   (menu Compte Propriétaire > Solde > Transfert). */
+db.collection('ownerTransferLog').orderBy('createdAt').onSnapshot(snap => {
+  ownerTransferLog = snap.docs.map(d => d.data());
+  onDataChanged();
+}, err => console.error('Erreur Firestore (ownerTransferLog) :', err));
+
 db.collection('staffUsers').onSnapshot(snap => {
   staffUsers = snap.docs.map(d => d.data());
   onDataChanged();
 }, err => console.error('Erreur Firestore (staffUsers) :', err));
+
+db.collection('suggestions').orderBy('createdAt').onSnapshot(snap => {
+  suggestions = snap.docs.map(d => d.data());
+  onDataChanged();
+}, err => console.error('Erreur Firestore (suggestions) :', err));
 
 db.collection('meta').doc('adminWallet').onSnapshot(doc => {
   adminWallet = doc.exists ? doc.data() : {orange:0, mtn:0, wave:0, moov:0};
   onDataChanged();
 }, err => console.error('Erreur Firestore (adminWallet) :', err));
 
+/* ---- Suivi de fréquentation du site (Statistiques > Visiteur) ----
+   Chaque navigateur reçoit un identifiant persistant (localStorage). Ce n'est pas
+   un compte : ça permet juste de compter les visites du site, même pour les
+   personnes qui ne s'inscrivent jamais et ne réservent rien. */
+let visitorLog = [];
+
+db.collection('visitorLog').onSnapshot(snap => {
+  visitorLog = snap.docs.map(d => d.data());
+  onDataChanged();
+}, err => console.error('Erreur Firestore (visitorLog) :', err));
+
+function trackVisitor(){
+  try{
+    let visitorId = localStorage.getItem('seonaresi_visitor_id');
+    if(!visitorId){
+      visitorId = 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('seonaresi_visitor_id', visitorId);
+    }
+    const today = new Date().toISOString().slice(0, 10);
+    const nowStr = new Date().toISOString();
+    const ref = db.collection('visitorLog').doc(visitorId);
+    if(localStorage.getItem('seonaresi_visitor_lastday') === today){
+      ref.set({visitorId, lastVisit: nowStr}, {merge:true}).catch(()=>{});
+      return;
+    }
+    localStorage.setItem('seonaresi_visitor_lastday', today);
+    ref.get().then(doc => {
+      const data = doc.exists ? doc.data() : null;
+      return ref.set({
+        visitorId,
+        firstVisit: (data && data.firstVisit) || nowStr,
+        lastVisit: nowStr,
+        visitCount: ((data && data.visitCount) || 0) + 1
+      }, {merge:true});
+    }).catch(err => console.error('Erreur Firestore (visitorLog set) :', err));
+  } catch(err){
+    console.error('Erreur suivi visiteur :', err);
+  }
+}
+trackVisitor();
+
 /* ---- État de navigation de l'espace administrateur (menus / sous-menus) ---- */
 const ADMIN_MENU = [
+  {id:'statistiques', label:'Statistiques', items:[
+    {id:'stat-abonnes', label:'Abonné'},
+    {id:'stat-achats', label:'Achat'},
+    {id:'stat-visiteurs', label:'Visiteur'}
+  ]},
   {id:'parametrages', label:'Paramétrages', items:[
     {id:'gestion-comptes', label:'Gestion des Comptes Utilisateurs'},
     {id:'droits-privileges', label:'Droits & Privilège'}
@@ -1623,6 +2096,13 @@ const ADMIN_MENU = [
     {id:'commission', label:'Commission'},
     {id:'transfert', label:'Transfert'},
     {id:'historique-comptabilite', label:'Historique'}
+  ]},
+  {id:'suggestions', label:'Boîte de suggestions', items:[
+    {id:'suggestions-liste', label:'Suggestions reçues'}
+  ]},
+  {id:'reservation', label:'Réservation', items:[
+    {id:'reservation-attente', label:'Réservation en attente'},
+    {id:'reservation-validee', label:'Réservation validée'}
   ]}
 ];
 let adminSection = 'gestion-comptes';
@@ -1646,7 +2126,8 @@ function defaultPermissions(perm){
     comptesUtilisateurs: Object.assign({enabled:false}, perm.comptesUtilisateurs || {}),
     comptabilite: Object.assign({enabled:false, voirTransferts:false, voirCommission:false}, perm.comptabilite || {}),
     reservationsPaiements: Object.assign({enabled:false, historique:false, rapport:false}, perm.reservationsPaiements || {}),
-    privileges: Object.assign({valide:false, bloquer:false, supprimer:false, modifier:false}, perm.privileges || {})
+    reservation: Object.assign({enabled:false, enAttente:false, validee:false}, perm.reservation || {}),
+    privileges: Object.assign({valide:false, bloquer:false, supprimer:false, modifier:false, annuler:false}, perm.privileges || {})
   };
 }
 function genStaffId(){
@@ -1707,23 +2188,83 @@ const authContent = document.getElementById('authContent');
 const dashOverlay = document.getElementById('dashOverlay');
 const dashContent = document.getElementById('dashContent');
 const navActions = document.getElementById('navActions');
+const suggestionOverlay = document.getElementById('suggestionOverlay');
+const suggestionContent = document.getElementById('suggestionContent');
 
 function closeAuth(){ authOverlay.classList.remove('open'); }
 function closeDash(){ dashOverlay.classList.remove('open'); currentDashView = null; }
+function closeSuggestion(){ suggestionOverlay.classList.remove('open'); }
 authOverlay.addEventListener('click', e => { if(e.target === authOverlay) closeAuth(); });
 dashOverlay.addEventListener('click', e => { if(e.target === dashOverlay) closeDash(); });
+suggestionOverlay.addEventListener('click', e => { if(e.target === suggestionOverlay) closeSuggestion(); });
 
 document.getElementById('btnOpenLogin').addEventListener('click', () => openAuthModal('login'));
 document.getElementById('btnOpenRegister').addEventListener('click', () => openAuthModal('register'));
+document.getElementById('btnOpenSuggestion').addEventListener('click', openSuggestionModal);
+document.getElementById('btnOpenReceiptCode').addEventListener('click', openReceiptCodeModal);
+
+/* ==================== Boîte de suggestions (clients) ==================== */
+function openSuggestionModal(){
+  suggestionContent.innerHTML = `
+    <button class="modal-close" id="suggestionClose">✕</button>
+    <div class="receipt-wrap">
+      <h3 style="margin-bottom:4px;">Boîte de suggestions</h3>
+      <p style="font-size:13px;color:#6B6A5A;margin-bottom:16px;">Une remarque, une idée ou un souci à nous signaler ? Écrivez-nous ci-dessous, votre message est transmis directement à l'administration.</p>
+      <div class="form-field"><label>Votre nom (optionnel)</label><input type="text" id="sugName" placeholder="Ex : Aïcha K."></div>
+      <div class="form-field"><label>Votre message</label><textarea id="sugMessage" placeholder="Écrivez votre suggestion ici…"></textarea></div>
+      <div class="res-error" id="sugError"></div>
+      <button class="btn-validate" id="btnDoSuggestion">Envoyer</button>
+    </div>
+  `;
+  suggestionOverlay.classList.add('open');
+  document.getElementById('suggestionClose').addEventListener('click', closeSuggestion);
+  document.getElementById('btnDoSuggestion').addEventListener('click', async () => {
+    const name = document.getElementById('sugName').value.trim();
+    const message = document.getElementById('sugMessage').value.trim();
+    const errEl = document.getElementById('sugError');
+    if(!message){
+      errEl.textContent = "Merci d'écrire un message avant d'envoyer.";
+      errEl.classList.add('show');
+      return;
+    }
+    errEl.classList.remove('show');
+    const btn = document.getElementById('btnDoSuggestion');
+    btn.disabled = true; btn.textContent = 'Envoi en cours…';
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+    try {
+      const docRef = db.collection('suggestions').doc();
+      await docRef.set({
+        id: docRef.id,
+        name: name || 'Visiteur',
+        message, dateStr,
+        createdAt: Date.now()
+      });
+      suggestionContent.innerHTML = `
+        <button class="modal-close" id="suggestionClose2">✕</button>
+        <div class="receipt-wrap" style="text-align:center;">
+          <h3 style="margin-bottom:10px;">Message envoyé</h3>
+          <p style="font-size:14px;color:#54533F;line-height:1.6;">Merci ! Votre suggestion a bien été transmise à l'administration de SEONA RESI.</p>
+          <button class="btn-validate" style="margin-top:16px;" id="btnSuggestionDoneClose">Fermer</button>
+        </div>
+      `;
+      document.getElementById('suggestionClose2').addEventListener('click', closeSuggestion);
+      document.getElementById('btnSuggestionDoneClose').addEventListener('click', closeSuggestion);
+    } catch(err){
+      console.error('Erreur Firestore (suggestion) :', err);
+      errEl.textContent = "Le message n'a pas pu être envoyé (connexion à la base indisponible). Réessayez.";
+      errEl.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Envoyer';
+    }
+  });
+}
 
 function renderNav(){
   const oldPill = document.getElementById('sessionPill');
   if(oldPill) oldPill.remove();
-  const loginBtn = document.getElementById('btnOpenLogin');
-  const regBtn = document.getElementById('btnOpenRegister');
+  const authWrap = document.querySelector('.auth-buttons-wrap');
   if(session){
-    loginBtn.style.display = 'none';
-    regBtn.style.display = 'none';
+    if(authWrap) authWrap.style.display = 'none';
     const label = session.type === 'admin' ? 'Administrateur'
       : session.type === 'staff' ? ('Gestionnaire — ' + ((getStaffById(session.staffId)||{}).role || ''))
       : ((getOwnerByCode(session.srCode)||{}).prenom || 'Propriétaire');
@@ -1731,12 +2272,11 @@ function renderNav(){
     pill.className = 'session-pill';
     pill.id = 'sessionPill';
     pill.innerHTML = `👤 ${label} <button type="button" id="btnGoDash">Mon espace</button> <button type="button" id="btnLogout">Déconnexion</button>`;
-    navActions.insertBefore(pill, loginBtn);
+    navActions.insertBefore(pill, authWrap);
     document.getElementById('btnGoDash').addEventListener('click', openDashboard);
     document.getElementById('btnLogout').addEventListener('click', () => { session = null; saveSession(); renderNav(); });
   } else {
-    loginBtn.style.display = '';
-    regBtn.style.display = '';
+    if(authWrap) authWrap.style.display = '';
   }
 }
 
@@ -1780,13 +2320,14 @@ function renderAuthBody(tab){
       <div class="res-error" id="loginError"></div>
       <button class="btn-validate" id="btnDoLogin">Se connecter</button>
     `;
-    document.getElementById('btnDoLogin').addEventListener('click', () => {
+    document.getElementById('btnDoLogin').addEventListener('click', async () => {
       const type = document.getElementById('loginType').value;
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value;
       const errEl = document.getElementById('loginError');
+      const passHash = await hashPassword(pass);
       if(type === 'admin'){
-        if(user === ADMIN_ACCOUNT.username && pass === ADMIN_ACCOUNT.password){
+        if(user === ADMIN_ACCOUNT.username && passHash === ADMIN_ACCOUNT.passwordHash){
           session = {type:'admin'}; saveSession(); closeAuth(); renderNav(); openDashboard();
         } else {
           errEl.textContent = "Identifiants administrateur incorrects.";
@@ -1795,7 +2336,7 @@ function renderAuthBody(tab){
         return;
       }
       if(type === 'staff'){
-        const staff = staffUsers.find(s => s.username === user && s.password === pass);
+        const staff = staffUsers.find(s => s.username === user && s.passwordHash === passHash);
         if(!staff){
           errEl.textContent = "Nom d'utilisateur ou mot de passe incorrect.";
           errEl.classList.add('show');
@@ -1815,7 +2356,7 @@ function renderAuthBody(tab){
         saveSession(); closeAuth(); renderNav(); openDashboard();
         return;
       }
-      const owner = owners.find(o => o.username === user && o.password === pass);
+      const owner = owners.find(o => o.username === user && o.passwordHash === passHash);
       if(!owner){
         errEl.textContent = "Nom d'utilisateur ou mot de passe incorrect.";
         errEl.classList.add('show');
@@ -1899,9 +2440,10 @@ function renderAuthBody(tab){
       document.getElementById('btnDoRegister').disabled = true;
       document.getElementById('btnDoRegister').textContent = 'Envoi en cours…';
       const cniData = await fileToDataURL(cniFile);
+      const passwordHash = await hashPassword(password);
       try {
         await db.collection('owners').doc(srCode).set({
-          srCode, username, password, nom, prenom, email, contact,
+          srCode, username, passwordHash, nom, prenom, email, contact,
           ville, quartier,
           cniName: cniFile.name, cniData,
           validated: false, blocked: false,
@@ -1951,9 +2493,10 @@ const OWNER_MENU = [
   {id:'biens-reserves', label:'Biens réservés', items:[
     {id:'deja-reserve', label:'Déjà réservé'}
   ]},
-  {id:'moyen-paiement', label:'Moyen de paiement', items:[
-    {id:'infos-paiement', label:'Opérateurs & numéros'},
-    {id:'historique-paiements', label:'Historique des paiements'}
+  {id:'solde', label:'Portefeuille', items:[
+    {id:'solde-paiement', label:'Solde'},
+    {id:'solde-transfert', label:'Retrait'},
+    {id:'solde-historique', label:'Historique'}
   ]}
 ];
 function ownerMenuIdForSection(sectionId){ const m = OWNER_MENU.find(mn => mn.items.some(it => it.id === sectionId)); return m ? m.id : OWNER_MENU[0].id; }
@@ -1975,14 +2518,6 @@ function renderOwnerDashboard(){
       </div>
 
       ${!owner.validated ? `<div class="empty-note">Votre compte sera activé dès qu'un administrateur aura vérifié votre pièce d'identité (${owner.cniName}). Vous pourrez ensuite renseigner votre moyen de paiement et ajouter les images de vos biens.</div>` : ''}
-
-      <div class="dash-section">
-        <h4>Portefeuille (après commission plateforme de 500 FCFA / paiement)</h4>
-        <div class="wallet-card" style="max-width:200px;">
-          <div class="op">Solde reçu</div>
-          <div class="amt">${money(owner.balance||0)}</div>
-        </div>
-      </div>
 
       <div class="admin-layout">
         <nav class="admin-sidebar" id="ownerSidebar">
@@ -2030,8 +2565,9 @@ function ownerSectionHTML(sectionId, owner){
   switch(sectionId){
     case 'bien-ajouter': return ownerSectionBienAjouter(owner, myListings);
     case 'deja-reserve': return ownerSectionDejaReserve(myListings);
-    case 'infos-paiement': return ownerSectionInfosPaiement(owner);
-    case 'historique-paiements': return ownerSectionHistoriquePaiements(owner);
+    case 'solde-paiement': return ownerSectionInfosPaiement(owner);
+    case 'solde-transfert': return ownerSectionSoldeTransfert(owner);
+    case 'solde-historique': return ownerSectionSoldeHistorique(owner);
     default: return '<div class="empty-note">Choisissez une rubrique dans le menu.</div>';
   }
 }
@@ -2041,9 +2577,9 @@ function ownerPropsListHTML(filtered){
   return filtered.length === 0 ? '<div class="empty-note">Aucun bien trouvé.</div>' : filtered.map(p => `
     <div class="dash-card">
       <div>
-        <strong>${p.title}</strong> — ${p.ref}
-        <div class="meta">${p.city} · ${money(p.price)}/mois · ${p.images.length}/7 images
-          ${reservedIds.includes(p.id) ? '<span class="status-pill validated" style="margin-left:8px;">Réservé</span>' : ''}
+        <strong>${escapeHtml(p.title)}</strong> — ${p.ref}
+        <div class="meta">${escapeHtml(p.city)} · ${money(p.price)}/mois · ${p.images.length}/7 images
+          ${hasActiveReservation(p.ref) ? '<span class="status-pill validated" style="margin-left:8px;">Réservé sur certaines dates</span>' : ''}
         </div>
       </div>
       <button class="dash-btn" data-add-img="${p.id}">Ajouter les Images</button>
@@ -2071,29 +2607,44 @@ function ownerSectionBienAjouter(owner, myListings){
 
 /* ---- Biens réservés > Déjà réservé ---- */
 function ownerSectionDejaReserve(myListings){
-  const reserved = myListings.filter(p => reservedIds.includes(p.id));
+  const reserved = myListings.filter(p => hasActiveReservation(p.ref));
   return `
     <h4>Biens déjà réservés (${reserved.length})</h4>
-    <p class="sub-hint">Liste de vos biens actuellement marqués comme réservés.</p>
-    ${reserved.length === 0 ? '<div class="empty-note">Aucun bien réservé pour le moment.</div>' : reserved.map(p => `
+    <p class="sub-hint">Vos biens ayant une ou plusieurs périodes réservées en cours. Ils restent visibles et réservables par d'autres clients sur les autres dates.</p>
+    ${reserved.length === 0 ? '<div class="empty-note">Aucun bien réservé pour le moment.</div>' : reserved.map(p => {
+      const ranges = getActiveReservationRanges(p.ref);
+      const periods = ranges.map(r => new Date(r.start+'T00:00:00').toLocaleDateString('fr-FR') + ' → ' + new Date(r.end+'T00:00:00').toLocaleDateString('fr-FR')).join(', ');
+      return `
       <div class="dash-card">
         <div>
-          <strong>${p.title}</strong> — ${p.ref}
-          <div class="meta">${p.city} · ${money(p.price)}/mois</div>
+          <strong>${escapeHtml(p.title)}</strong> — ${p.ref}
+          <div class="meta">${escapeHtml(p.city)} · ${money(p.price)}/mois</div>
+          <div class="meta" style="margin-top:4px;">📅 ${periods}</div>
         </div>
         <span class="status-pill validated">Réservé</span>
       </div>
-    `).join('')}
+    `;}).join('')}
   `;
 }
 
-/* ---- Moyen de paiement ---- */
+/* ---- Solde : petite carte de solde réutilisée en haut des sous-menus Paiement / Transfert / Historique ---- */
+function ownerBalanceCardHTML(owner){
+  return `
+    <div class="wallet-card" style="max-width:200px;margin-bottom:16px;">
+      <div class="op">Solde disponible</div>
+      <div class="amt">${money(owner.balance||0)}</div>
+    </div>
+  `;
+}
+
+/* ---- Portefeuille > Solde (anciennement Paiement) ---- */
 function ownerSectionInfosPaiement(owner){
   const selectedOps = (owner.paymentOperators && owner.paymentOperators.length) ? owner.paymentOperators : (owner.paymentOperator ? [owner.paymentOperator] : []);
   const phones = (owner.paymentPhones && owner.paymentPhones.length) ? owner.paymentPhones : (owner.paymentPhone ? [owner.paymentPhone] : ['']);
   return `
-    <h4>Moyen de paiement (réception des loyers)</h4>
-    <p class="sub-hint">Cochez un ou plusieurs opérateurs, puis ajoutez un ou plusieurs numéros qui recevront vos paiements.</p>
+    <h4>Solde</h4>
+    ${ownerBalanceCardHTML(owner)}
+    <p class="sub-hint">Moyen de paiement (réception des loyers) : cochez un ou plusieurs opérateurs, puis ajoutez un ou plusieurs numéros qui recevront vos paiements.</p>
     <div class="form-field">
       <label>Opérateur(s)</label>
       <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:4px;">
@@ -2122,19 +2673,54 @@ function ownPayPhonesListHTML(values){
   `).join('');
 }
 
-/* ---- Moyen de paiement > Historique des paiements ---- */
-function ownerSectionHistoriquePaiements(owner){
-  const history = reservationsLog.filter(r => r.ref === owner.srCode).slice().reverse();
+/* ---- Solde > Retrait (anciennement Transfert) ---- */
+function ownerSectionSoldeTransfert(owner){
   return `
-    <h4>Historique des paiements (${history.length})</h4>
-    <p class="sub-hint">Tous les paiements reçus pour vos biens, commission plateforme déduite.</p>
-    ${history.length === 0 ? '<div class="empty-note">Aucun paiement reçu pour le moment.</div>' : history.map(r => `
+    <h4>Retrait</h4>
+    ${ownerBalanceCardHTML(owner)}
+    <p class="sub-hint">Effectuez un retrait depuis votre solde disponible.</p>
+    <form id="ownerTransferForm">
+      <div class="form-row">
+        <div class="form-field">
+          <label>Moyen de paiement</label>
+          <select name="operator">
+            ${OPS.map(op => `<option value="${op.id}">${op.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-field"><label>Montant (FCFA)</label><input type="number" name="amount" min="1" required></div>
+      </div>
+      <div class="form-field"><label>Destinataire</label><input type="text" name="recipient" placeholder="Nom ou numéro du destinataire" required></div>
+      <div class="res-error" id="ownerTransferError"></div>
+      <button type="submit" class="btn-validate">Faire un retrait</button>
+    </form>
+  `;
+}
+
+/* ---- Portefeuille > Historique (historique des paiements reçus ET des retraits) ---- */
+function ownerSectionSoldeHistorique(owner){
+  const paymentEntries = reservationsLog.filter(r => r.ref === owner.srCode).map(r => ({
+    type:'paiement', dateStr:r.dateStr, createdAt:r.createdAt||0,
+    label:r.title, meta:`Client : ${escapeHtml(r.clientName)} · Tél. client : ${r.phone || 'non renseigné'} · via ${r.operator}`,
+    amount:r.ownerNet
+  }));
+  const transferEntries = ownerTransferLog.filter(t => t.ownerCode === owner.srCode).map(t => ({
+    type:'transfert', dateStr:t.dateStr, createdAt:t.createdAt||0,
+    label:`Vers ${t.recipient}`, meta:`via ${t.operator}`,
+    amount:-t.amount
+  }));
+  const all = paymentEntries.concat(transferEntries).sort((a,b) => a.createdAt - b.createdAt);
+  return `
+    <h4>Historique (${all.length})</h4>
+    ${ownerBalanceCardHTML(owner)}
+    <p class="sub-hint">Historique des paiements reçus (commission plateforme déduite) et des transferts effectués.</p>
+    ${all.length === 0 ? '<div class="empty-note">Aucune opération enregistrée pour le moment.</div>' : all.slice().reverse().map(e => `
       <div class="dash-card">
         <div>
-          <strong>${r.title}</strong>
-          <div class="meta">${r.dateStr} · Client : ${r.clientName} · via ${r.operator}</div>
-          <div class="meta">Montant payé : ${money(r.due)} · Reçu net : ${money(r.ownerNet)}</div>
+          <span class="type-badge ${e.type === 'paiement' ? 'commission' : 'transfert'}">${e.type === 'paiement' ? 'Paiement reçu' : 'Transfert'}</span>
+          <div style="margin-top:6px;"><strong>${e.label}</strong></div>
+          <div class="meta">${e.dateStr} · ${e.meta}</div>
         </div>
+        <div class="amt" style="font-family:'Fraunces',serif;font-weight:600;">${e.amount < 0 ? '- ' + money(Math.abs(e.amount)) : money(e.amount)}</div>
       </div>
     `).join('')}
   `;
@@ -2206,6 +2792,46 @@ function bindOwnerContentEvents(owner){
       savePayBtn.disabled = false; savePayBtn.textContent = 'Enregistrer le moyen de paiement';
     }
   });
+
+  const transferForm = document.getElementById('ownerTransferForm');
+  if(transferForm){
+    transferForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const errEl = document.getElementById('ownerTransferError');
+      const operator = transferForm.operator.value;
+      const amount = Number(transferForm.amount.value);
+      const recipient = transferForm.recipient.value.trim();
+      if(!amount || amount <= 0 || !recipient){
+        errEl.textContent = "Merci de renseigner un montant valide et un destinataire.";
+        errEl.classList.add('show');
+        return;
+      }
+      if(amount > (owner.balance||0)){
+        errEl.textContent = "Solde insuffisant pour effectuer ce transfert.";
+        errEl.classList.add('show');
+        return;
+      }
+      errEl.classList.remove('show');
+      const submitBtn = transferForm.querySelector('button[type=submit]');
+      submitBtn.disabled = true; submitBtn.textContent = 'Envoi en cours…';
+      try {
+        const batch = db.batch();
+        batch.update(db.collection('owners').doc(owner.srCode), {
+          balance: firebase.firestore.FieldValue.increment(-amount)
+        });
+        batch.set(db.collection('ownerTransferLog').doc(String(Date.now())), {
+          ownerCode: owner.srCode, dateStr: new Date().toLocaleString('fr-FR'),
+          operator, amount, recipient, createdAt: Date.now()
+        });
+        await batch.commit();
+      } catch(err){
+        console.error('Erreur Firestore (transfert propriétaire) :', err);
+        errEl.textContent = "Le transfert n'a pas pu être enregistré (connexion à la base indisponible).";
+        errEl.classList.add('show');
+        submitBtn.disabled = false; submitBtn.textContent = 'Faire un transfert';
+      }
+    });
+  }
 }
 
 function openPropertyForm(owner){
@@ -2297,7 +2923,7 @@ function openImageUpload(propId){
     <div class="receipt-wrap">
       <h3 style="margin-bottom:4px;">Ajouter les Images</h3>
       <div class="sr-badge" style="margin-bottom:10px;">${prop.ref}</div>
-      <p style="font-size:12.5px;color:#6B6A5A;margin-bottom:14px;">${prop.title} — maximum 7 images par bien. Elles seront visibles par les clients sur la page d'accueil dès leur ajout.</p>
+      <p style="font-size:12.5px;color:#6B6A5A;margin-bottom:14px;">${escapeHtml(prop.title)} — maximum 7 images par bien. Elles seront visibles par les clients sur la page d'accueil dès leur ajout.</p>
       <div class="img-thumbs" id="imgThumbs">
         ${prop.images.length ? prop.images.map(src => `<img src="${src}">`).join('') : '<span class="empty-note">Aucune image pour le moment.</span>'}
       </div>
@@ -2381,6 +3007,7 @@ function renderAdminDashboard(){
       adminSection = subBtn.dataset.section;
       editingOwnerSR = null; resetPwSR = null; commissionView = 'portefeuille';
       creatingStaff = false; editingStaffId = null; resetPwStaffId = null; rightsDraft = null;
+      editingReservationId = null;
       document.querySelectorAll('.admin-sub-btn').forEach(b => b.classList.toggle('active', b.dataset.section === adminSection));
       document.getElementById('adminContent').innerHTML = adminSectionHTML(adminSection);
     }
@@ -2407,6 +3034,12 @@ function staffMenuFor(staff){
     if(p.comptabilite.voirCommission) items.push({id:'commission', label:'Commission'});
     if(p.comptabilite.voirTransferts) items.push({id:'transfert', label:'Transfert'}, {id:'historique-comptabilite', label:'Historique'});
     if(items.length) menu.push({id:'comptabilite', label:'Comptabilité', items});
+  }
+  if(p.reservation && p.reservation.enabled){
+    const items = [];
+    if(p.reservation.enAttente) items.push({id:'reservation-attente', label:'Réservation en attente'});
+    if(p.reservation.validee) items.push({id:'reservation-validee', label:'Réservation validée'});
+    if(items.length) menu.push({id:'reservation', label:'Réservation', items});
   }
   return menu;
 }
@@ -2463,6 +3096,7 @@ function renderStaffDashboard(){
       if(subBtn){
         staffSection = subBtn.dataset.section;
         commissionView = 'portefeuille';
+        editingReservationId = null;
         document.querySelectorAll('#staffSidebar .admin-sub-btn').forEach(b => b.classList.toggle('active', b.dataset.section === staffSection));
         document.getElementById('adminContent').innerHTML = adminSectionHTML(staffSection);
       }
@@ -2474,16 +3108,27 @@ function renderStaffDashboard(){
 
 function adminMenuCount(menuId){
   if(menuId === 'reservations-paiements') return ` (${reservationsLog.length})`;
+  if(menuId === 'suggestions') return ` (${suggestions.length})`;
+  if(menuId === 'reservation') return ` (${reservationsLog.filter(r => (r.status||'en_attente') === 'en_attente').length})`;
   return '';
 }
 function adminSubCount(sectionId){
+  if(sectionId === 'stat-abonnes') return ` (${owners.length})`;
+  if(sectionId === 'stat-achats') return ` (${reservationsLog.length})`;
+  if(sectionId === 'stat-visiteurs') return ` (${visitorLog.length})`;
   if(sectionId === 'valides') return ` (${owners.filter(o => o.validated).length})`;
   if(sectionId === 'utilisateurs') return ` (${staffUsers.length})`;
+  if(sectionId === 'suggestions-liste') return ` (${suggestions.length})`;
+  if(sectionId === 'reservation-attente') return ` (${reservationsLog.filter(r => (r.status||'en_attente') === 'en_attente').length})`;
+  if(sectionId === 'reservation-validee') return ` (${reservationsLog.filter(r => r.status === 'validee').length})`;
   return '';
 }
 
 function adminSectionHTML(sectionId){
   switch(sectionId){
+    case 'stat-abonnes': return sectionStatAbonnes();
+    case 'stat-achats': return sectionStatAchats();
+    case 'stat-visiteurs': return sectionStatVisiteurs();
     case 'gestion-comptes': return sectionGestionComptes();
     case 'droits-privileges': return sectionDroitsPrivileges();
     case 'utilisateurs': return sectionUtilisateurs();
@@ -2494,6 +3139,9 @@ function adminSectionHTML(sectionId){
     case 'commission': return sectionCommission();
     case 'transfert': return sectionTransfert();
     case 'historique-comptabilite': return sectionHistoriqueComptabilite();
+    case 'suggestions-liste': return sectionSuggestions();
+    case 'reservation-attente': return sectionReservationAttente();
+    case 'reservation-validee': return sectionReservationValidee();
     default: return '<div class="empty-note">Choisissez une rubrique dans le menu.</div>';
   }
 }
@@ -2505,8 +3153,8 @@ function staffCardHTML(s){
       <div class="dash-card">
         <form class="edit-owner-form" data-edit-staff-form="${s.id}">
           <div class="form-row">
-            <div class="form-field"><label>Rôle / intitulé</label><input type="text" name="role" value="${s.role}"></div>
-            <div class="form-field"><label>Nom d'utilisateur</label><input type="text" name="username" value="${s.username}"></div>
+            <div class="form-field"><label>Rôle / intitulé</label><input type="text" name="role" value="${escapeHtml(s.role)}"></div>
+            <div class="form-field"><label>Nom d'utilisateur</label><input type="text" name="username" value="${escapeHtml(s.username)}"></div>
           </div>
           <div style="display:flex;gap:8px;">
             <button type="submit" class="dash-btn primary">Enregistrer</button>
@@ -2520,7 +3168,7 @@ function staffCardHTML(s){
     return `
       <div class="dash-card">
         <form class="edit-owner-form" data-pw-staff-form="${s.id}">
-          <div class="sr-badge" style="margin-bottom:10px;">${s.role} — ${s.username}</div>
+          <div class="sr-badge" style="margin-bottom:10px;">${escapeHtml(s.role)} — ${escapeHtml(s.username)}</div>
           <div class="form-field"><label>Nouveau mot de passe</label><input type="text" name="password" placeholder="Nouveau mot de passe" required></div>
           <div style="display:flex;gap:8px;">
             <button type="submit" class="dash-btn primary">Enregistrer le mot de passe</button>
@@ -2533,9 +3181,9 @@ function staffCardHTML(s){
   return `
     <div class="dash-card">
       <div>
-        <strong class="staff-role">${s.role}</strong>
+        <strong class="staff-role">${escapeHtml(s.role)}</strong>
         <span class="status-pill ${s.blocked ? 'pending' : 'validated'}" style="margin-left:6px;">${s.blocked ? 'Bloqué' : 'Actif'}</span>
-        <div class="meta">Identifiant : ${s.username}</div>
+        <div class="meta">Identifiant : ${escapeHtml(s.username)}</div>
       </div>
       <div style="display:flex;gap:8px;">
         <button type="button" class="dash-btn ${s.blocked ? '' : 'danger'}" data-block-staff="${s.id}">${s.blocked ? 'Débloquer' : 'Bloquer'}</button>
@@ -2586,12 +3234,12 @@ function sectionGestionComptes(){
           <div class="dash-card">
             <form class="edit-owner-form" data-edit-form="${o.srCode}">
               <div class="form-row">
-                <div class="form-field"><label>Nom</label><input type="text" name="nom" value="${o.nom}"></div>
-                <div class="form-field"><label>Prénom</label><input type="text" name="prenom" value="${o.prenom}"></div>
+                <div class="form-field"><label>Nom</label><input type="text" name="nom" value="${escapeHtml(o.nom)}"></div>
+                <div class="form-field"><label>Prénom</label><input type="text" name="prenom" value="${escapeHtml(o.prenom)}"></div>
               </div>
               <div class="form-row">
-                <div class="form-field"><label>Email</label><input type="email" name="email" value="${o.email}"></div>
-                <div class="form-field"><label>Contact</label><input type="tel" name="contact" value="${o.contact}"></div>
+                <div class="form-field"><label>Email</label><input type="email" name="email" value="${escapeHtml(o.email)}"></div>
+                <div class="form-field"><label>Contact</label><input type="tel" name="contact" value="${escapeHtml(o.contact)}"></div>
               </div>
               <div style="display:flex;gap:8px;">
                 <button type="submit" class="dash-btn primary">Enregistrer</button>
@@ -2605,7 +3253,7 @@ function sectionGestionComptes(){
         return `
           <div class="dash-card">
             <form class="edit-owner-form" data-pw-form="${o.srCode}">
-              <div class="sr-badge" style="margin-bottom:10px;">${o.srCode} — ${o.prenom} ${o.nom}</div>
+              <div class="sr-badge" style="margin-bottom:10px;">${o.srCode} — ${escapeHtml(o.prenom)} ${escapeHtml(o.nom)}</div>
               <div class="form-field"><label>Nouveau mot de passe</label><input type="text" name="password" placeholder="Nouveau mot de passe" required></div>
               <div style="display:flex;gap:8px;">
                 <button type="submit" class="dash-btn primary">Enregistrer le mot de passe</button>
@@ -2618,10 +3266,10 @@ function sectionGestionComptes(){
       return `
         <div class="dash-card">
           <div>
-            <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
+            <strong>${escapeHtml(o.prenom)} ${escapeHtml(o.nom)}</strong> — ${o.srCode}
             <span class="status-pill ${o.validated ? 'validated' : 'pending'}" style="margin-left:6px;">${o.validated ? 'Validé' : 'En attente'}</span>
             ${o.blocked ? '<span class="status-pill pending" style="margin-left:6px;">Bloqué</span>' : ''}
-            <div class="meta">Identifiant : ${o.username} · ${o.email} · ${o.contact}</div>
+            <div class="meta">Identifiant : ${escapeHtml(o.username)} · ${escapeHtml(o.email)} · ${escapeHtml(o.contact)}</div>
           </div>
           <div style="display:flex;gap:8px;">
             <button type="button" class="dash-btn ${o.blocked ? '' : 'danger'}" data-block-owner="${o.srCode}">${o.blocked ? 'Débloquer' : 'Bloquer'}</button>
@@ -2719,6 +3367,17 @@ function sectionDroitsPrivileges(){
         <label class="right-item ${p.reservationsPaiements.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="reservationsPaiements.rapport" ${p.reservationsPaiements.rapport ? 'checked' : ''}> Rapport d'activité</label>
       </div>
     </div>
+
+    <div class="right-group">
+      <div class="right-group-head">
+        <strong>Réservation</strong>
+        <label class="switch"><input type="checkbox" data-right-toggle="reservation" ${p.reservation.enabled ? 'checked' : ''}><span class="slider"></span></label>
+      </div>
+      <div class="right-items">
+        <label class="right-item ${p.reservation.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="reservation.enAttente" ${p.reservation.enAttente ? 'checked' : ''}> Réservation en attente</label>
+        <label class="right-item ${p.reservation.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="reservation.validee" ${p.reservation.validee ? 'checked' : ''}> Réservation validée</label>
+      </div>
+    </div>
     ` : `
     <div class="right-group">
       <div class="right-group-head">
@@ -2729,6 +3388,7 @@ function sectionDroitsPrivileges(){
         <label class="right-item"><input type="checkbox" data-right-check="privileges.bloquer" ${p.privileges.bloquer ? 'checked' : ''}> Bloquer</label>
         <label class="right-item"><input type="checkbox" data-right-check="privileges.supprimer" ${p.privileges.supprimer ? 'checked' : ''}> Supprimer</label>
         <label class="right-item"><input type="checkbox" data-right-check="privileges.modifier" ${p.privileges.modifier ? 'checked' : ''}> Modifier</label>
+        <label class="right-item"><input type="checkbox" data-right-check="privileges.annuler" ${p.privileges.annuler ? 'checked' : ''}> Annuler</label>
       </div>
     </div>
     `}
@@ -2741,7 +3401,7 @@ function sectionDroitsPrivileges(){
 /* ---- Comptes utilisateurs > Utilisateurs ---- */
 function permissionsActive(perm){
   if(!perm) return false;
-  return perm.inscriptions.enabled || perm.comptesProprietaires.enabled || (perm.comptesUtilisateurs && perm.comptesUtilisateurs.enabled) || perm.comptabilite.enabled || (perm.reservationsPaiements && perm.reservationsPaiements.enabled);
+  return perm.inscriptions.enabled || perm.comptesProprietaires.enabled || (perm.comptesUtilisateurs && perm.comptesUtilisateurs.enabled) || perm.comptabilite.enabled || (perm.reservationsPaiements && perm.reservationsPaiements.enabled) || (perm.reservation && perm.reservation.enabled);
 }
 function sectionUtilisateurs(){
   return `
@@ -2754,10 +3414,10 @@ function sectionUtilisateurs(){
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             ${!s.validated && active ? `<button type="button" class="dash-btn primary" data-validate-staff="${s.id}">Valider</button>` : ''}
             <div>
-              <strong class="staff-role">${s.role}</strong>
+              <strong class="staff-role">${escapeHtml(s.role)}</strong>
               <span class="status-pill ${s.validated ? 'validated' : 'pending'}" style="margin-left:6px;">${s.validated ? '✓ Compte créé (Gestionnaire)' : 'Non finalisé'}</span>
               ${s.blocked ? '<span class="status-pill pending" style="margin-left:6px;">Bloqué</span>' : ''}
-              <div class="meta">Identifiant : ${s.username} · Droits &amp; privilèges : ${active ? 'activés' : 'non activés'}</div>
+              <div class="meta">Identifiant : ${escapeHtml(s.username)} · Droits &amp; privilèges : ${active ? 'activés' : 'non activés'}</div>
             </div>
           </div>
         </div>
@@ -2774,10 +3434,10 @@ function sectionAttenteValidation(){
     ${owners.length === 0 ? '<div class="empty-note">Aucune inscription pour le moment.</div>' : owners.slice().reverse().map(o => `
       <div class="dash-card">
         <div>
-          <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
+          <strong>${escapeHtml(o.prenom)} ${escapeHtml(o.nom)}</strong> — ${o.srCode}
           <span class="status-pill ${o.validated ? 'validated' : 'pending'}" style="margin-left:6px;">${o.validated ? '✓ Compte créé' : 'Non effectuée'}</span>
-          <div class="meta">${o.username} · ${o.email} · ${o.contact}</div>
-          <div class="meta">CNI : <a href="${o.cniData}" target="_blank" rel="noopener">${o.cniName}</a></div>
+          <div class="meta">${escapeHtml(o.username)} · ${escapeHtml(o.email)} · ${escapeHtml(o.contact)}</div>
+          <div class="meta">CNI : <a href="${o.cniData}" target="_blank" rel="noopener">${escapeHtml(o.cniName)}</a></div>
         </div>
         ${!o.validated ? `
           <div style="display:flex;gap:8px;">
@@ -2791,6 +3451,79 @@ function sectionAttenteValidation(){
 }
 
 /* ---- Comptes propriétaires > Validés ---- */
+/* ---- Statistiques > Abonné : personnes inscrites sur l'application ---- */
+function sectionStatAbonnes(){
+  const total = owners.length;
+  const validated = owners.filter(o => o.validated).length;
+  const pending = total - validated;
+  return `
+    <h4>Statistiques — Abonnés (${total})</h4>
+    <p class="sub-hint">Personnes inscrites sur l'application (comptes propriétaires créés).</p>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="lbl">Total inscrits</div><div class="val">${total}</div></div>
+      <div class="stat-card"><div class="lbl">Comptes validés</div><div class="val">${validated}</div></div>
+      <div class="stat-card"><div class="lbl">En attente de validation</div><div class="val">${pending}</div></div>
+    </div>
+    ${total === 0 ? '<div class="empty-note">Aucun inscrit pour le moment.</div>' : owners.slice().reverse().map(o => `
+      <div class="dash-card">
+        <div>
+          <strong>${escapeHtml(o.prenom)} ${escapeHtml(o.nom)}</strong> — ${o.srCode}
+          <div class="meta">${escapeHtml(o.email)} · ${escapeHtml(o.contact)} · ${o.validated ? 'Validé ✅' : 'En attente ⏳'}</div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ---- Statistiques > Achat : réservations effectuées par les clients ---- */
+function sectionStatAchats(){
+  const total = reservationsLog.length;
+  const totalMontant = reservationsLog.reduce((a,r) => a + (r.due||0), 0);
+  const validees = reservationsLog.filter(r => r.status === 'validee').length;
+  const enAttente = reservationsLog.filter(r => (r.status||'en_attente') === 'en_attente').length;
+  return `
+    <h4>Statistiques — Achats (${total})</h4>
+    <p class="sub-hint">Réservations effectuées par les clients sur la plateforme.</p>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="lbl">Réservations totales</div><div class="val">${total}</div></div>
+      <div class="stat-card"><div class="lbl">Validées</div><div class="val">${validees}</div></div>
+      <div class="stat-card"><div class="lbl">En attente</div><div class="val">${enAttente}</div></div>
+      <div class="stat-card"><div class="lbl">Montant total encaissé</div><div class="val">${money(totalMontant)}</div></div>
+    </div>
+    ${total === 0 ? '<div class="empty-note">Aucun achat pour le moment.</div>' : reservationsLog.slice().reverse().map(r => `
+      <div class="dash-card">
+        <div>
+          <strong>${r.ref}</strong> — ${r.title}
+          <div class="meta">${r.dateStr} · Client : ${escapeHtml(r.clientName)} · Payé : ${money(r.due)} via ${r.operator} · ${r.status === 'validee' ? 'Validée ✅' : 'En attente ⏳'}</div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ---- Statistiques > Visiteur : personnes juste passées sur le site ---- */
+function sectionStatVisiteurs(){
+  const total = visitorLog.length;
+  const totalVisits = visitorLog.reduce((a,v) => a + (v.visitCount||1), 0);
+  const sorted = visitorLog.slice().sort((a,b) => new Date(b.lastVisit||0) - new Date(a.lastVisit||0));
+  return `
+    <h4>Statistiques — Visiteurs (${total})</h4>
+    <p class="sub-hint">Personnes ayant consulté le site, inscrites ou non.</p>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="lbl">Visiteurs uniques</div><div class="val">${total}</div></div>
+      <div class="stat-card"><div class="lbl">Visites cumulées</div><div class="val">${totalVisits}</div></div>
+    </div>
+    ${total === 0 ? '<div class="empty-note">Aucun visiteur enregistré pour le moment.</div>' : sorted.map(v => `
+      <div class="dash-card">
+        <div>
+          <strong>Visiteur</strong> — ${String(v.visitorId||'').slice(0,10)}…
+          <div class="meta">Première visite : ${v.firstVisit ? new Date(v.firstVisit).toLocaleString('fr-FR') : '—'} · Dernière visite : ${v.lastVisit ? new Date(v.lastVisit).toLocaleString('fr-FR') : '—'} · ${v.visitCount||1} visite(s)</div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
 function sectionComptesValides(){
   const validated = owners.filter(o => o.validated);
   return `
@@ -2799,8 +3532,8 @@ function sectionComptesValides(){
     ${validated.length === 0 ? '<div class="empty-note">Aucun compte validé pour le moment.</div>' : validated.map(o => `
       <div class="dash-card">
         <div>
-          <strong>${o.prenom} ${o.nom}</strong> — ${o.srCode}
-          <div class="meta">Identifiant : ${o.username} · Mot de passe : ${o.password} · ${o.email} · ${o.contact}</div>
+          <strong>${escapeHtml(o.prenom)} ${escapeHtml(o.nom)}</strong> — ${o.srCode}
+          <div class="meta">Identifiant : ${escapeHtml(o.username)} · ${escapeHtml(o.email)} · ${escapeHtml(o.contact)}</div>
           <div class="meta">Paiement : ${o.paymentOperator ? o.paymentOperator + ' — ' + o.paymentPhone : 'non renseigné'} · Solde : ${money(o.balance||0)}</div>
           <div class="meta">${ownerListings.filter(p => p.ownerCode === o.srCode).length} bien(s) publié(s)</div>
         </div>
@@ -2817,7 +3550,7 @@ function sectionHistoriqueReservations(){
       <div class="dash-card">
         <div>
           <strong>${r.ref}</strong> — ${r.title}
-          <div class="meta">${r.dateStr} · Client : ${r.clientName} · Payé : ${money(r.due)} via ${r.operator}</div>
+          <div class="meta">${r.dateStr} · Client : ${escapeHtml(r.clientName)} · Tél. client : ${r.phone || 'non renseigné'} · Payé : ${money(r.due)} via ${r.operator}</div>
           <div class="meta">Commission admin : ${money(r.fee)} · Reversé au propriétaire : ${money(r.ownerNet)}</div>
         </div>
       </div>
@@ -2857,7 +3590,7 @@ function sectionCommission(){
       <button type="button" class="dash-btn ${commissionView === 'historique' ? 'active' : ''}" data-commission-view="historique">Historique des commissions</button>
     </div>
     ${commissionView === 'portefeuille' ? `
-      <p class="sub-hint">Commission plateforme : 500 FCFA par paiement, répartie par moyen de paiement.</p>
+      <p class="sub-hint">Commission plateforme : 10% sur chaque paiement, répartie par moyen de paiement. Si le séjour dépasse 2 jours, une commission additionnelle de 6% est prélevée sur le Montant Total.</p>
       <div class="wallet-grid">
         ${OPS.map(op => `
           <div class="wallet-card">
@@ -2873,6 +3606,7 @@ function sectionCommission(){
           <div>
             <strong>${r.ref}</strong> — ${r.title}
             <div class="meta">${r.dateStr} · via ${r.operator}</div>
+            <div class="meta">10% du paiement : ${money(r.feeBase != null ? r.feeBase : r.fee)}${r.feeLongStay ? ` · +6% séjour &gt; 2 jours : ${money(r.feeLongStay)}` : ''}</div>
           </div>
           <div class="amt" style="font-family:'Fraunces',serif;font-weight:600;">${money(r.fee)}</div>
         </div>
@@ -2931,6 +3665,115 @@ function sectionHistoriqueComptabilite(){
   `;
 }
 
+/* ---- Boîte de suggestions (reçues des clients) ---- */
+function sectionSuggestions(){
+  return `
+    <h4>Boîte de suggestions (${suggestions.length})</h4>
+    <p class="sub-hint">Toutes les suggestions envoyées par les clients depuis le bouton « Boîte de suggestions » du site apparaissent ici.</p>
+    ${suggestions.length === 0 ? '<div class="empty-note">Aucune suggestion reçue pour le moment.</div>' : suggestions.slice().reverse().map(s => `
+      <div class="dash-card">
+        <div>
+          <strong>${escapeHtml(s.name || 'Visiteur')}</strong>
+          <div class="meta">${s.dateStr}</div>
+          <p style="margin:8px 0 0;font-size:13.5px;line-height:1.5;">${escapeHtml(s.message)}</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="dash-btn danger" data-delete-suggestion="${s.id}">Supprimer</button>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ---- Droits & privilèges liés à la réservation : Valider / Bloquer / Supprimer / Modifier / Annuler ---- */
+function currentPrivileges(){
+  const empty = {valide:false, bloquer:false, supprimer:false, modifier:false, annuler:false};
+  if(!session) return empty;
+  if(session.type === 'admin') return {valide:true, bloquer:true, supprimer:true, modifier:true, annuler:true};
+  if(session.type === 'staff'){
+    const staff = getStaffById(session.staffId);
+    return (staff && staff.permissions && staff.permissions.privileges) || empty;
+  }
+  return empty;
+}
+let editingReservationId = null;
+
+function reservationEditForm(r){
+  return `
+    <form data-edit-reservation-form="${r.id}" class="edit-owner-form" style="margin-top:10px;">
+      <div class="form-row">
+        <div class="form-field"><label>Client</label><input type="text" name="clientName" value="${r.clientName || ''}"></div>
+        <div class="form-field"><label>Date de réservation</label><input type="text" name="resDate" value="${r.resDate || ''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Date de fin</label><input type="text" name="resEndDate" value="${r.resEndDate || ''}"></div>
+        <div class="form-field"><label>Montant payé</label><input type="number" name="due" value="${r.due || 0}"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button type="submit" class="dash-btn primary">Enregistrer</button>
+        <button type="button" class="dash-btn" data-reservation-edit-cancel="${r.id}">Annuler la modification</button>
+      </div>
+    </form>
+  `;
+}
+
+/* ---- Réservation > Réservation en attente ---- */
+function sectionReservationAttente(){
+  const priv = currentPrivileges();
+  const pending = reservationsLog.filter(r => (r.status || 'en_attente') === 'en_attente');
+  return `
+    <h4>Réservation en attente (${pending.length})</h4>
+    <p class="sub-hint">Réservations effectuées par les clients, en attente de validation par l'administration.</p>
+    ${pending.length === 0 ? '<div class="empty-note">Aucune réservation en attente pour le moment.</div>' : pending.slice().reverse().map(r => `
+      <div class="dash-card">
+        <div>
+          <strong>${r.ref}</strong> — ${r.title}
+          <span class="status-pill pending" style="margin-left:6px;">En attente</span>
+          <div class="meta">${r.dateStr} · Client : ${escapeHtml(r.clientName)} · Montant : ${money(r.due)} via ${r.operator}</div>
+        </div>
+        ${editingReservationId === r.id ? reservationEditForm(r) : `
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${priv.valide ? `<button type="button" class="dash-btn primary" data-reservation-validate="${r.id}">Valider</button>` : ''}
+          ${priv.modifier ? `<button type="button" class="dash-btn" data-reservation-edit="${r.id}">Modifier</button>` : ''}
+          ${priv.annuler ? `<button type="button" class="dash-btn" data-reservation-cancel="${r.id}">Annuler</button>` : ''}
+          ${priv.supprimer ? `<button type="button" class="dash-btn danger" data-reservation-delete="${r.id}">Supprimer</button>` : ''}
+        </div>
+        `}
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ---- Réservation > Réservation validée ---- */
+function sectionReservationValidee(){
+  const priv = currentPrivileges();
+  const validated = reservationsLog.filter(r => r.status === 'validee');
+  return `
+    <h4>Réservation validée (${validated.length})</h4>
+    <p class="sub-hint">Réservations validées par l'administration.</p>
+    ${validated.length === 0 ? '<div class="empty-note">Aucune réservation validée pour le moment.</div>' : validated.slice().reverse().map(r => `
+      <div class="dash-card">
+        <div>
+          <strong>${r.ref}</strong> — ${r.title}
+          <span class="status-pill validated" style="margin-left:6px;">Validée</span>
+          ${r.blocked ? '<span class="status-pill pending" style="margin-left:6px;">Bloquée</span>' : ''}
+          <div class="meta">${r.dateStr} · Client : ${escapeHtml(r.clientName)} · Montant : ${money(r.due)} via ${r.operator}</div>
+          <div class="meta">${r.receiptCode ? `✓ Code envoyé au client : <strong>${r.receiptCode}</strong>` : 'Aucun code envoyé pour le moment — le client ne peut pas encore générer son reçu.'}</div>
+        </div>
+        ${editingReservationId === r.id ? reservationEditForm(r) : `
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${priv.valide ? `<button type="button" class="dash-btn primary" data-reservation-send-code="${r.id}">${r.receiptCode ? 'Renvoyer code' : 'Envoyer code'}</button>` : ''}
+          ${priv.bloquer ? `<button type="button" class="dash-btn" data-reservation-block="${r.id}">${r.blocked ? 'Débloquer' : 'Bloquer'}</button>` : ''}
+          ${priv.modifier ? `<button type="button" class="dash-btn" data-reservation-edit="${r.id}">Modifier</button>` : ''}
+          ${priv.annuler ? `<button type="button" class="dash-btn" data-reservation-cancel="${r.id}">Annuler</button>` : ''}
+          ${priv.supprimer ? `<button type="button" class="dash-btn danger" data-reservation-delete="${r.id}">Supprimer</button>` : ''}
+        </div>
+        `}
+      </div>
+    `).join('')}
+  `;
+}
+
 /* ---- Événements du panneau de contenu admin ---- */
 function bindAdminContentEvents(){
   const content = document.getElementById('adminContent');
@@ -2956,6 +3799,14 @@ function bindAdminContentEvents(){
     const blockOwnerBtn = e.target.closest('[data-block-owner]');
     const blockStaffBtn = e.target.closest('[data-block-staff]');
     const validateStaffBtn = e.target.closest('[data-validate-staff]');
+    const deleteSuggestionBtn = e.target.closest('[data-delete-suggestion]');
+    const reservationValidateBtn = e.target.closest('[data-reservation-validate]');
+    const reservationCancelBtn = e.target.closest('[data-reservation-cancel]');
+    const reservationDeleteBtn = e.target.closest('[data-reservation-delete]');
+    const reservationBlockBtn = e.target.closest('[data-reservation-block]');
+    const reservationEditBtn = e.target.closest('[data-reservation-edit]');
+    const reservationEditCancelBtn = e.target.closest('[data-reservation-edit-cancel]');
+    const reservationSendCodeBtn = e.target.closest('[data-reservation-send-code]');
 
     if(validateBtn){
       try { await db.collection('owners').doc(validateBtn.dataset.validate).update({validated: true}); }
@@ -3050,6 +3901,82 @@ function bindAdminContentEvents(){
       const id = validateStaffBtn.dataset.validateStaff;
       try { await db.collection('staffUsers').doc(id).update({validated: true}); }
       catch(err){ console.error('Erreur Firestore (validation utilisateur) :', err); alert("La validation n'a pas pu être enregistrée."); }
+    } else if(deleteSuggestionBtn){
+      const id = deleteSuggestionBtn.dataset.deleteSuggestion;
+      if(confirm('Supprimer définitivement cette suggestion ?')){
+        try { await db.collection('suggestions').doc(id).delete(); }
+        catch(err){ console.error('Erreur Firestore (suppression suggestion) :', err); alert("La suppression n'a pas pu être enregistrée."); }
+      }
+    } else if(reservationValidateBtn){
+      const id = reservationValidateBtn.dataset.reservationValidate;
+      const r = reservationsLog.find(x => x.id === id);
+      /* On ouvre une fenêtre vide tout de suite (pendant le clic) pour que le
+         navigateur ne bloque pas l'ouverture de WhatsApp une fois l'écriture
+         Firestore terminée (opération asynchrone). */
+      const waWin = (r && r.phone) ? window.open('', '_blank') : null;
+      try {
+        await db.collection('reservationsLog').doc(id).update({status: 'validee'});
+        if(waWin && r){
+          const msg = encodeURIComponent(
+            `Bonjour ${escapeHtml(r.clientName)}, votre réservation « ${r.title} » (${r.ref}) sur SEONA RESI a été validée ✅. `+
+            `Vous recevrez très prochainement un code par WhatsApp pour générer votre reçu officiel. Merci de votre confiance !`
+          );
+          waWin.location.href = `https://wa.me/${waPhoneCI(r.phone)}?text=${msg}`;
+        } else if(waWin){
+          waWin.close();
+        }
+      } catch(err){
+        console.error('Erreur Firestore (validation réservation) :', err);
+        alert("La validation n'a pas pu être enregistrée.");
+        if(waWin) waWin.close();
+      }
+    } else if(reservationSendCodeBtn){
+      const id = reservationSendCodeBtn.dataset.reservationSendCode;
+      const r = reservationsLog.find(x => x.id === id);
+      if(!r) return;
+      if(!r.phone){
+        alert("Aucun numéro de téléphone n'est enregistré pour cette réservation, impossible d'envoyer le code.");
+        return;
+      }
+      const code = String(Math.floor(100000 + Math.random() * 900000));
+      const waWin = window.open('', '_blank');
+      try {
+        await db.collection('reservationsLog').doc(id).update({receiptCode: code, codeSentAt: Date.now()});
+        const msg = encodeURIComponent(
+          `Bonjour ${escapeHtml(r.clientName)}, voici votre code pour générer le reçu officiel de votre réservation « ${r.title} » (${r.ref}) sur SEONA RESI : ${code}. `+
+          `Rendez-vous sur le site, cliquez sur « 🧾 Récupérer mon reçu », puis saisissez ce code avec votre numéro de téléphone.`
+        );
+        waWin.location.href = `https://wa.me/${waPhoneCI(r.phone)}?text=${msg}`;
+      } catch(err){
+        console.error('Erreur Firestore (envoi code réservation) :', err);
+        alert("Le code n'a pas pu être enregistré/envoyé.");
+        if(waWin) waWin.close();
+      }
+    } else if(reservationCancelBtn){
+      const id = reservationCancelBtn.dataset.reservationCancel;
+      if(confirm('Annuler cette réservation ?')){
+        try { await db.collection('reservationsLog').doc(id).update({status: 'annulee'}); }
+        catch(err){ console.error('Erreur Firestore (annulation réservation) :', err); alert("L'annulation n'a pas pu être enregistrée."); }
+      }
+    } else if(reservationBlockBtn){
+      const id = reservationBlockBtn.dataset.reservationBlock;
+      const r = reservationsLog.find(x => x.id === id);
+      if(r){
+        try { await db.collection('reservationsLog').doc(id).update({blocked: !r.blocked}); }
+        catch(err){ console.error('Erreur Firestore (blocage réservation) :', err); alert("L'opération n'a pas pu être enregistrée."); }
+      }
+    } else if(reservationDeleteBtn){
+      const id = reservationDeleteBtn.dataset.reservationDelete;
+      if(confirm('Supprimer définitivement cette réservation ?')){
+        try { await db.collection('reservationsLog').doc(id).delete(); }
+        catch(err){ console.error('Erreur Firestore (suppression réservation) :', err); alert("La suppression n'a pas pu être enregistrée."); }
+      }
+    } else if(reservationEditBtn){
+      editingReservationId = reservationEditBtn.dataset.reservationEdit;
+      refreshAdminSection();
+    } else if(reservationEditCancelBtn){
+      editingReservationId = null;
+      refreshAdminSection();
     }
   });
 
@@ -3082,6 +4009,28 @@ function bindAdminContentEvents(){
     const staffCreateForm = e.target.id === 'staffCreateForm' ? e.target : null;
     const editStaffForm = e.target.closest('[data-edit-staff-form]');
     const pwStaffForm = e.target.closest('[data-pw-staff-form]');
+    const editReservationForm = e.target.closest('[data-edit-reservation-form]');
+
+    if(editReservationForm){
+      e.preventDefault();
+      const id = editReservationForm.dataset.editReservationForm;
+      const submitBtn = editReservationForm.querySelector('button[type=submit]');
+      submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
+      try {
+        await db.collection('reservationsLog').doc(id).update({
+          clientName: editReservationForm.clientName.value.trim(),
+          resDate: editReservationForm.resDate.value.trim(),
+          resEndDate: editReservationForm.resEndDate.value.trim(),
+          due: Number(editReservationForm.due.value) || 0
+        });
+      } catch(err){
+        console.error('Erreur Firestore (modification réservation) :', err);
+        alert("La modification n'a pas pu être enregistrée.");
+      }
+      editingReservationId = null;
+      refreshAdminSection();
+      return;
+    }
 
     if(staffCreateForm){
       e.preventDefault();
@@ -3102,8 +4051,9 @@ function bindAdminContentEvents(){
       submitBtn.disabled = true; submitBtn.textContent = 'Création…';
       try {
         const id = genStaffId();
+        const passwordHash = await hashPassword(password);
         await db.collection('staffUsers').doc(id).set({
-          id, role, username, password, permissions: defaultPermissions(),
+          id, role, username, passwordHash, permissions: defaultPermissions(),
           validated: false, blocked: false
         });
         creatingStaff = false;
@@ -3141,7 +4091,10 @@ function bindAdminContentEvents(){
       if(staff && newPw){
         const submitBtn = pwStaffForm.querySelector('button[type=submit]');
         submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
-        try { await db.collection('staffUsers').doc(staff.id).update({password: newPw}); }
+        try {
+          const passwordHash = await hashPassword(newPw);
+          await db.collection('staffUsers').doc(staff.id).update({passwordHash});
+        }
         catch(err){ console.error('Erreur Firestore (mot de passe utilisateur) :', err); alert("Le mot de passe n'a pas pu être réinitialisé."); }
       }
       resetPwStaffId = null;
@@ -3176,7 +4129,10 @@ function bindAdminContentEvents(){
       if(owner && newPw){
         const submitBtn = pwForm.querySelector('button[type=submit]');
         submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement…';
-        try { await db.collection('owners').doc(owner.srCode).update({password: newPw}); }
+        try {
+          const passwordHash = await hashPassword(newPw);
+          await db.collection('owners').doc(owner.srCode).update({passwordHash});
+        }
         catch(err){ console.error('Erreur Firestore (mot de passe) :', err); alert("Le mot de passe n'a pas pu être réinitialisé."); }
       }
       resetPwSR = null;
@@ -3235,6 +4191,42 @@ function refreshAdminSection(){
 
 renderNav();
 render();
+</script>
+<script>
+/* ---------- Menu mobile (burger) ---------- */
+(function(){
+  const burger = document.getElementById('navBurger');
+  const navActions = document.getElementById('navActions');
+  const backdrop = document.getElementById('navBackdrop');
+  if(!burger || !navActions || !backdrop) return;
+
+  function openMenu(){
+    navActions.classList.add('open');
+    backdrop.classList.add('open');
+    burger.classList.add('open');
+    burger.setAttribute('aria-expanded','true');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMenu(){
+    navActions.classList.remove('open');
+    backdrop.classList.remove('open');
+    burger.classList.remove('open');
+    burger.setAttribute('aria-expanded','false');
+    document.body.style.overflow = '';
+  }
+  burger.addEventListener('click', () => {
+    navActions.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  backdrop.addEventListener('click', closeMenu);
+  /* Ferme le menu dès qu'on choisit une action à l'intérieur */
+  navActions.addEventListener('click', (e) => {
+    if(e.target.closest('button')) closeMenu();
+  });
+  /* Ferme le menu si on repasse en affichage bureau */
+  window.addEventListener('resize', () => {
+    if(window.innerWidth > 900) closeMenu();
+  });
+})();
 </script>
 </body>
 </html>
