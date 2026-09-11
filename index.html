@@ -1719,12 +1719,13 @@ async function validateReservation(l, res, method){
      au propriétaire du bien. Tout est écrit dans Firestore afin d'être visible
      immédiatement côté administrateur, sur n'importe quel appareil.
      Règles de commission :
-       - 10% de commission sur chaque paiement (calculée sur le montant réglé maintenant).
-       - Si le nombre de séjour(s) dépasse 2 jours, une commission additionnelle de 6%
+       - 10% de commission sur le prix du bien (calculée sur le Montant Total du séjour,
+         res.total, et non sur le seul acompte réglé maintenant).
+       - Si le séjour dépasse 2 jours, une commission additionnelle de 6%
          est prélevée sur le Montant Total (res.total) du séjour. */
   const stays = res.stays || 1;
   const total = res.total || res.due;
-  const feeBase = Math.round(res.due * 0.10);
+  const feeBase = Math.round(total * 0.10);
   const feeLongStay = stays > 2 ? Math.round(total * 0.06) : 0;
   const fee = feeBase + feeLongStay;
   const ownerNet = res.due - fee;
@@ -2088,21 +2089,19 @@ const ADMIN_MENU = [
   {id:'comptes-proprietaires', label:'Comptes propriétaires', items:[
     {id:'valides', label:'Validés'}
   ]},
-  {id:'reservations-paiements', label:'Réservations & paiements', items:[
-    {id:'historique-reservations', label:'Historique des Réservations'},
-    {id:'rapport-activite', label:"Rapport d'activité"}
-  ]},
   {id:'comptabilite', label:'Comptabilité', items:[
     {id:'commission', label:'Commission'},
     {id:'transfert', label:'Transfert'},
-    {id:'historique-comptabilite', label:'Historique'}
+    {id:'historique-comptabilite', label:'Historique'},
+    {id:'rapport-activite', label:"Rapport d'activité"}
   ]},
   {id:'suggestions', label:'Boîte de suggestions', items:[
     {id:'suggestions-liste', label:'Suggestions reçues'}
   ]},
-  {id:'reservation', label:'Réservation', items:[
+  {id:'reservation', label:'Réservations', items:[
     {id:'reservation-attente', label:'Réservation en attente'},
-    {id:'reservation-validee', label:'Réservation validée'}
+    {id:'reservation-validee', label:'Réservation validée'},
+    {id:'historique-reservations', label:'Historiques des Réservations'}
   ]}
 ];
 let adminSection = 'gestion-comptes';
@@ -2124,9 +2123,12 @@ function defaultPermissions(perm){
     inscriptions: Object.assign({enabled:false, voir:false, valider:false}, perm.inscriptions || {}),
     comptesProprietaires: Object.assign({enabled:false, voirValides:false, voirTransferts:false}, perm.comptesProprietaires || {}),
     comptesUtilisateurs: Object.assign({enabled:false}, perm.comptesUtilisateurs || {}),
-    comptabilite: Object.assign({enabled:false, voirTransferts:false, voirCommission:false}, perm.comptabilite || {}),
-    reservationsPaiements: Object.assign({enabled:false, historique:false, rapport:false}, perm.reservationsPaiements || {}),
-    reservation: Object.assign({enabled:false, enAttente:false, validee:false}, perm.reservation || {}),
+    comptabilite: Object.assign({enabled:false, voirTransferts:false, voirCommission:false, rapport:false}, perm.comptabilite || {}, {
+      rapport: (perm.comptabilite && perm.comptabilite.rapport) || (perm.reservationsPaiements && perm.reservationsPaiements.rapport) || false
+    }),
+    reservation: Object.assign({enabled:false, enAttente:false, validee:false, historique:false}, perm.reservation || {}, {
+      historique: (perm.reservation && perm.reservation.historique) || (perm.reservationsPaiements && perm.reservationsPaiements.historique) || false
+    }),
     privileges: Object.assign({valide:false, bloquer:false, supprimer:false, modifier:false, annuler:false}, perm.privileges || {})
   };
 }
@@ -3033,13 +3035,15 @@ function staffMenuFor(staff){
     const items = [];
     if(p.comptabilite.voirCommission) items.push({id:'commission', label:'Commission'});
     if(p.comptabilite.voirTransferts) items.push({id:'transfert', label:'Transfert'}, {id:'historique-comptabilite', label:'Historique'});
+    if(p.comptabilite.rapport) items.push({id:'rapport-activite', label:"Rapport d'activité"});
     if(items.length) menu.push({id:'comptabilite', label:'Comptabilité', items});
   }
   if(p.reservation && p.reservation.enabled){
     const items = [];
     if(p.reservation.enAttente) items.push({id:'reservation-attente', label:'Réservation en attente'});
     if(p.reservation.validee) items.push({id:'reservation-validee', label:'Réservation validée'});
-    if(items.length) menu.push({id:'reservation', label:'Réservation', items});
+    if(p.reservation.historique) items.push({id:'historique-reservations', label:'Historiques des Réservations'});
+    if(items.length) menu.push({id:'reservation', label:'Réservations', items});
   }
   return menu;
 }
@@ -3107,7 +3111,6 @@ function renderStaffDashboard(){
 
 
 function adminMenuCount(menuId){
-  if(menuId === 'reservations-paiements') return ` (${reservationsLog.length})`;
   if(menuId === 'suggestions') return ` (${suggestions.length})`;
   if(menuId === 'reservation') return ` (${reservationsLog.filter(r => (r.status||'en_attente') === 'en_attente').length})`;
   return '';
@@ -3354,28 +3357,19 @@ function sectionDroitsPrivileges(){
       <div class="right-items">
         <label class="right-item ${p.comptabilite.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptabilite.voirTransferts" ${p.comptabilite.voirTransferts ? 'checked' : ''}> Voir les transferts</label>
         <label class="right-item ${p.comptabilite.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptabilite.voirCommission" ${p.comptabilite.voirCommission ? 'checked' : ''}> Voir commission</label>
+        <label class="right-item ${p.comptabilite.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="comptabilite.rapport" ${p.comptabilite.rapport ? 'checked' : ''}> Rapport d'activité</label>
       </div>
     </div>
 
     <div class="right-group">
       <div class="right-group-head">
-        <strong>Réservations &amp; paiements</strong>
-        <label class="switch"><input type="checkbox" data-right-toggle="reservationsPaiements" ${p.reservationsPaiements.enabled ? 'checked' : ''}><span class="slider"></span></label>
-      </div>
-      <div class="right-items">
-        <label class="right-item ${p.reservationsPaiements.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="reservationsPaiements.historique" ${p.reservationsPaiements.historique ? 'checked' : ''}> Historique des réservations</label>
-        <label class="right-item ${p.reservationsPaiements.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="reservationsPaiements.rapport" ${p.reservationsPaiements.rapport ? 'checked' : ''}> Rapport d'activité</label>
-      </div>
-    </div>
-
-    <div class="right-group">
-      <div class="right-group-head">
-        <strong>Réservation</strong>
+        <strong>Réservations</strong>
         <label class="switch"><input type="checkbox" data-right-toggle="reservation" ${p.reservation.enabled ? 'checked' : ''}><span class="slider"></span></label>
       </div>
       <div class="right-items">
         <label class="right-item ${p.reservation.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="reservation.enAttente" ${p.reservation.enAttente ? 'checked' : ''}> Réservation en attente</label>
         <label class="right-item ${p.reservation.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="reservation.validee" ${p.reservation.validee ? 'checked' : ''}> Réservation validée</label>
+        <label class="right-item ${p.reservation.enabled ? '' : 'disabled'}"><input type="checkbox" data-right-check="reservation.historique" ${p.reservation.historique ? 'checked' : ''}> Historiques des Réservations</label>
       </div>
     </div>
     ` : `
@@ -3401,7 +3395,7 @@ function sectionDroitsPrivileges(){
 /* ---- Comptes utilisateurs > Utilisateurs ---- */
 function permissionsActive(perm){
   if(!perm) return false;
-  return perm.inscriptions.enabled || perm.comptesProprietaires.enabled || (perm.comptesUtilisateurs && perm.comptesUtilisateurs.enabled) || perm.comptabilite.enabled || (perm.reservationsPaiements && perm.reservationsPaiements.enabled) || (perm.reservation && perm.reservation.enabled);
+  return perm.inscriptions.enabled || perm.comptesProprietaires.enabled || (perm.comptesUtilisateurs && perm.comptesUtilisateurs.enabled) || perm.comptabilite.enabled || (perm.reservation && perm.reservation.enabled);
 }
 function sectionUtilisateurs(){
   return `
@@ -3590,7 +3584,7 @@ function sectionCommission(){
       <button type="button" class="dash-btn ${commissionView === 'historique' ? 'active' : ''}" data-commission-view="historique">Historique des commissions</button>
     </div>
     ${commissionView === 'portefeuille' ? `
-      <p class="sub-hint">Commission plateforme : 10% sur chaque paiement, répartie par moyen de paiement. Si le séjour dépasse 2 jours, une commission additionnelle de 6% est prélevée sur le Montant Total.</p>
+      <p class="sub-hint">Commission plateforme : 10% sur le prix du bien (Montant Total), répartie par moyen de paiement. Si le séjour dépasse 2 jours, une commission additionnelle de 6% est prélevée sur le Montant Total.</p>
       <div class="wallet-grid">
         ${OPS.map(op => `
           <div class="wallet-card">
@@ -3665,12 +3659,37 @@ function sectionHistoriqueComptabilite(){
   `;
 }
 
-/* ---- Boîte de suggestions (reçues des clients) ---- */
+/* ---- Boîte de suggestions (reçues des clients) ----
+   Analyse très simple du texte du message afin de classer chaque suggestion
+   dans l'une des 3 catégories ci-dessous. L'affichage respecte toujours
+   cet ordre : Négatives → Positives → Neutres. */
+const SUGGESTION_MOTS_NEGATIFS = [
+  'mauvais','mauvaise','nul','nulle','déçu','deçu','décevant','decevant','horrible','pire',
+  'problème','probleme','panne','bug','erreur','lent','lente','cher','arnaque','sale',
+  'insatisfait','insatisfaisant','impossible','plainte','déteste','deteste','honte','scandale',
+  'annulé','annulée','annule','annulee','retard','en retard','jamais','décu','frustré','frustre',
+  'mécontent','mecontent','inacceptable','catastrophe','pas content','pas contente','pas satisfait'
+];
+const SUGGESTION_MOTS_POSITIFS = [
+  'merci','super','excellent','excellente','parfait','parfaite','génial','genial','top','bravo',
+  'satisfait','satisfaite','content','contente','ravi','ravie','bien','agréable','agreable',
+  'recommande','recommand','rapide','professionnel','professionnelle','magnifique','impeccable',
+  'j\'aime','jaime','adore','félicitations','felicitations','bon travail'
+];
+function suggestionSentiment(message){
+  const txt = String(message || '').toLowerCase();
+  const hasNeg = SUGGESTION_MOTS_NEGATIFS.some(m => txt.includes(m));
+  const hasPos = SUGGESTION_MOTS_POSITIFS.some(m => txt.includes(m));
+  if(hasNeg) return 'negative';
+  if(hasPos) return 'positive';
+  return 'neutre';
+}
 function sectionSuggestions(){
-  return `
-    <h4>Boîte de suggestions (${suggestions.length})</h4>
-    <p class="sub-hint">Toutes les suggestions envoyées par les clients depuis le bouton « Boîte de suggestions » du site apparaissent ici.</p>
-    ${suggestions.length === 0 ? '<div class="empty-note">Aucune suggestion reçue pour le moment.</div>' : suggestions.slice().reverse().map(s => `
+  const groupes = {negative: [], positive: [], neutre: []};
+  suggestions.slice().reverse().forEach(s => {
+    groupes[suggestionSentiment(s.message)].push(s);
+  });
+  const carte = s => `
       <div class="dash-card">
         <div>
           <strong>${escapeHtml(s.name || 'Visiteur')}</strong>
@@ -3681,7 +3700,19 @@ function sectionSuggestions(){
           <button type="button" class="dash-btn danger" data-delete-suggestion="${s.id}">Supprimer</button>
         </div>
       </div>
-    `).join('')}
+    `;
+  const section = (titre, liste) => liste.length === 0 ? '' : `
+    <h5 style="margin:18px 0 8px;font-size:13.5px;text-transform:uppercase;letter-spacing:.04em;color:#6B6A5A;">${titre} (${liste.length})</h5>
+    ${liste.map(carte).join('')}
+  `;
+  return `
+    <h4>Boîte de suggestions (${suggestions.length})</h4>
+    <p class="sub-hint">Toutes les suggestions envoyées par les clients depuis le bouton « Boîte de suggestions » du site apparaissent ici, classées par ordre : négatives, puis positives, puis neutres.</p>
+    ${suggestions.length === 0 ? '<div class="empty-note">Aucune suggestion reçue pour le moment.</div>' : `
+      ${section('Suggestions négatives', groupes.negative)}
+      ${section('Suggestions positives', groupes.positive)}
+      ${section('Suggestions neutres', groupes.neutre)}
+    `}
   `;
 }
 
