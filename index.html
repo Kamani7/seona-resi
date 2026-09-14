@@ -943,28 +943,28 @@
 const LISTINGS = [
   {id:1, ref:"SR-014", type:"Villa", title:"Villa avec jardin, quartier calme", city:"San-Pédro", price:280000, rooms:4, baths:3, area:210,
     desc:"Villa de plain-pied entourée d'un jardin clos, proche du port. Idéale pour une famille recherchant calme et sécurité.",
-    amenities:["Jardin clos","Parking 2 voitures","Groupe électrogène","Forage d'eau"], color:"#3A6F62", phone:"07 47 37 79 39", payOperator:"orange", images:[]},
+    amenities:["Jardin clos","Parking 2 voitures","Groupe électrogène","Forage d'eau"], color:"#3A6F62", phone:"07 47 37 79 39", payOperator:"orange", payOperators:["orange","wave"], phones:["07 47 37 79 39","07 47 37 79 39"], images:[]},
   {id:2, ref:"SR-021", type:"Appartement", title:"Appartement standing, vue mer", city:"San-Pédro", price:190000, rooms:3, baths:2, area:95,
     desc:"Appartement lumineux au 3e étage avec vue dégagée sur la mer, proche des commerces et écoles.",
-    amenities:["Climatisation","Ascenseur","Balcon","Gardien"], color:"#B5562F", phone:"07 78 66 22 93", payOperator:"mtn", images:[]},
+    amenities:["Climatisation","Ascenseur","Balcon","Gardien"], color:"#B5562F", phone:"07 78 66 22 93", payOperator:"mtn", payOperators:["mtn"], phones:["07 78 66 22 93"], images:[]},
   {id:3, ref:"SR-033", type:"Maison", title:"Maison familiale, cour spacieuse", city:"Abidjan", price:320000, rooms:5, baths:3, area:250,
     desc:"Grande maison à Cocody avec cour intérieure, garage double et dépendance pour employé de maison.",
-    amenities:["Cour spacieuse","Garage double","Dépendance","Citerne d'eau"], color:"#C79A3E", phone:"01 02 03 04 05", payOperator:"wave", images:[]},
+    amenities:["Cour spacieuse","Garage double","Dépendance","Citerne d'eau"], color:"#C79A3E", phone:"01 02 03 04 05", payOperator:"wave", payOperators:["wave"], phones:["01 02 03 04 05"], images:[]},
   {id:4, ref:"SR-045", type:"Studio", title:"Studio meublé, proche université", city:"Abidjan", price:75000, rooms:1, baths:1, area:28,
     desc:"Studio meublé et fonctionnel, à deux pas de l'université. Parfait pour étudiant ou jeune actif.",
-    amenities:["Meublé","Wifi inclus","Sécurisé 24h/24"], color:"#3A6F62", phone:"05 06 07 08 09", payOperator:"moov", images:[]},
+    amenities:["Meublé","Wifi inclus","Sécurisé 24h/24"], color:"#3A6F62", phone:"05 06 07 08 09", payOperator:"moov", payOperators:["moov"], phones:["05 06 07 08 09"], images:[]},
   {id:5, ref:"SR-052", type:"Villa", title:"Villa contemporaine avec piscine", city:"Abidjan", price:650000, rooms:5, baths:4, area:320,
     desc:"Villa moderne à Riviera avec piscine privée, cuisine équipée et suite parentale.",
-    amenities:["Piscine privée","Cuisine équipée","Suite parentale","Vidéosurveillance"], color:"#B5562F", phone:"07 47 37 79 39", payOperator:"orange", images:[]},
+    amenities:["Piscine privée","Cuisine équipée","Suite parentale","Vidéosurveillance"], color:"#B5562F", phone:"07 47 37 79 39", payOperator:"orange", payOperators:["orange","mtn"], phones:["07 47 37 79 39","07 47 37 79 39"], images:[]},
   {id:6, ref:"SR-061", type:"Appartement", title:"Appartement 2 pièces rénové", city:"Yamoussoukro", price:110000, rooms:2, baths:1, area:60,
     desc:"Appartement récemment rénové, quartier résidentiel calme proche du centre administratif.",
-    amenities:["Rénové","Eau courante","Parking"], color:"#C79A3E", phone:"01 02 03 04 05", payOperator:"wave", images:[]},
+    amenities:["Rénové","Eau courante","Parking"], color:"#C79A3E", phone:"01 02 03 04 05", payOperator:"wave", payOperators:["wave"], phones:["01 02 03 04 05"], images:[]},
   {id:7, ref:"SR-074", type:"Maison", title:"Maison de ville avec terrasse", city:"Bouaké", price:150000, rooms:3, baths:2, area:130,
     desc:"Maison de ville avec petite terrasse ombragée, idéale pour une famille de taille moyenne.",
-    amenities:["Terrasse","Cour arrière","Proche marché"], color:"#3A6F62", phone:"05 06 07 08 09", payOperator:"moov", images:[]},
+    amenities:["Terrasse","Cour arrière","Proche marché"], color:"#3A6F62", phone:"05 06 07 08 09", payOperator:"moov", payOperators:["moov"], phones:["05 06 07 08 09"], images:[]},
   {id:8, ref:"SR-088", type:"Studio", title:"Studio cosy centre-ville", city:"San-Pédro", price:65000, rooms:1, baths:1, area:24,
     desc:"Petit studio bien agencé en plein centre-ville, à proximité immédiate des transports.",
-    amenities:["Centre-ville","Transports à pied","Sécurisé"], color:"#B5562F", phone:"07 78 66 22 93", payOperator:"mtn", images:[]},
+    amenities:["Centre-ville","Transports à pied","Sécurisé"], color:"#B5562F", phone:"07 78 66 22 93", payOperator:"mtn", payOperators:["mtn"], phones:["07 78 66 22 93"], images:[]},
 ];
 /* Biens ajoutés par les propriétaires inscrits (persistés séparément) */
 /* Alimenté en temps réel depuis Firestore (collection 'ownerListings'), voir plus bas. */
@@ -1316,13 +1316,19 @@ function openModal(id){
       </div>
       <p class="modal-desc">${escapeHtml(l.desc)}</p>
       <div class="amenities">${l.amenities.map(a=>`<span>${escapeHtml(a)}</span>`).join('')}</div>
-      ${(l.payOperator && l.phone) ? (() => {
-          const m = PAYMENT_METHODS.find(pm => pm.id === l.payOperator);
+      ${(() => {
+          const avail = buildAvailableMethods(l);
+          if(!avail.length) return '';
+          const label = avail.length > 1
+            ? `Moyens de paiement acceptés : <strong>${avail.map(a => a.method.label).join(', ')}</strong> — vous choisirez votre opérateur à l'étape de réservation`
+            : `Moyen de paiement du propriétaire (identique sur son profil) : <strong>${avail[0].method.label}</strong>`;
           return `<div class="deposit-summary" style="margin-bottom:16px;">
-            <span class="dot" style="background:${m?m.color:'#888'}">${m?m.initials:'?'}</span>
-            <span>Moyen de paiement du propriétaire (identique sur son profil) : <strong>${m?m.label:l.payOperator}</strong> <span style="color:#8A8874;">— numéro masqué, communiqué sur votre reçu une fois la réservation validée</span></span>
+            ${avail.length > 1
+              ? avail.map(a => `<span class="dot" style="background:${a.method.color};margin-right:4px;">${a.method.initials}</span>`).join('')
+              : `<span class="dot" style="background:${avail[0].method.color}">${avail[0].method.initials}</span>`}
+            <span>${label} <span style="color:#8A8874;">— numéro masqué, communiqué sur votre reçu une fois la réservation validée</span></span>
           </div>`;
-        })() : ''}
+        })()}
       ${activeRanges.length ? `<div style="font-size:12.5px;color:#6B6A5A;background:#EFEDDF;border-radius:8px;padding:9px 12px;margin-bottom:12px;">📅 Ce bien a déjà ${activeRanges.length > 1 ? 'des périodes réservées' : 'une période réservée'} (${activeRanges.map(r => new Date(r.start+'T00:00:00').toLocaleDateString('fr-FR') + ' → ' + new Date(r.end+'T00:00:00').toLocaleDateString('fr-FR')).join(', ')}). Vous pouvez le réserver sur d'autres dates, elles seront grisées à l'étape suivante.</div>` : ''}
       <button class="btn-reserve" id="btnReserve" data-id="${l.id}" style="width:100%;padding:13px 16px;border-radius:9px;font-weight:600;font-size:15px;margin-bottom:12px;">Réservation</button>
       <div class="contact-row">
@@ -1564,6 +1570,25 @@ const PAYMENT_METHODS = [
   {id:'moov', label:'Moov Monnaie', color:'#0072CE', initials:'MM', ussd:'*155#'},
 ];
 
+/* Renvoie la liste des moyens de paiement que le propriétaire a renseignés pour ce bien,
+   afin que le client puisse choisir son opérateur au moment de la réservation.
+   Prend en charge à la fois les biens ayant plusieurs opérateurs (payOperators/phones)
+   et les anciens biens n'ayant qu'un seul opérateur (payOperator/phone). */
+function buildAvailableMethods(l){
+  const ops = (l.payOperators && l.payOperators.length) ? l.payOperators : (l.payOperator ? [l.payOperator] : []);
+  const phones = (l.phones && l.phones.length) ? l.phones : (l.phone ? [l.phone] : []);
+  const seen = new Set();
+  const list = [];
+  ops.forEach((opId, i) => {
+    if(seen.has(opId)) return;
+    const m = PAYMENT_METHODS.find(pm => pm.id === opId);
+    if(!m) return;
+    seen.add(opId);
+    list.push({method:m, phone: phones[i] || phones[0] || l.phone || ''});
+  });
+  return list;
+}
+
 /* Génère un faux QR code (motif visuel) à partir d'une graine, pour illustrer le flux de dépôt. */
 function fakeQR(seed){
   let s = 0;
@@ -1582,9 +1607,9 @@ function fakeQR(seed){
 }
 
 function openPaymentMethods(l, res){
-  const method = PAYMENT_METHODS.find(m => m.id === l.payOperator);
+  const available = buildAvailableMethods(l);
 
-  if(!method || !l.phone){
+  if(!available.length){
     reservationContent.innerHTML = `
       <button class="modal-close" id="reservationCloseErr">✕</button>
       <div class="receipt-wrap">
@@ -1600,6 +1625,14 @@ function openPaymentMethods(l, res){
     return;
   }
 
+  /* Si le propriétaire n'a renseigné qu'un seul opérateur, on passe directement à l'étape
+     suivante (rien à choisir). S'il en a renseigné plusieurs, le client choisit lui-même
+     l'opérateur avec lequel il souhaite régler (choix conservé dans res.chosenOperator). */
+  if(available.length === 1){
+    proceedToDepositStep(l, res, available[0].method);
+    return;
+  }
+
   reservationContent.innerHTML = `
     <button class="modal-close" id="reservationClose2">✕</button>
     <div class="receipt-wrap">
@@ -1610,10 +1643,17 @@ function openPaymentMethods(l, res){
         <span class="amount">${money(res.due)}</span>
       </div>
 
-      <div class="deposit-summary" style="margin-bottom:18px;">
-        <span class="dot" style="background:${method.color}">${method.initials}</span>
-        <span>Ce bien est réglé via <strong>${method.label}</strong> — le même moyen de paiement que celui affiché sur son profil. Le numéro du propriétaire reste confidentiel : il figurera sur votre reçu une fois la réservation validée.</span>
+      <p class="sub-hint" style="margin:0 0 10px;">Choisissez l'opérateur avec lequel vous souhaitez régler ce dépôt :</p>
+      <div class="pay-option-group" id="operatorChoiceGroup">
+        ${available.map((a,i) => `
+          <label class="pay-option ${i===0?'checked':''}">
+            <input type="radio" name="payOperatorChoice" value="${a.method.id}" ${i===0?'checked':''}>
+            <span><span class="dot" style="background:${a.method.color};display:inline-block;width:22px;height:22px;border-radius:50%;color:#fff;font-size:10px;line-height:22px;text-align:center;margin-right:8px;">${a.method.initials}</span>${a.method.label}</span>
+          </label>
+        `).join('')}
       </div>
+
+      <div class="res-hint" style="font-size:12.5px;color:#6B6A5A;margin:8px 0 18px;">Le numéro du propriétaire reste confidentiel : il figurera sur votre reçu une fois la réservation validée.</div>
 
       <button class="btn-validate" id="btnConfirmPayment">Continuer</button>
       <button type="button" class="btn-back-link" id="btnBackToReservation">← Revenir aux informations de réservation</button>
@@ -1621,9 +1661,47 @@ function openPaymentMethods(l, res){
   `;
   reservationOverlay.classList.add('open');
 
+  const choiceGroup = document.getElementById('operatorChoiceGroup');
+  choiceGroup.addEventListener('change', () => {
+    document.querySelectorAll('#operatorChoiceGroup .pay-option').forEach(opt => {
+      opt.classList.toggle('checked', opt.querySelector('input').checked);
+    });
+  });
+
   document.getElementById('reservationClose2').addEventListener('click', closeReservationModal);
   document.getElementById('btnBackToReservation').addEventListener('click', () => openReservationModal(l));
-  document.getElementById('btnConfirmPayment').addEventListener('click', () => openDepositStep(l, res, method));
+  document.getElementById('btnConfirmPayment').addEventListener('click', () => {
+    const chosenId = document.querySelector('input[name="payOperatorChoice"]:checked').value;
+    const chosen = available.find(a => a.method.id === chosenId).method;
+    proceedToDepositStep(l, res, chosen);
+  });
+}
+
+function proceedToDepositStep(l, res, method){
+  reservationContent.innerHTML = `
+    <button class="modal-close" id="reservationClose2b">✕</button>
+    <div class="receipt-wrap">
+      <div class="card-type" style="margin-bottom:4px;">Mode de paiement</div>
+      <h3 style="margin-bottom:6px;">${escapeHtml(l.title)}</h3>
+      <div class="res-total" style="margin-bottom:18px;">
+        <span class="label">Montant à payer</span>
+        <span class="amount">${money(res.due)}</span>
+      </div>
+
+      <div class="deposit-summary" style="margin-bottom:18px;">
+        <span class="dot" style="background:${method.color}">${method.initials}</span>
+        <span>Ce bien est réglé via <strong>${method.label}</strong>. Le numéro du propriétaire reste confidentiel : il figurera sur votre reçu une fois la réservation validée.</span>
+      </div>
+
+      <button class="btn-validate" id="btnConfirmPayment2">Continuer</button>
+      <button type="button" class="btn-back-link" id="btnBackToReservation2">← Revenir aux informations de réservation</button>
+    </div>
+  `;
+  reservationOverlay.classList.add('open');
+
+  document.getElementById('reservationClose2b').addEventListener('click', closeReservationModal);
+  document.getElementById('btnBackToReservation2').addEventListener('click', () => openReservationModal(l));
+  document.getElementById('btnConfirmPayment2').addEventListener('click', () => openDepositStep(l, res, method));
 }
 
 /* ---------- Étape de finalisation du dépôt : QR code / code à 4 chiffres / redirection ---------- */
@@ -1719,13 +1797,18 @@ async function validateReservation(l, res, method){
      au propriétaire du bien. Tout est écrit dans Firestore afin d'être visible
      immédiatement côté administrateur, sur n'importe quel appareil.
      Règles de commission :
-       - 10% de commission sur le prix du bien (calculée sur le Montant Total du séjour,
-         res.total, et non sur le seul acompte réglé maintenant).
-       - Si le séjour dépasse 2 jours, une commission additionnelle de 6%
-         est prélevée sur le Montant Total (res.total) du séjour. */
+       - 10% de commission prélevée sur le PRIX DU BIEN (res.amount, le montant unitaire
+         du séjour), et non sur le Montant Total de la réservation.
+         Exemple : bien à 15 000 FCFA → commission de 10% = 1 500 FCFA, quel que soit
+         le nombre de séjours réservés.
+       - Si le séjour dépasse 2 jours (nombre de séjours > 2), une seconde commission
+         de 6% est prélevée, cette fois sur le Montant Total de la réservation (res.total).
+         Exemple : réservation de 3 jours à 15 000 FCFA → Montant Total = 45 000 FCFA →
+         commission additionnelle de 6% = 2 700 FCFA. */
   const stays = res.stays || 1;
   const total = res.total || res.due;
-  const feeBase = Math.round(total * 0.10);
+  const unitPrice = res.amount || l.price || 0;
+  const feeBase = Math.round(unitPrice * 0.10);
   const feeLongStay = stays > 2 ? Math.round(total * 0.06) : 0;
   const fee = feeBase + feeLongStay;
   const ownerNet = res.due - fee;
@@ -2783,7 +2866,10 @@ function bindOwnerContentEvents(owner){
           paymentOperator: ops[0], paymentPhone: phones[0]
         });
         ownerListings.filter(p => p.ownerCode === owner.srCode).forEach(p => {
-          batch.update(db.collection('ownerListings').doc(String(p.id)), {payOperator: ops[0], phone: phones[0]});
+          batch.update(db.collection('ownerListings').doc(String(p.id)), {
+            payOperator: ops[0], phone: phones[0],
+            payOperators: ops, phones: phones
+          });
         });
         await batch.commit();
       } catch(err){
@@ -2900,6 +2986,8 @@ function openPropertyForm(owner){
       color: colors[Math.floor(Math.random() * colors.length)],
       phone: phonesArr[0] || '',
       payOperator: opsArr[0] || '',
+      payOperators: opsArr,
+      phones: phonesArr,
       images: []
     };
     const btn = document.getElementById('btnCreateProp');
@@ -3584,7 +3672,7 @@ function sectionCommission(){
       <button type="button" class="dash-btn ${commissionView === 'historique' ? 'active' : ''}" data-commission-view="historique">Historique des commissions</button>
     </div>
     ${commissionView === 'portefeuille' ? `
-      <p class="sub-hint">Commission plateforme : 10% sur le prix du bien (Montant Total), répartie par moyen de paiement. Si le séjour dépasse 2 jours, une commission additionnelle de 6% est prélevée sur le Montant Total.</p>
+      <p class="sub-hint">Commission plateforme : 10% prélevés sur le prix du bien (montant unitaire du séjour), répartie par moyen de paiement. Si le séjour dépasse 2 jours, une commission additionnelle de 6% est prélevée sur le Montant Total de la réservation.</p>
       <div class="wallet-grid">
         ${OPS.map(op => `
           <div class="wallet-card">
@@ -3600,7 +3688,7 @@ function sectionCommission(){
           <div>
             <strong>${r.ref}</strong> — ${r.title}
             <div class="meta">${r.dateStr} · via ${r.operator}</div>
-            <div class="meta">10% du paiement : ${money(r.feeBase != null ? r.feeBase : r.fee)}${r.feeLongStay ? ` · +6% séjour &gt; 2 jours : ${money(r.feeLongStay)}` : ''}</div>
+            <div class="meta">10% sur le prix du bien : ${money(r.feeBase != null ? r.feeBase : r.fee)}${r.feeLongStay ? ` · +6% séjour &gt; 2 jours (sur le Montant Total) : ${money(r.feeLongStay)}` : ''}</div>
           </div>
           <div class="amt" style="font-family:'Fraunces',serif;font-weight:600;">${money(r.fee)}</div>
         </div>
