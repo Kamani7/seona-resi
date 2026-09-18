@@ -304,6 +304,33 @@
     text-decoration:underline;padding:0 0 16px;
   }
 
+  /* ---------- PayDunya (agrégateur) ---------- */
+  .pd-brand{
+    display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  }
+  .pd-brand .pd-logo{
+    width:40px;height:40px;border-radius:10px;background:#FF6B00;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none;
+  }
+  .pd-brand .pd-name{font-weight:700;font-size:15px;}
+  .pd-brand .pd-sub{font-size:12px;color:#6B6A5A;font-weight:500;}
+  .pd-channels{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 4px;justify-content:center;}
+  .pd-chan{
+    border:1px solid var(--line);border-radius:999px;padding:5px 11px;
+    font-size:12px;font-weight:600;color:#54533F;background:var(--white);
+  }
+  .pd-notice{
+    background:#EFEAD8;border:1px solid #E3D9B4;color:#6B5A2A;border-radius:10px;
+    padding:11px 13px;font-size:12.5px;line-height:1.55;margin-bottom:14px;text-align:left;
+  }
+  .pd-secure{font-size:12px;color:#6B6A5A;margin-top:12px;}
+  .btn-paydunya{
+    width:100%;background:#FF6B00;color:#fff;border:none;border-radius:9px;
+    padding:13px 16px;font-weight:600;font-size:15px;transition:background .15s ease;
+  }
+  .btn-paydunya:hover{background:#E05F00;}
+  .btn-paydunya:disabled{opacity:.6;cursor:default;}
+
   /* ---------- Étape dépôt (QR / code / redirection) ---------- */
   .deposit-summary{
     display:flex;align-items:center;gap:10px;background:#EFEDDF;border-radius:10px;
@@ -939,6 +966,32 @@
   const db = firebase.firestore();
 </script>
 
+<!-- ==================== Connexion à PayDunya ====================
+     PayDunya est un agrégateur de paiement : un seul lien de paiement permet au
+     client de régler avec Orange Money, Wave, MTN MoMo, Moov Money, Free Money
+     ou une carte bancaire.
+
+     IMPORTANT — SÉCURITÉ : les clés PayDunya (MASTER-KEY, PRIVATE-KEY, TOKEN) ne
+     doivent JAMAIS être écrites dans cette page, car tout le monde pourrait les
+     lire depuis le navigateur et encaisser à votre place. Elles doivent rester
+     sur un petit serveur à vous (fichier `paydunya-server.js` fourni avec cette
+     mise à jour, à déployer sur Render / Railway / Vercel / un VPS).
+
+     1) Déployez `paydunya-server.js` et notez son adresse publique
+        (ex : https://seona-resi-pay.onrender.com).
+     2) Collez cette adresse ci-dessous dans `apiBase`.
+     3) Tant que `apiBase` reste vide, l'application fonctionne en MODE DÉMO :
+        le parcours PayDunya s'affiche mais aucun paiement réel n'est déclenché. -->
+<script>
+  const PAYDUNYA_CONFIG = {
+    apiBase: "",                 // ex : "https://seona-resi-pay.onrender.com"
+    mode: "test",                // "test" (sandbox) ou "live" — doit correspondre au serveur
+    storeName: "SEONA RESI",
+    channels: ["Orange Money", "Wave", "MTN MoMo", "Moov Money", "Free Money", "Carte bancaire"]
+  };
+  const paydunyaReady = () => Boolean(PAYDUNYA_CONFIG.apiBase);
+</script>
+
 <script>
 const LISTINGS = [
   {id:1, ref:"SR-014", type:"Villa", title:"Villa avec jardin, quartier calme", city:"San-Pédro", price:280000, rooms:4, baths:3, area:210,
@@ -1568,6 +1621,10 @@ const PAYMENT_METHODS = [
   {id:'mtn', label:'MTN Momo', color:'#FFCC00', initials:'MoMo', ussd:'*133#'},
   {id:'wave', label:'Wave', color:'#1DC3EA', initials:'W', ussd:null},
   {id:'moov', label:'Moov Monnaie', color:'#0072CE', initials:'MM', ussd:'*155#'},
+  /* PayDunya n'est pas un opérateur mais un agrégateur : il ouvre une page de
+     paiement sécurisée qui accepte Orange Money, Wave, MTN, Moov, Free Money et
+     la carte bancaire. Le flux est donc différent (redirection), d'où type:'aggregator'. */
+  {id:'paydunya', label:'PayDunya', color:'#FF6B00', initials:'PD', ussd:null, type:'aggregator'},
 ];
 
 /* Renvoie la liste des moyens de paiement que le propriétaire a renseignés pour ce bien,
@@ -1690,7 +1747,9 @@ function proceedToDepositStep(l, res, method){
 
       <div class="deposit-summary" style="margin-bottom:18px;">
         <span class="dot" style="background:${method.color}">${method.initials}</span>
-        <span>Ce bien est réglé via <strong>${method.label}</strong>. Le numéro du propriétaire reste confidentiel : il figurera sur votre reçu une fois la réservation validée.</span>
+        <span>${method.type === 'aggregator'
+          ? `Ce bien est réglé en ligne via <strong>${method.label}</strong> (Orange Money, Wave, MTN, Moov ou carte bancaire).`
+          : `Ce bien est réglé via <strong>${method.label}</strong>. Le numéro du propriétaire reste confidentiel : il figurera sur votre reçu une fois la réservation validée.`}</span>
       </div>
 
       <button class="btn-validate" id="btnConfirmPayment2">Continuer</button>
@@ -1704,8 +1763,204 @@ function proceedToDepositStep(l, res, method){
   document.getElementById('btnConfirmPayment2').addEventListener('click', () => openDepositStep(l, res, method));
 }
 
+/* ==================== Paiement en ligne via PayDunya ====================
+   PayDunya étant un agrégateur, le parcours n'est pas le même que pour un dépôt
+   mobile money classique :
+     1) on demande à NOTRE serveur de créer une facture PayDunya (les clés secrètes
+        restent sur le serveur, jamais dans cette page) ;
+     2) le client est redirigé vers la page de paiement sécurisée PayDunya ;
+     3) au retour, on interroge le serveur pour vérifier que la facture est bien
+        « completed » avant d'enregistrer la réservation et la commission.
+   Tant que PAYDUNYA_CONFIG.apiBase est vide, on reste en mode démonstration. */
+
+const PAYDUNYA_PENDING_KEY = 'seonaresi_paydunya_pending';
+
+function savePaydunyaPending(token, l, res){
+  const light = {
+    ref:l.ref, title:l.title, city:l.city || '', phone:l.phone || '',
+    ownerCode:l.ownerCode || '', price:l.price || 0
+  };
+  localStorage.setItem(PAYDUNYA_PENDING_KEY, JSON.stringify({token, l:light, res, createdAt:Date.now()}));
+}
+function readPaydunyaPending(){
+  try { return JSON.parse(localStorage.getItem(PAYDUNYA_PENDING_KEY) || 'null'); }
+  catch(e){ return null; }
+}
+function clearPaydunyaPending(){ localStorage.removeItem(PAYDUNYA_PENDING_KEY); }
+
+/* Demande la création d'une facture PayDunya à notre serveur.
+   Réponse attendue : {token:"...", url:"https://app.paydunya.com/checkout/invoice/..."} */
+async function createPaydunyaInvoice(l, res){
+  const returnUrl = location.origin + location.pathname;
+  const r = await fetch(PAYDUNYA_CONFIG.apiBase.replace(/\/$/, '') + '/paydunya/create-invoice', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      amount: res.due,
+      description: 'Reservation ' + l.ref + ' - ' + l.title,
+      ref: l.ref,
+      listingTitle: l.title,
+      customerName: res.name || '',
+      customerPhone: res.phone || '',
+      returnUrl: returnUrl + '?paydunya=return',
+      cancelUrl: returnUrl + '?paydunya=cancel'
+    })
+  });
+  if(!r.ok) throw new Error('HTTP ' + r.status);
+  const data = await r.json();
+  if(!data || !data.url || !data.token) throw new Error(data && data.error ? data.error : 'Réponse invalide du serveur de paiement.');
+  return data;
+}
+
+/* Attend que les comptes propriétaires soient chargés depuis Firestore (utile au
+   retour de PayDunya, la page venant d'être rechargée). */
+function waitForOwners(maxMs){
+  const limit = maxMs || 8000;
+  const start = Date.now();
+  return new Promise(resolve => {
+    (function check(){
+      if(owners.length || Date.now() - start > limit) return resolve();
+      setTimeout(check, 200);
+    })();
+  });
+}
+
+function openPaydunyaStep(l, res, method){
+  const demo = !paydunyaReady();
+  reservationContent.innerHTML = `
+    <button class="modal-close" id="pdClose">✕</button>
+    <div class="receipt-wrap">
+      <div class="card-type" style="margin-bottom:4px;">Paiement en ligne</div>
+      <h3 style="margin-bottom:14px;">${escapeHtml(l.title)}</h3>
+
+      <div class="deposit-summary">
+        <span class="dot" style="background:${method.color}">${method.initials}</span>
+        <span>Paiement via <strong>PayDunya</strong> — Montant à payer : <strong>${money(res.due)}</strong></span>
+      </div>
+
+      <div class="deposit-panel">
+        <div class="pd-brand" style="justify-content:center;">
+          <span class="pd-logo">PD</span>
+          <span style="text-align:left;">
+            <span class="pd-name">PayDunya</span><br>
+            <span class="pd-sub">Page de paiement sécurisée</span>
+          </span>
+        </div>
+        <div class="deposit-instructions">
+          Vous allez être redirigé(e) vers PayDunya pour régler <strong>${money(res.due)}</strong>.
+          Choisissez ensuite le moyen qui vous arrange :
+        </div>
+        <div class="pd-channels">
+          ${PAYDUNYA_CONFIG.channels.map(c => `<span class="pd-chan">${c}</span>`).join('')}
+        </div>
+        <div class="pd-secure">🔒 Vos informations de paiement ne transitent pas par SEONA RESI.</div>
+      </div>
+
+      ${demo ? `<div class="pd-notice">⚙️ <strong>Mode démonstration</strong> : PayDunya n'est pas encore relié à votre compte marchand (<code>PAYDUNYA_CONFIG.apiBase</code> est vide). Le bouton ci-dessous simule un paiement réussi pour vous laisser tester le parcours.</div>` : ''}
+
+      <div class="res-error" id="pdError"></div>
+
+      <button class="btn-paydunya" id="btnPaydunyaPay">${demo ? 'Simuler le paiement PayDunya' : 'Payer maintenant via PayDunya'}</button>
+      <button type="button" class="btn-back-link" id="btnPdBack" style="margin-top:14px;">← Changer de mode de paiement</button>
+    </div>
+  `;
+  reservationOverlay.classList.add('open');
+
+  document.getElementById('pdClose').addEventListener('click', closeReservationModal);
+  document.getElementById('btnPdBack').addEventListener('click', () => openPaymentMethods(l, res));
+
+  const payBtn = document.getElementById('btnPaydunyaPay');
+  const errEl = document.getElementById('pdError');
+  payBtn.addEventListener('click', async () => {
+    errEl.classList.remove('show');
+    if(demo){
+      payBtn.disabled = true; payBtn.textContent = 'Paiement simulé…';
+      validateReservation(l, res, method);
+      return;
+    }
+    payBtn.disabled = true; payBtn.textContent = 'Ouverture de PayDunya…';
+    try {
+      const invoice = await createPaydunyaInvoice(l, res);
+      savePaydunyaPending(invoice.token, l, res);
+      location.href = invoice.url;
+    } catch(err){
+      console.error('Erreur PayDunya :', err);
+      errEl.textContent = "Le paiement PayDunya n'a pas pu être lancé. Vérifiez votre connexion puis réessayez.";
+      errEl.classList.add('show');
+      payBtn.disabled = false; payBtn.textContent = 'Payer maintenant via PayDunya';
+    }
+  });
+}
+
+/* Petit écran d'information réutilisé au retour de PayDunya. */
+function openPaydunyaInfo(titre, html, showRetry){
+  reservationContent.innerHTML = `
+    <button class="modal-close" id="pdInfoClose">✕</button>
+    <div class="receipt-wrap">
+      <div class="card-type" style="margin-bottom:4px;">PayDunya</div>
+      <h3 style="margin-bottom:14px;">${titre}</h3>
+      <div style="font-size:14px;color:#54533F;line-height:1.6;">${html}</div>
+      <div class="receipt-actions" style="margin-top:18px;">
+        <button class="btn-close-receipt" id="pdInfoBtn">Fermer</button>
+      </div>
+    </div>
+  `;
+  reservationOverlay.classList.add('open');
+  document.getElementById('pdInfoClose').addEventListener('click', closeReservationModal);
+  document.getElementById('pdInfoBtn').addEventListener('click', closeReservationModal);
+}
+
+/* Au retour depuis PayDunya (…?paydunya=return&token=XXX ou ?paydunya=cancel) :
+   on vérifie le statut réel de la facture auprès de notre serveur avant de créditer
+   quoi que ce soit — on ne fait jamais confiance à la simple présence de l'URL. */
+async function handlePaydunyaReturn(){
+  const params = new URLSearchParams(location.search);
+  const flag = params.get('paydunya');
+  if(!flag) return;
+
+  const pending = readPaydunyaPending();
+  const token = params.get('token') || (pending && pending.token);
+  history.replaceState({}, '', location.origin + location.pathname);
+
+  if(flag === 'cancel'){
+    clearPaydunyaPending();
+    openPaydunyaInfo('Paiement annulé', "Le paiement a été annulé. Votre réservation n'a pas été enregistrée : vous pouvez relancer la réservation quand vous le souhaitez.");
+    return;
+  }
+
+  if(!pending || !token){
+    openPaydunyaInfo('Paiement introuvable', "Nous n'avons pas retrouvé la réservation liée à ce paiement sur cet appareil. Si votre compte a été débité, contactez-nous avec la référence PayDunya.");
+    return;
+  }
+
+  openPaydunyaInfo('Vérification du paiement…', "⏳ Nous vérifions votre paiement auprès de PayDunya. Merci de patienter quelques secondes sans fermer cette page.");
+
+  try {
+    const r = await fetch(PAYDUNYA_CONFIG.apiBase.replace(/\/$/, '') + '/paydunya/status/' + encodeURIComponent(token));
+    const data = await r.json();
+    if(data && data.status === 'completed'){
+      clearPaydunyaPending();
+      await waitForOwners();
+      const method = PAYMENT_METHODS.find(m => m.id === 'paydunya');
+      await validateReservation(pending.l, pending.res, method);
+    } else if(data && (data.status === 'pending' || data.status === 'processing')){
+      openPaydunyaInfo('Paiement en cours', "Votre paiement est encore en cours de traitement chez PayDunya. Patientez une minute puis rechargez cette page : la réservation sera enregistrée dès la confirmation.");
+    } else {
+      clearPaydunyaPending();
+      openPaydunyaInfo('Paiement non abouti', "PayDunya n'a pas confirmé ce paiement. Aucun montant n'a été enregistré. Vous pouvez relancer la réservation.");
+    }
+  } catch(err){
+    console.error('Erreur vérification PayDunya :', err);
+    openPaydunyaInfo('Vérification impossible', "Impossible de joindre le serveur de paiement pour vérifier votre transaction. Rechargez la page dans quelques instants ou contactez-nous.");
+  }
+}
+
+window.addEventListener('load', handlePaydunyaReturn);
+
 /* ---------- Étape de finalisation du dépôt : QR code / code à 4 chiffres / redirection ---------- */
 function openDepositStep(l, res, method){
+  /* PayDunya : parcours de paiement en ligne (redirection), pas de QR/USSD. */
+  if(method.type === 'aggregator'){ openPaydunyaStep(l, res, method); return; }
   const depositCode = String(Math.floor(1000 + Math.random() * 9000));
   const qrPayload = `SEONA-RESI|${l.ref}|${method.id}|${res.due}|${depositCode}`;
   let mode = 'qr';
@@ -2043,7 +2298,7 @@ const ADMIN_ACCOUNT = {username:'admin', passwordHash:'41f230cadcdf1bd676395ea48
    afin que les données soient partagées entre tous les appareils/navigateurs. */
 let owners = [];
 let reservationsLog = [];
-let adminWallet = {orange:0, mtn:0, wave:0, moov:0};
+let adminWallet = {orange:0, mtn:0, wave:0, moov:0, paydunya:0};
 let transferLog = [];
 let ownerTransferLog = [];
 let suggestions = [];
@@ -2107,7 +2362,7 @@ db.collection('suggestions').orderBy('createdAt').onSnapshot(snap => {
 }, err => console.error('Erreur Firestore (suggestions) :', err));
 
 db.collection('meta').doc('adminWallet').onSnapshot(doc => {
-  adminWallet = doc.exists ? doc.data() : {orange:0, mtn:0, wave:0, moov:0};
+  adminWallet = doc.exists ? doc.data() : {orange:0, mtn:0, wave:0, moov:0, paydunya:0};
   onDataChanged();
 }, err => console.error('Erreur Firestore (adminWallet) :', err));
 
@@ -2226,7 +2481,8 @@ const OPS = [
   {id:'orange', label:'Orange Monnaie'},
   {id:'mtn', label:'MTN Momo'},
   {id:'wave', label:'Wave'},
-  {id:'moov', label:'Moov Monnaie'}
+  {id:'moov', label:'Moov Monnaie'},
+  {id:'paydunya', label:'PayDunya (Orange, Wave, MTN, Moov, carte)'}
 ];
 
 function getOwnerByCode(code){ return owners.find(o => o.srCode === code); }
@@ -2729,7 +2985,7 @@ function ownerSectionInfosPaiement(owner){
   return `
     <h4>Solde</h4>
     ${ownerBalanceCardHTML(owner)}
-    <p class="sub-hint">Moyen de paiement (réception des loyers) : cochez un ou plusieurs opérateurs, puis ajoutez un ou plusieurs numéros qui recevront vos paiements.</p>
+    <p class="sub-hint">Moyen de paiement (réception des loyers) : cochez un ou plusieurs opérateurs, puis ajoutez un ou plusieurs numéros qui recevront vos paiements. En cochant <strong>PayDunya</strong>, vos clients peuvent payer en ligne depuis n'importe quel réseau (Orange Money, Wave, MTN, Moov, Free Money ou carte bancaire) : indiquez tout de même le numéro sur lequel vous souhaitez être reversé.</p>
     <div class="form-field">
       <label>Opérateur(s)</label>
       <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:4px;">
@@ -4349,4 +4605,3 @@ render();
 </script>
 </body>
 </html>
-Mise à jour et modification
